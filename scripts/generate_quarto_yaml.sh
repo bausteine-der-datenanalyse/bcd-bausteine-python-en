@@ -20,7 +20,6 @@ book:
     - Sebastian Seipel
   date: today
   language: en-US
-  downloads: [pdf]
   repo-url: "https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en"
   repo-actions: [source]
   favicon: books/shared-media/logo/favicon.svg
@@ -91,8 +90,6 @@ format:
     theme: flatly
     toc: true
     toc-depth: 2
-  pdf:
-    number-sections: true
 
 execute:
   freeze: auto
