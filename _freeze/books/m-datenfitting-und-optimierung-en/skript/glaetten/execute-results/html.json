@@ -1,0 +1,12 @@
+{
+  "hash": "f9509d0b813f9fa2e2962b2297f545c6",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "# Trend Smoothing – Reducing Noise\n\n\n\nNoisy data? A **moving average** smooths curves:\n\n::: {#bd43702c .cell execution_count=2}\n``` {.python .cell-code}\ndata = np.genfromtxt(\"01-daten/trenddaten-mit-rauschen.csv\", delimiter=\",\", skip_header=1)\nx = data[:, 0]\ny = data[:, 1]\n\nwindow = 5\nweights = np.ones(window) / window\ny_smooth = np.convolve(y, weights, mode='valid')\n\nplt.plot(x, y, label=\"Original\", alpha=0.5)\nplt.plot(x[(window-1)//2:-(window//2)], y_smooth, label=\"Smoothed\", color='red')\nplt.legend()\nplt.grid(True)\nplt.title(\"Trend Smoothing\")\n\nplt.show()\n```\n\n::: {.cell-output .cell-output-display}\n![](glaetten_files/figure-html/cell-3-output-1.png){width=582 height=431 fig-alt='Visualization of data forming a waveform from left to right. The smoothed curve is overlaid on top.'}\n:::\n:::\n\n\n",
+    "supporting": [
+      "glaetten_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

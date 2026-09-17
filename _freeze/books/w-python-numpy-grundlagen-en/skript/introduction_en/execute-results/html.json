@@ -1,0 +1,12 @@
+{
+  "hash": "857bfba8e80870aa63a72674c62cb6ea",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "# Introduction to NumPy\n\nNumPy is a powerful library for Python that is used for numerical computing and data analysis. The name \"NumPy\" is an acronym for \"Numerical Python\".  \nNumPy itself is mainly written in the C programming language, which is why NumPy is generally very fast.\n\nNumPy allows efficient work with small and large vectors and matrices that would otherwise be cumbersome to implement in native Python. It also provides the ability to perform calculations with vectors and matrices easily—even for very large datasets.\n\nThis introduction will help you understand and use the basics of NumPy.\n\n## Advantages & Disadvantages\n\nIn most cases, operations with NumPy data structures are faster. However, unlike native Python lists, NumPy arrays can only hold one data type per list.\n\n::: {.callout-note collapse=\"true\"}\n## Why is NumPy often faster?\n\nNumPy implements a more efficient memory storage for lists.  \nNative Python stores list contents in scattered memory locations, wherever space is available.\n\n![Storage of data in native Python](../skript/00-bilder/data_memory_list.svg){#fig-python_memory fig-alt=\"Sequential data is stored at random places in memory\"}\n\nIn contrast, NumPy arrays and matrices are stored in contiguous blocks of memory, allowing for more efficient data access.\n\n![Storage of data in NumPy](../skript/00-bilder/data_memory_numpy.svg){#fig-numpy_memory fig-alt=\"Sequential data is stored in a continuous memory block\"}\n\nHowever, this also means that expanding a list is much faster than expanding arrays or matrices. Lists can use any free space, while arrays and matrices have to be copied to a new location in memory.\n\n:::\n\n## Importing the Package\n\nNumPy is imported with the following line. It is a global convention to use the alias `np`.\n\n::: {#042bfaf8 .cell execution_count=1}\n``` {.python .cell-code}\nimport numpy as np\n```\n:::\n\n\n## References\n\nAll functions introduced here can be found in the (English) NumPy documentation: [Documentation](https://numpy.org/doc/)\n\n",
+    "supporting": [
+      "introduction_en_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

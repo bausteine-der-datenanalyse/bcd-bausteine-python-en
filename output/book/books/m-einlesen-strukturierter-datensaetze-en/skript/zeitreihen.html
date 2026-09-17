@@ -1,0 +1,2637 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>46&nbsp; Time Series – Python Building Blocks</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/marktdaten-oesterreich.html" rel="next">
+<link href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/numpy-pandas.html" rel="prev">
+<link href="../../../books/shared-media/logo/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-c117ac82edef17e21c58c619b1d4b9e4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../books/m-einlesen-strukturierter-datensaetze-en/index.html">m-einlesen-strukturierter-datensaetze-en</a></li><li class="breadcrumb-item"><a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/zeitreihen.html"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">Time Series</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../../../index.html" class="sidebar-logo-link">
+      <img src="../../../books/shared-media/logo/logo_with_text.svg" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../../books/shared-media/logo/logo_with_text.svg" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../../">Python Building Blocks</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-pseudocode-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pseudocode-en/Pseudocode.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Pseudocode Tool Module</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-minimal-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python Tool Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Understanding Data Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/flusskontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Decisions and Loops</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/listen_iterationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Storing Multiple Values</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/funktionen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Reusable Code with Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/lesen_schreiben.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Working with Files</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python Tool Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction: Data Analysis with Python</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Data Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/funktionen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Functions: Basics</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/flusskontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Control Flow</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/sammeltypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Collection Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/funktionen-definieren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Defining Your Own Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/dateien-lesen-und-schreiben.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Reading and writing files</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/module-und-pakete-importieren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Importing Modules and Packages</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/daswichtigste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">The Essentials</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-numpy-grundlagen-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/introduction_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to NumPy</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_creation_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Creating NumPy Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_info_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Size, Structure, and Type</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_calculation_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Working with Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_slicing_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Slicing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_manipulation_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Array Manipulation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_read_n_write_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Reading and Writing Files</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_images_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Working with Images</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/assessment_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Learning Objective Check</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/uebungen/uebung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Exercise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/klausurfragen/klausurfragen_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Exam Questions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-pandas-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tool Module Pandas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/operationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Operations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/plotting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Plot Creation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Data Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/datetime.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Time Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/dateien.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Reading and Writing Files</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-matplotlib-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Matplotlib Tool Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Introduction to Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/basic_plot_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Plot Types in Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/adapting_plots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Customization and Adapting of Plots in Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/advanced_techniques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Advanced Techniques in Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/scientific_plotting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Best Practices in Matplotlib: Common Mistakes and Improvements</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-numerik-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-numerik-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-numerik-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Numerical Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-numerik-en/skript/intro_integrale.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Integration</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-numerik-en/skript/intro_ableitungen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Differentiation</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-einlesen-strukturierter-datensaetze-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reading Structured Datasets Method Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/grundlagen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Fundamentals: Characteristics of Datasets</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/datentypoperationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Data Type-Dependent Operations and Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/numpy-pandas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">The NumPy and Pandas modules</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/zeitreihen.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">Time Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/marktdaten-oesterreich.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">47</span>&nbsp; <span class="chapter-title">Download Austrian Market Transparency Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/modul-glob.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">48</span>&nbsp; <span class="chapter-title">Accessing multiple local files: <code>glob</code> module</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/maskierte-arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">49</span>&nbsp; <span class="chapter-title">Masked Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/dateiformate.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">50</span>&nbsp; <span class="chapter-title">Scientific File Formats</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/daswichtigste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">51</span>&nbsp; <span class="chapter-title">Key Takeaways (possibly as a video)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/lernzielkontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">52</span>&nbsp; <span class="chapter-title">Learning Assessment</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-datenfitting-und-optimierung-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Fitting and Optimization Method Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">53</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/interpolation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">54</span>&nbsp; <span class="chapter-title">Interpolation – Filling in the Gaps</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/fitting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">55</span>&nbsp; <span class="chapter-title">Fitting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/splines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">56</span>&nbsp; <span class="chapter-title">Splines</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/glaetten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">57</span>&nbsp; <span class="chapter-title">Trend Smoothing – Reducing Noise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/uebungen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">58</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-sensordatenanalyse-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sensor Data Analysis Method Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">59</span>&nbsp; <span class="chapter-title">The Principle of Measurements</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/normalverteilung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">60</span>&nbsp; <span class="chapter-title">The Normal Distribution</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/lineare-parameterschätzung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">61</span>&nbsp; <span class="chapter-title">Linear Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/fehlerrechnung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">62</span>&nbsp; <span class="chapter-title">Error Calculation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/übung-hooke.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">63</span>&nbsp; <span class="chapter-title">Exercise: Hooke’s Law</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/kalibrierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">64</span>&nbsp; <span class="chapter-title">Calibration</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-analyse-von-zeitdaten-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/01-einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">65</span>&nbsp; <span class="chapter-title">1 Classification: Time Series as a Measurement Process</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/02-vorverarbeitung-validierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">66</span>&nbsp; <span class="chapter-title">2 Preprocessing &amp; Validation of a Time Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/03-resampling-alignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">67</span>&nbsp; <span class="chapter-title">3 Resampling &amp; Alignment</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/04-glaettung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">68</span>&nbsp; <span class="chapter-title">4 Smoothing &amp; Noise Reduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/05-trend-saison.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">69</span>&nbsp; <span class="chapter-title">5 Trend &amp; Season</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/06-lags-autokorrelation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">70</span>&nbsp; <span class="chapter-title">6 Lags &amp; Autocorrelation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/07-anomalien.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">71</span>&nbsp; <span class="chapter-title">7 Anomalies</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/08-forecasting-baselines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">72</span>&nbsp; <span class="chapter-title">8 Forecasting Baselines &amp; Evaluation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/09-lernzielkontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">73</span>&nbsp; <span class="chapter-title">9 Learning Objectives Check</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/10-uebung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">74</span>&nbsp; <span class="chapter-title">Exercise 10: Time Series Workflow</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/11-klausurfragen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">75</span>&nbsp; <span class="chapter-title">11 Exam Questions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true">
+ <span class="menu-text">a-energiedatenanalyse-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-energiedatenanalyse-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-energiedatenanalyse-en/skript/energiedatenanalyse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">76</span>&nbsp; <span class="chapter-title">Energy Data Analysis</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
+ <span class="menu-text">a-auswertung-fds-daten-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/skript/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">77</span>&nbsp; <span class="chapter-title">Introduction to ASET</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/skript/aset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">78</span>&nbsp; <span class="chapter-title">Available safe egress time</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/skript/fdsreader.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">79</span>&nbsp; <span class="chapter-title">Fdsreader</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/uebungen/uebung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">80</span>&nbsp; <span class="chapter-title">uebung.html</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/klausurfragen/klausurfragen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">81</span>&nbsp; <span class="chapter-title">klausurfragen.html</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#date-and-time-in-numpy-and-pandas" id="toc-date-and-time-in-numpy-and-pandas" class="nav-link active" data-scroll-target="#date-and-time-in-numpy-and-pandas"><span class="header-section-number">46.1</span> Date and Time in NumPy and Pandas</a></li>
+  <li><a href="#reading-time-series" id="toc-reading-time-series" class="nav-link" data-scroll-target="#reading-time-series"><span class="header-section-number">46.2</span> Reading Time Series</a></li>
+  <li><a href="#accessing-time-series" id="toc-accessing-time-series" class="nav-link" data-scroll-target="#accessing-time-series"><span class="header-section-number">46.3</span> Accessing Time Series</a></li>
+  <li><a href="#missing-values-in-time-series" id="toc-missing-values-in-time-series" class="nav-link" data-scroll-target="#missing-values-in-time-series"><span class="header-section-number">46.4</span> Missing Values in Time Series</a></li>
+  <li><a href="#sec-übungenzeitreihen" id="toc-sec-übungenzeitreihen" class="nav-link" data-scroll-target="#sec-übungenzeitreihen"><span class="header-section-number">46.5</span> Exercises: Reading Time Series</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en/blob/main/books/m-einlesen-strukturierter-datensaetze-en/skript/zeitreihen.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../books/m-einlesen-strukturierter-datensaetze-en/index.html">m-einlesen-strukturierter-datensaetze-en</a></li><li class="breadcrumb-item"><a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/zeitreihen.html"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">Time Series</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-time-series" class="quarto-section-identifier"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">Time Series</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="98b901b4" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preparation: reload modules from the previous chapter</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="date-and-time-in-numpy-and-pandas" class="level2" data-number="46.1">
+<h2 data-number="46.1" class="anchored" data-anchor-id="date-and-time-in-numpy-and-pandas"><span class="header-section-number">46.1</span> Date and Time in NumPy and Pandas</h2>
+<p>The NumPy and Pandas modules use the <code>datetime64</code> data type to handle date and time information.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">NumPy</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Pandas</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p><code>datetime64</code> objects are created using the function <code>np.datetime64()</code>. In Python output, the data type is also represented by the letter <code>M</code>. <code>datetime64</code> objects can be created in two ways:</p>
+<ul>
+<li>A string in <a href="https://www.iso.org/iso-8601-date-and-time-format.html">ISO 8601</a> format representing a date in the order year, month, day, hour, minute, second, millisecond, e.g., <code>YYYY-MM-DD 12:00:00.000</code>. A space or the letter <code>T</code> can be used as the separator between date and time. The data type and the smallest unit used are stored in the <code>dtype</code> attribute.</li>
+</ul>
+<div id="efa2f5b4" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.datetime64(<span class="st">'2024'</span>), np.datetime64(<span class="st">'2024'</span>).dtype)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.datetime64(<span class="st">'2024-10-31'</span>), np.datetime64(<span class="st">'2024-10-31'</span>).dtype)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.datetime64(<span class="st">'2024-10-31T12:24:59.999'</span>), np.datetime64(<span class="st">'2024-10-31T12:24:59.999'</span>).dtype)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2024 datetime64[Y]
+2024-10-31 datetime64[D]
+2024-10-31T12:24:59.999 datetime64[ms]</code></pre>
+</div>
+</div>
+<ul>
+<li>As a number relative to the epoch with a specified time unit. The available time units are years (‘Y’), months (‘M’), weeks (‘W’), days (‘D’), as well as hours (‘h’), minutes (‘m’), seconds (‘s’), milliseconds (‘ms’), and other second-based units down to attoseconds (see <a href="https://numpy.org/doc/stable/reference/arrays.datetime.html#datetime-units">NumPy documentation</a>).</li>
+</ul>
+<div id="74e42e12" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.datetime64(<span class="dv">10</span> <span class="op">*</span> <span class="dv">1000</span>, <span class="st">'D'</span>), np.datetime64(<span class="dv">10</span> <span class="op">*</span> <span class="dv">1000</span>, <span class="st">'D'</span>).dtype)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.datetime64(<span class="dv">1000</span> <span class="op">*</span> <span class="dv">1000</span>, <span class="st">'h'</span>), np.datetime64(<span class="dv">1000</span> <span class="op">*</span> <span class="dv">1000</span>, <span class="st">'h'</span>).dtype)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.datetime64(<span class="dv">1000</span> <span class="op">*</span> <span class="dv">1000</span> <span class="op">*</span> <span class="dv">1000</span>, <span class="st">'s'</span>), np.datetime64(<span class="dv">1000</span> <span class="op">*</span> <span class="dv">1000</span> <span class="op">*</span> <span class="dv">1000</span>, <span class="st">'s'</span>).dtype)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1997-05-19 datetime64[D]
+2084-01-29T16 datetime64[h]
+2001-09-09T01:46:40 datetime64[s]</code></pre>
+</div>
+</div>
+<p>Datetime formats from other modules can also be converted to <code>np.datetime64()</code>.</p>
+<p>When creating an array, the time unit can be specified.</p>
+<div id="a66ebd2d" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>my_array <span class="op">=</span> np.array([<span class="st">'2007-07-13'</span>, <span class="st">'2006-01-13'</span>, <span class="st">'2010-08-13'</span>], dtype <span class="op">=</span> <span class="st">'datetime64[s]'</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(my_array, my_array.dtype)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>['2007-07-13T00:00:00' '2006-01-13T00:00:00' '2010-08-13T00:00:00'] datetime64[s]</code></pre>
+</div>
+</div>
+<p>The <code>datetime64</code> data type is compatible with most NumPy functions.</p>
+<div id="7351023c" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>np.arange(<span class="st">'2005-02'</span>, <span class="st">'2005-03'</span>, dtype <span class="op">=</span> <span class="st">'datetime64[D]'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>array(['2005-02-01', '2005-02-02', '2005-02-03', '2005-02-04',
+       '2005-02-05', '2005-02-06', '2005-02-07', '2005-02-08',
+       '2005-02-09', '2005-02-10', '2005-02-11', '2005-02-12',
+       '2005-02-13', '2005-02-14', '2005-02-15', '2005-02-16',
+       '2005-02-17', '2005-02-18', '2005-02-19', '2005-02-20',
+       '2005-02-21', '2005-02-22', '2005-02-23', '2005-02-24',
+       '2005-02-25', '2005-02-26', '2005-02-27', '2005-02-28'],
+      dtype='datetime64[D]')</code></pre>
+</div>
+</div>
+<p>(<a href="https://numpy.org/doc/stable/reference/arrays.datetime.html">NumPy documentation</a>)</p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>In Pandas, <code>datetime64</code> objects are created using the functions <code>pd.to_datetime()</code> or <code>pd.date_range()</code>.<br>
+<em>Note: Another option is the function <code>pd.Timestamp()</code>, which offers more extensive possibilities for creating a point in time but does not support string parsing.</em></p>
+<p><code>pd.to_datetime()</code> generates values of the data type <code>datetime64[ns]</code>. Scalars (single values) created with <code>pd.to_datetime()</code> are returned as Timestamps, which do not have a <code>dtype</code> attribute. The function <code>pd.to_datetime()</code> accepts the following input types:</p>
+<ul>
+<li><p>datetime objects from other modules.</p></li>
+<li><p>Numbers and a time unit <code>pd.to_datetime(1, unit = None)</code> (default is nanoseconds). The <code>unit</code> argument accepts the values <code>'ns'</code>, <code>'ms'</code>, <code>'s'</code>, <code>'m'</code>, <code>'h'</code>, <code>'D'</code>, <code>'W'</code>, <code>'M'</code>, <code>'Y'</code> for nanoseconds, milliseconds, seconds, minutes, hours, days, weeks, months, and years. A timestamp is generated relative to the epoch.</p></li>
+</ul>
+<div id="f277ec86" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.to_datetime(<span class="dv">1000</span>, unit <span class="op">=</span> <span class="st">'D'</span>))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.to_datetime(<span class="dv">1000</span> <span class="op">*</span> <span class="dv">1000</span>, unit <span class="op">=</span> <span class="st">'h'</span>))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.to_datetime(<span class="dv">1000</span> <span class="op">*</span> <span class="dv">1000</span> <span class="op">*</span> <span class="dv">1000</span>, unit <span class="op">=</span> <span class="st">'s'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1972-09-27 00:00:00
+2084-01-29 16:00:00
+2001-09-09 01:46:40</code></pre>
+</div>
+</div>
+<ul>
+<li>Strings representing a date or a date with time, formatted according to <a href="https://www.iso.org/iso-8601-date-and-time-format.html">ISO 8601</a>.</li>
+</ul>
+<div id="ecc5ba29" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.to_datetime(<span class="st">'2017'</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.to_datetime(<span class="st">'2017-01-01T00'</span>))</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.to_datetime(<span class="st">'2017-01-01 00:00:00'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2017-01-01 00:00:00
+2017-01-01 00:00:00
+2017-01-01 00:00:00</code></pre>
+</div>
+</div>
+<ul>
+<li>Strings in other formats can be parsed using the argument <code>format = "%d/%m/%Y"</code> (see <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior">strftime documentation for string formatting</a>).</li>
+</ul>
+<div id="adeee5db" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.to_datetime(<span class="st">'Monday, 12. August `24'</span>, <span class="bu">format</span> <span class="op">=</span> <span class="st">"%A, </span><span class="sc">%d</span><span class="st">. %B `%y"</span>))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.to_datetime(<span class="st">'Monday, 12. August 2024, 12:15 Uhr CET'</span>, <span class="bu">format</span> <span class="op">=</span> <span class="st">"%A, </span><span class="sc">%d</span><span class="st">. %B %Y, %H:%M Uhr %Z"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2024-08-12 00:00:00
+2024-08-12 12:15:00+02:00</code></pre>
+</div>
+</div>
+<ul>
+<li>Dictionary or DataFrame.</li>
+</ul>
+<div id="ddf5e333" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.to_datetime({<span class="st">'year'</span>:[<span class="dv">2020</span>, <span class="dv">2024</span>], <span class="st">'month'</span>: [<span class="dv">1</span>, <span class="dv">11</span>], <span class="st">'day'</span>: [<span class="dv">1</span>, <span class="dv">21</span>]}), <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.to_datetime(pd.DataFrame({<span class="st">'year'</span>:[<span class="dv">2020</span>, <span class="dv">2024</span>], <span class="st">'month'</span>: [<span class="dv">1</span>, <span class="dv">11</span>], <span class="st">'day'</span>: [<span class="dv">1</span>, <span class="dv">21</span>]})))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0   2020-01-01
+1   2024-11-21
+dtype: datetime64[ns] 
+
+0   2020-01-01
+1   2024-11-21
+dtype: datetime64[ns]</code></pre>
+</div>
+</div>
+<p>The function <code>pd.date_range()</code> generates an array of type <code>DatetimeIndex</code> with <code>dtype=datetime64</code>. Exactly three of the following four arguments are required to create the range:</p>
+<ul>
+<li><p>start: beginning of the range.</p></li>
+<li><p>end: end of the range (inclusive).</p></li>
+<li><p>freq: step size (e.g., year, day, business day, hour, or multiples like ‘6h’ — see <a href="https://pandas.pydata.org/docs/user_guide/timeseries.html#timeseries-offset-aliases">list of available strings</a>).</p></li>
+<li><p>periods: number of values to generate.</p></li>
+</ul>
+<div id="b3fb85de" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.date_range(start <span class="op">=</span> <span class="st">'2017'</span>, end <span class="op">=</span> <span class="st">'2024'</span>, periods <span class="op">=</span> <span class="dv">3</span>), <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.date_range(start <span class="op">=</span> <span class="st">'2017'</span>, end <span class="op">=</span> <span class="st">'2024'</span>, freq <span class="op">=</span> <span class="st">'YE'</span>), <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.date_range(end <span class="op">=</span> <span class="st">'2024'</span>, freq <span class="op">=</span> <span class="st">'h'</span>, periods <span class="op">=</span> <span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>DatetimeIndex(['2017-01-01', '2020-07-02', '2024-01-01'], dtype='datetime64[ns]', freq=None) 
+
+DatetimeIndex(['2017-12-31', '2018-12-31', '2019-12-31', '2020-12-31',
+               '2021-12-31', '2022-12-31', '2023-12-31'],
+              dtype='datetime64[ns]', freq='YE-DEC') 
+
+DatetimeIndex(['2023-12-31 22:00:00', '2023-12-31 23:00:00',
+               '2024-01-01 00:00:00'],
+              dtype='datetime64[ns]', freq='h')</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Time differences are represented using a dedicated data type (see the following example).<br>
+<!-- **Note for myself: Use case shifting time zones independent of a time zone (and without the time zone syntax)** --></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Time Differences in NumPy and Pandas
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">NumPy</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Pandas</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p>Time differences are represented using the <code>timedelta64</code> data type. Like <code>datetime64</code>, it is created by specifying an integer and a time unit.</p>
+<div id="e9653fd9" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>np.timedelta64(<span class="dv">1</span>, <span class="st">'D'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>np.timedelta64(1,'D')</code></pre>
+</div>
+</div>
+<p>Objects of the types <code>datetime64</code> and <code>timedelta64</code> allow operations with date and time (see more examples in the <a href="https://numpy.org/doc/stable/reference/arrays.datetime.html#datetime-and-timedelta-arithmetic">NumPy documentation</a>).</p>
+<div id="e42a497e" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.datetime64(<span class="st">'today'</span>) <span class="op">-</span> np.datetime64(<span class="st">'2000-01-01'</span>, <span class="st">'D'</span>))</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.datetime64(<span class="st">'now'</span>) <span class="op">-</span> np.datetime64(<span class="st">'2000-01-01'</span>, <span class="st">'h'</span>))</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n\n</span><span class="st">A simple time shift:"</span>, np.datetime64(<span class="st">'now'</span>) <span class="op">-</span> np.timedelta64(<span class="dv">1</span>, <span class="st">'h'</span>))</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"How many days are in a week?"</span>, np.timedelta64(<span class="dv">1</span>,<span class="st">'W'</span>) <span class="op">/</span> np.timedelta64(<span class="dv">1</span>,<span class="st">'D'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>9756 days
+842962876 seconds
+
+
+A simple time shift: 2026-09-17T11:21:16
+How many days are in a week? 7.0</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>Time differences can be created similarly to NumPy by specifying an integer and a time unit.<br>
+Additionally, they can be created using keyword arguments (allowed arguments are: weeks, days, hours, minutes, seconds, milliseconds, microseconds, nanoseconds).</p>
+<div id="97bcdd97" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>pd.Timedelta(<span class="dv">1</span>, <span class="st">'D'</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>pd.Timedelta(days <span class="op">=</span> <span class="dv">1</span>, hours <span class="op">=</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_9639/2140743804.py:2: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+  pd.Timedelta(days = 1, hours = 1)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>Timedelta('1 days 01:00:00')</code></pre>
+</div>
+</div>
+<p><strong>Important:</strong> Unlike in NumPy, time differences in months and years are no longer supported by Pandas.</p>
+<div id="a5d83124" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(pd.Timedelta(<span class="dv">1</span>, <span class="st">'Y'</span>))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">ValueError</span> <span class="im">as</span> error:</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(error)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(pd.Timedelta(<span class="dv">1</span>, <span class="st">'Y'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Units 'M', 'Y', and 'y' are no longer supported, as they do not represent unambiguous timedelta values durations.</code></pre>
+</div>
+</div>
+<p>Time differences can also be created using a string.</p>
+<div id="13b09feb" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.Timedelta(<span class="st">'10sec'</span>))</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.Timedelta(<span class="st">'10min'</span>))</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.Timedelta(<span class="st">'10hours'</span>))</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.Timedelta(<span class="st">'10days'</span>))</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.Timedelta(<span class="st">'10w'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0 days 00:00:10
+0 days 00:10:00
+0 days 10:00:00
+10 days 00:00:00
+70 days 00:00:00</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_9639/3776135813.py:1: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+  print(pd.Timedelta('10sec'))
+/tmp/ipykernel_9639/3776135813.py:2: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+  print(pd.Timedelta('10min'))
+/tmp/ipykernel_9639/3776135813.py:3: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+  print(pd.Timedelta('10hours'))
+/tmp/ipykernel_9639/3776135813.py:4: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+  print(pd.Timedelta('10days'))
+/tmp/ipykernel_9639/3776135813.py:5: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+  print(pd.Timedelta('10w'))</code></pre>
+</div>
+</div>
+<p>Using a time difference, time series can be easily shifted.</p>
+<div id="8abec677" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>pd.date_range(start <span class="op">=</span> <span class="st">'2024-01-01T00:00'</span>, end <span class="op">=</span> <span class="st">'2024-01-01T02:00'</span>, freq <span class="op">=</span> <span class="st">'15min'</span>) <span class="op">+</span> pd.Timedelta(<span class="st">'30min'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_9639/2191239578.py:1: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+  pd.date_range(start = '2024-01-01T00:00', end = '2024-01-01T02:00', freq = '15min') + pd.Timedelta('30min')</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<pre><code>DatetimeIndex(['2024-01-01 00:30:00', '2024-01-01 00:45:00',
+               '2024-01-01 01:00:00', '2024-01-01 01:15:00',
+               '2024-01-01 01:30:00', '2024-01-01 01:45:00',
+               '2024-01-01 02:00:00', '2024-01-01 02:15:00',
+               '2024-01-01 02:30:00'],
+              dtype='datetime64[ns]', freq='15min')</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p><strong>How old are you in days? How old in seconds? Calculate using NumPy or Pandas.</strong></p>
+<div id="tip-alter" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;46.2: Tip: Pandas and Example Solution for Age
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>For an elegant solution in Pandas, check the available methods and attributes of Timedelta objects.</p>
+<pre class="raw"><code>dir(pd.Timedelta(0))</code></pre>
+<div id="tip-loesungalter" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;46.1: Example Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Replace the string <code>'YYYY-MM-DD'</code> or, if you know the time of your birth, <code>'YYYY-MM-DDTHH:MM'</code> with your date of birth.</p>
+<section id="numpy-2" class="level4" data-number="46.1.0.1">
+<h4 data-number="46.1.0.1" class="anchored" data-anchor-id="numpy-2"><span class="header-section-number">46.1.0.1</span> NumPy</h4>
+<p>In NumPy, the keywords <code>np.datetime64('today')</code> and <code>np.datetime64('now')</code> can be used. The output is resolved in days or seconds.</p>
+<pre class="raw"><code>print(np.datetime64('today') - np.datetime64('YYYY-MM-DD', 'D'))
+print(np.datetime64('now') - np.datetime64('YYYY-MM-DDTHH:MM', 's'))</code></pre>
+</section>
+<section id="pandas-2" class="level4" data-number="46.1.0.2">
+<h4 data-number="46.1.0.2" class="anchored" data-anchor-id="pandas-2"><span class="header-section-number">46.1.0.2</span> Pandas</h4>
+<p>In Pandas, the keywords <code>pd.to_datetime('today')</code> and <code>pd.to_datetime('now')</code> are resolved in nanoseconds.</p>
+<pre class="raw"><code>(pd.to_datetime('today') - pd.to_datetime('YYYY-MM-DD')).days
+(pd.to_datetime('now') - pd.to_datetime('YYYY-MM-DDTHH:MM')).total_seconds()</code></pre>
+</section>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="reading-time-series" class="level2" data-number="46.2">
+<h2 data-number="46.2" class="anchored" data-anchor-id="reading-time-series"><span class="header-section-number">46.2</span> Reading Time Series</h2>
+<p>The Pandas module, in particular, provides efficient ways to correctly read date formats. Below, reading time series with NumPy and Pandas is demonstrated using electricity market data. Various exercises are available in <a href="#sec-übungenzeitreihen" class="quarto-xref"><span>Section 46.5</span></a>.</p>
+<p>The German Federal Network Agency (Bundesnetzagentur) publishes various electricity market data, including wholesale prices. The electricity market data must be manually downloaded from <a href="https://www.smard.de/home/downloadcenter/download-marktdaten/">https://www.smard.de/</a>. In this script, data for the year 2023 is used.</p>
+<div style="font-size: 90%;">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Data</th>
+<th>Filename</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Wholesale prices 2023</td>
+<td>Gro_handelspreise_202301010000_202401010000_Stunde.csv</td>
+</tr>
+<tr class="even">
+<td>Wholesale prices 2023 (English)</td>
+<td>Day-ahead_prices_202301010000_202401010000_Hour.csv</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="wrn-SMARD" class="callout callout-style-simple callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning&nbsp;46.1: Downloading SMARD Data
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="quarto-layout-panel" data-layout="[[50, 50], [50, 50], [1]]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p>Click “Accept” when selecting the time period.</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p>Select data in original resolution and click “Download”.</p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="00-bilder/smard-accept.png" class="img-fluid figure-img"></p>
+<figcaption>&nbsp;</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="00-bilder/smard-day-ahead-prices.png" class="img-fluid figure-img"></p>
+<figcaption>&nbsp;</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
+<p>The date format of the files depends on the language set on the website (German/English).</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">NumPy</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Pandas</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<p>Attempting to read the file with <code>np.loadtxt()</code> leads to various errors (data type is not numeric, number of columns cannot be determined). This can be handled by specifying the data type <code>dtype = str</code> and limiting to the first row <code>max_rows = 1</code>.</p>
+<div id="be1d49cf" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> <span class="st">"01-daten/Gro_handelspreise_202301010000_202401010000_Stunde.csv"</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>prices <span class="op">=</span> np.loadtxt(fname <span class="op">=</span> file_path, dtype <span class="op">=</span> <span class="st">'str'</span>, max_rows <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>prices</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>array(['\ufeffDatum', 'von;Datum', 'bis;Deutschland/Luxemburg', '[€/MWh]',
+       'Originalauflösungen;∅', 'Anrainer', 'DE/LU', '[€/MWh]',
+       'Originalauflösungen;Belgien', '[€/MWh]',
+       'Originalauflösungen;Dänemark', '1', '[€/MWh]',
+       'Originalauflösungen;Dänemark', '2', '[€/MWh]',
+       'Originalauflösungen;Frankreich', '[€/MWh]',
+       'Originalauflösungen;Niederlande', '[€/MWh]',
+       'Originalauflösungen;Norwegen', '2', '[€/MWh]',
+       'Originalauflösungen;Österreich', '[€/MWh]',
+       'Originalauflösungen;Polen', '[€/MWh]',
+       'Originalauflösungen;Schweden', '4', '[€/MWh]',
+       'Originalauflösungen;Schweiz', '[€/MWh]',
+       'Originalauflösungen;Tschechien', '[€/MWh]',
+       'Originalauflösungen;DE/AT/LU', '[€/MWh]',
+       'Originalauflösungen;Italien', '(Nord)', '[€/MWh]',
+       'Originalauflösungen;Slowenien', '[€/MWh]',
+       'Originalauflösungen;Ungarn', '[€/MWh]', 'Originalauflösungen'],
+      dtype='&lt;U31')</code></pre>
+</div>
+</div>
+<p>This way, the first row can be read and the semicolon can be identified as the delimiter. Encoding issues may also become noticeable. Therefore, the delimiter is specified with <code>delimiter=';'</code> and the file encoding with <code>encoding='UTF-8'</code>.</p>
+<div id="22a9cfec" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> <span class="st">"01-daten/Gro_handelspreise_202301010000_202401010000_Stunde.csv"</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>prices <span class="op">=</span> np.loadtxt(fname <span class="op">=</span> file_path, dtype <span class="op">=</span> <span class="st">'str'</span>, max_rows <span class="op">=</span> <span class="dv">1</span>, delimiter<span class="op">=</span><span class="st">';'</span>, encoding<span class="op">=</span><span class="st">'UTF-8'</span>)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>prices</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>array(['\ufeffDatum von', 'Datum bis',
+       'Deutschland/Luxemburg [€/MWh] Originalauflösungen',
+       '∅ Anrainer DE/LU [€/MWh] Originalauflösungen',
+       'Belgien [€/MWh] Originalauflösungen',
+       'Dänemark 1 [€/MWh] Originalauflösungen',
+       'Dänemark 2 [€/MWh] Originalauflösungen',
+       'Frankreich [€/MWh] Originalauflösungen',
+       'Niederlande [€/MWh] Originalauflösungen',
+       'Norwegen 2 [€/MWh] Originalauflösungen',
+       'Österreich [€/MWh] Originalauflösungen',
+       'Polen [€/MWh] Originalauflösungen',
+       'Schweden 4 [€/MWh] Originalauflösungen',
+       'Schweiz [€/MWh] Originalauflösungen',
+       'Tschechien [€/MWh] Originalauflösungen',
+       'DE/AT/LU [€/MWh] Originalauflösungen',
+       'Italien (Nord) [€/MWh] Originalauflösungen',
+       'Slowenien [€/MWh] Originalauflösungen',
+       'Ungarn [€/MWh] Originalauflösungen'], dtype='&lt;U49')</code></pre>
+</div>
+</div>
+<p>The string “\ufeff” remains at the beginning of the array. This indicates the <a href="https://en.wikipedia.org/wiki/Byte_order">byte order</a> of the file. It can be skipped by specifying <code>encoding='UTF-8-sig'</code> (<a href="https://stackoverflow.com/a/72466627">Mark Tolonen on stackoverflow.com</a>, <a href="https://docs.python.org/3/library/codecs.html">Python documentation</a>). This way, the first row is read correctly, allowing <code>max_rows=2</code> to be used to inspect the data types.</p>
+<div id="cb7eb2e8" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>prices <span class="op">=</span> np.loadtxt(fname <span class="op">=</span> file_path, dtype <span class="op">=</span> <span class="st">'str'</span>, max_rows <span class="op">=</span> <span class="dv">2</span>, delimiter<span class="op">=</span><span class="st">';'</span>, encoding<span class="op">=</span><span class="st">'UTF-8-sig'</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>prices</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<pre><code>array([['Datum von', 'Datum bis',
+        'Deutschland/Luxemburg [€/MWh] Originalauflösungen',
+        '∅ Anrainer DE/LU [€/MWh] Originalauflösungen',
+        'Belgien [€/MWh] Originalauflösungen',
+        'Dänemark 1 [€/MWh] Originalauflösungen',
+        'Dänemark 2 [€/MWh] Originalauflösungen',
+        'Frankreich [€/MWh] Originalauflösungen',
+        'Niederlande [€/MWh] Originalauflösungen',
+        'Norwegen 2 [€/MWh] Originalauflösungen',
+        'Österreich [€/MWh] Originalauflösungen',
+        'Polen [€/MWh] Originalauflösungen',
+        'Schweden 4 [€/MWh] Originalauflösungen',
+        'Schweiz [€/MWh] Originalauflösungen',
+        'Tschechien [€/MWh] Originalauflösungen',
+        'DE/AT/LU [€/MWh] Originalauflösungen',
+        'Italien (Nord) [€/MWh] Originalauflösungen',
+        'Slowenien [€/MWh] Originalauflösungen',
+        'Ungarn [€/MWh] Originalauflösungen'],
+       ['01.01.2023 00:00', '01.01.2023 01:00', '-5,17', '13,85',
+        '-4,39', '2,01', '2,01', '0,00', '-3,61', '119,32', '12,06',
+        '18,09', '2,01', '0,03', '4,84', '-', '195,90', '13,31', '19,76']],
+      dtype='&lt;U49')</code></pre>
+</div>
+</div>
+<p>The first two columns contain date and time information, while the remaining columns contain numeric values, with one column using ‘-’ to encode missing values. The decimal separator is a comma. Since NumPy arrays can only hold a single data type, the dataset must be split accordingly. For the fourth-to-last column, it should be checked whether it contains only missing values.</p>
+<p>First, the dataset is fully read as strings, skipping the column headers with <code>skiprows=1</code>.</p>
+<div id="7aab9dcf" class="cell" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>prices <span class="op">=</span> np.loadtxt(fname <span class="op">=</span> file_path, dtype <span class="op">=</span> <span class="st">'str'</span>, delimiter<span class="op">=</span><span class="st">';'</span>, encoding<span class="op">=</span><span class="st">'UTF-8-sig'</span>, skiprows<span class="op">=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, the date columns are isolated. NumPy does not support string formatting for dates, so the timestamps must be manually converted from ‘01.01.2023 00:00’ to the ISO 8601 format ‘YYYY-MM-DDThh:mm’.</p>
+<div id="686208fb" class="cell" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Isolate date columns</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>prices_date <span class="op">=</span> prices[:, <span class="dv">0</span>:<span class="dv">2</span>]</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert strings manually to ISO 8601 format</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="co">## Column 0</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a><span class="co">### create new array</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>prices_from_date <span class="op">=</span> np.array([], dtype<span class="op">=</span><span class="st">'datetime64'</span>)</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> element <span class="kw">in</span> prices_date[:, <span class="dv">0</span>]:</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># rearrange string</span></span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>  new_element <span class="op">=</span> element[<span class="dv">6</span>:<span class="dv">10</span>] <span class="op">+</span> <span class="st">'-'</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>                element[<span class="dv">3</span>:<span class="dv">5</span>] <span class="op">+</span> <span class="st">'-'</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>                element[<span class="dv">0</span>:<span class="dv">2</span>] <span class="op">+</span> <span class="st">'T'</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>                element[<span class="dv">11</span>:<span class="dv">13</span>] <span class="op">+</span> <span class="st">':'</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>                element[<span class="dv">14</span>:]</span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># convert to datetime64</span></span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a>  new_element <span class="op">=</span> np.datetime64(new_element)</span>
+<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># append</span></span>
+<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a>  prices_from_date <span class="op">=</span> np.append(prices_from_date, new_element)</span>
+<span id="cb45-23"><a href="#cb45-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-24"><a href="#cb45-24" aria-hidden="true" tabindex="-1"></a><span class="co">## Column 1</span></span>
+<span id="cb45-25"><a href="#cb45-25" aria-hidden="true" tabindex="-1"></a><span class="co">### create new array</span></span>
+<span id="cb45-26"><a href="#cb45-26" aria-hidden="true" tabindex="-1"></a>prices_to_date <span class="op">=</span> np.array([], dtype<span class="op">=</span><span class="st">'datetime64'</span>)</span>
+<span id="cb45-27"><a href="#cb45-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-28"><a href="#cb45-28" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> element <span class="kw">in</span> prices_date[:, <span class="dv">1</span>]:</span>
+<span id="cb45-29"><a href="#cb45-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-30"><a href="#cb45-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># rearrange string</span></span>
+<span id="cb45-31"><a href="#cb45-31" aria-hidden="true" tabindex="-1"></a>  new_element <span class="op">=</span> element[<span class="dv">6</span>:<span class="dv">10</span>] <span class="op">+</span> <span class="st">'-'</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb45-32"><a href="#cb45-32" aria-hidden="true" tabindex="-1"></a>                element[<span class="dv">3</span>:<span class="dv">5</span>] <span class="op">+</span> <span class="st">'-'</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb45-33"><a href="#cb45-33" aria-hidden="true" tabindex="-1"></a>                element[<span class="dv">0</span>:<span class="dv">2</span>] <span class="op">+</span> <span class="st">'T'</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb45-34"><a href="#cb45-34" aria-hidden="true" tabindex="-1"></a>                element[<span class="dv">11</span>:<span class="dv">13</span>] <span class="op">+</span> <span class="st">':'</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb45-35"><a href="#cb45-35" aria-hidden="true" tabindex="-1"></a>                element[<span class="dv">14</span>:]</span>
+<span id="cb45-36"><a href="#cb45-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-37"><a href="#cb45-37" aria-hidden="true" tabindex="-1"></a>  <span class="co"># convert to datetime64</span></span>
+<span id="cb45-38"><a href="#cb45-38" aria-hidden="true" tabindex="-1"></a>  new_element <span class="op">=</span> np.datetime64(new_element)</span>
+<span id="cb45-39"><a href="#cb45-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-40"><a href="#cb45-40" aria-hidden="true" tabindex="-1"></a>  <span class="co"># append</span></span>
+<span id="cb45-41"><a href="#cb45-41" aria-hidden="true" tabindex="-1"></a>  prices_to_date <span class="op">=</span> np.append(prices_to_date, new_element)</span>
+<span id="cb45-42"><a href="#cb45-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-43"><a href="#cb45-43" aria-hidden="true" tabindex="-1"></a><span class="co"># view the last 4 elements</span></span>
+<span id="cb45-44"><a href="#cb45-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(prices_from_date[<span class="op">-</span><span class="dv">4</span>:], prices_from_date.dtype)</span>
+<span id="cb45-45"><a href="#cb45-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(prices_to_date[<span class="op">-</span><span class="dv">4</span>:], prices_to_date.dtype)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>['2023-12-31T20:00' '2023-12-31T21:00' '2023-12-31T22:00'
+ '2023-12-31T23:00'] datetime64[m]
+['2023-12-31T21:00' '2023-12-31T22:00' '2023-12-31T23:00'
+ '2024-01-01T00:00'] datetime64[m]</code></pre>
+</div>
+</div>
+<p>In the second step, it is checked whether the fourth-to-last column contains only missing values. Although the column position is known, it is determined using <code>np.argwhere()</code>. The number of unique values is counted using <code>len(np.unique())</code>.</p>
+<div id="03c22124" class="cell" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># isolate numeric columns</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>prices_numeric <span class="op">=</span> prices[:, <span class="dv">2</span>:]</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="co"># find the position of the column with missing value '-' in the first row</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>position <span class="op">=</span> np.argwhere(prices_numeric[<span class="dv">0</span>, :] <span class="op">==</span> <span class="st">'-'</span>)</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Column index:"</span>, position)</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a><span class="co"># check which values appear in the column</span></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of unique values:"</span>, <span class="bu">len</span>(np.unique(prices_numeric[:, position])))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Column index: [[13]]
+Number of unique values: 1</code></pre>
+</div>
+</div>
+<p>Since the fourth-to-last column contains only the ‘-’ character, it can be removed. The data type can then be declared as a floating-point number. To do this, the decimal comma must be replaced with a period using <code>np.char.replace(prices_numeric, ',', '.')</code>. The column names must be stored separately.</p>
+<div id="d58ae670" class="cell" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove column with missing values</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>prices_numeric <span class="op">=</span> np.delete(arr <span class="op">=</span> prices_numeric, obj <span class="op">=</span> position, axis <span class="op">=</span> <span class="dv">1</span>)  <span class="co"># axis 1 = columns</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace decimal comma with point</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>prices_numeric <span class="op">=</span> np.char.replace(prices_numeric, <span class="st">','</span>, <span class="st">'.'</span>)</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>prices_numeric <span class="op">=</span> prices_numeric.astype(<span class="st">'float64'</span>)</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Store column names</span></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>prices_numeric_colnames <span class="op">=</span> np.loadtxt(fname <span class="op">=</span> file_path, dtype<span class="op">=</span><span class="st">'str'</span>, delimiter<span class="op">=</span><span class="st">';'</span>, encoding<span class="op">=</span><span class="st">'UTF-8-sig'</span>, max_rows<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>prices_numeric_colnames <span class="op">=</span> prices_numeric_colnames[<span class="dv">2</span>:]  <span class="co"># remove date columns</span></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>prices_numeric_colnames <span class="op">=</span> np.delete(arr <span class="op">=</span> prices_numeric_colnames, obj <span class="op">=</span> position)</span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(prices_numeric_colnames, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(prices_numeric[<span class="dv">0</span>:<span class="dv">2</span>, :], prices_numeric.dtype)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>['Deutschland/Luxemburg [€/MWh] Originalauflösungen'
+ '∅ Anrainer DE/LU [€/MWh] Originalauflösungen'
+ 'Belgien [€/MWh] Originalauflösungen'
+ 'Dänemark 1 [€/MWh] Originalauflösungen'
+ 'Dänemark 2 [€/MWh] Originalauflösungen'
+ 'Frankreich [€/MWh] Originalauflösungen'
+ 'Niederlande [€/MWh] Originalauflösungen'
+ 'Norwegen 2 [€/MWh] Originalauflösungen'
+ 'Österreich [€/MWh] Originalauflösungen'
+ 'Polen [€/MWh] Originalauflösungen'
+ 'Schweden 4 [€/MWh] Originalauflösungen'
+ 'Schweiz [€/MWh] Originalauflösungen'
+ 'Tschechien [€/MWh] Originalauflösungen'
+ 'Italien (Nord) [€/MWh] Originalauflösungen'
+ 'Slowenien [€/MWh] Originalauflösungen'
+ 'Ungarn [€/MWh] Originalauflösungen'] 
+
+[[-5.1700e+00  1.3850e+01 -4.3900e+00  2.0100e+00  2.0100e+00  0.0000e+00
+  -3.6100e+00  1.1932e+02  1.2060e+01  1.8090e+01  2.0100e+00  3.0000e-02
+   4.8400e+00  1.9590e+02  1.3310e+01  1.9760e+01]
+ [-1.0700e+00  9.7900e+00 -1.7500e+00  1.3800e+00  1.3800e+00 -1.0000e-01
+  -1.4600e+00  1.0883e+02 -1.0000e-01  5.7500e+00  1.3800e+00 -7.2500e+00
+  -3.5000e-01  1.9109e+02 -7.0000e-02  1.9000e-01]] float64</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<p>First, the wholesale prices file is read using the function <code>pd.read_csv()</code>, and the success is checked using the <code>pd.DataFrame.info()</code> method.</p>
+<div id="1499b523" class="cell" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> <span class="st">"01-daten/Gro_handelspreise_202301010000_202401010000_Stunde.csv"</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>prices <span class="op">=</span> pd.read_csv(filepath_or_buffer <span class="op">=</span> file_path)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(prices.info())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+MultiIndex: 8760 entries, ('01.01.2023 00:00;01.01.2023 01:00;-5', '17;13', '85;-4', '39;2', '01;2', '01;0', '00;-3', '61;119', '32;12', '06;18', '09;2', '01;0', '03;4', '84;-;195', '90;13', '31;19') to ('31.12.2023 23:00;01.01.2024 00:00;2', '44;19', '26;3', '17;26', '87;26', '87;3', '64;3', '17;59', '31;9', '35;35', '70;26', '87;9', '51;7', '44;-;106', '12;11', '02;14')
+Data columns (total 1 columns):
+ #   Column                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          Non-Null Count  Dtype
+---  ------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          --------------  -----
+ 0   Datum von;Datum bis;Deutschland/Luxemburg [€/MWh] Originalauflösungen;∅ Anrainer DE/LU [€/MWh] Originalauflösungen;Belgien [€/MWh] Originalauflösungen;Dänemark 1 [€/MWh] Originalauflösungen;Dänemark 2 [€/MWh] Originalauflösungen;Frankreich [€/MWh] Originalauflösungen;Niederlande [€/MWh] Originalauflösungen;Norwegen 2 [€/MWh] Originalauflösungen;Österreich [€/MWh] Originalauflösungen;Polen [€/MWh] Originalauflösungen;Schweden 4 [€/MWh] Originalauflösungen;Schweiz [€/MWh] Originalauflösungen;Tschechien [€/MWh] Originalauflösungen;DE/AT/LU [€/MWh] Originalauflösungen;Italien (Nord) [€/MWh] Originalauflösungen;Slowenien [€/MWh] Originalauflösungen;Ungarn [€/MWh] Originalauflösungen  8760 non-null   int64
+dtypes: int64(1)
+memory usage: 4.3+ MB
+None</code></pre>
+</div>
+</div>
+<p>Only one column is recognized because the dataset uses a semicolon as the delimiter. This can be specified with the argument <code>sep=';'</code> (default is comma). The success is checked using <code>pd.DataFrame.info()</code> and <code>pd.DataFrame.head()</code>.</p>
+<div id="3f843912" class="cell" data-execution_count="25">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> <span class="st">"01-daten/Gro_handelspreise_202301010000_202401010000_Stunde.csv"</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>prices <span class="op">=</span> pd.read_csv(filepath_or_buffer <span class="op">=</span> file_path, sep<span class="op">=</span><span class="st">';'</span>)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(prices.info())</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>prices.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 8760 entries, 0 to 8759
+Data columns (total 19 columns):
+ #   Column                                             Non-Null Count  Dtype 
+---  ------                                             --------------  ----- 
+ 0   Datum von                                          8760 non-null   object
+ 1   Datum bis                                          8760 non-null   object
+ 2   Deutschland/Luxemburg [€/MWh] Originalauflösungen  8760 non-null   object
+ 3   ∅ Anrainer DE/LU [€/MWh] Originalauflösungen       8760 non-null   object
+ 4   Belgien [€/MWh] Originalauflösungen                8760 non-null   object
+ 5   Dänemark 1 [€/MWh] Originalauflösungen             8760 non-null   object
+ 6   Dänemark 2 [€/MWh] Originalauflösungen             8760 non-null   object
+ 7   Frankreich [€/MWh] Originalauflösungen             8760 non-null   object
+ 8   Niederlande [€/MWh] Originalauflösungen            8760 non-null   object
+ 9   Norwegen 2 [€/MWh] Originalauflösungen             8760 non-null   object
+ 10  Österreich [€/MWh] Originalauflösungen             8760 non-null   object
+ 11  Polen [€/MWh] Originalauflösungen                  8760 non-null   object
+ 12  Schweden 4 [€/MWh] Originalauflösungen             8760 non-null   object
+ 13  Schweiz [€/MWh] Originalauflösungen                8760 non-null   object
+ 14  Tschechien [€/MWh] Originalauflösungen             8760 non-null   object
+ 15  DE/AT/LU [€/MWh] Originalauflösungen               8760 non-null   object
+ 16  Italien (Nord) [€/MWh] Originalauflösungen         8760 non-null   object
+ 17  Slowenien [€/MWh] Originalauflösungen              8760 non-null   object
+ 18  Ungarn [€/MWh] Originalauflösungen                 8760 non-null   object
+dtypes: object(19)
+memory usage: 1.3+ MB
+None</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Datum von</th>
+<th data-quarto-table-cell-role="th">Datum bis</th>
+<th data-quarto-table-cell-role="th">Deutschland/Luxemburg [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">∅ Anrainer DE/LU [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Belgien [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Dänemark 1 [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Dänemark 2 [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Frankreich [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Niederlande [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Norwegen 2 [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Österreich [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Polen [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Schweden 4 [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Schweiz [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Tschechien [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">DE/AT/LU [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Italien (Nord) [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Slowenien [€/MWh] Originalauflösungen</th>
+<th data-quarto-table-cell-role="th">Ungarn [€/MWh] Originalauflösungen</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>01.01.2023 00:00</td>
+<td>01.01.2023 01:00</td>
+<td>-5,17</td>
+<td>13,85</td>
+<td>-4,39</td>
+<td>2,01</td>
+<td>2,01</td>
+<td>0,00</td>
+<td>-3,61</td>
+<td>119,32</td>
+<td>12,06</td>
+<td>18,09</td>
+<td>2,01</td>
+<td>0,03</td>
+<td>4,84</td>
+<td>-</td>
+<td>195,90</td>
+<td>13,31</td>
+<td>19,76</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>01.01.2023 01:00</td>
+<td>01.01.2023 02:00</td>
+<td>-1,07</td>
+<td>9,79</td>
+<td>-1,75</td>
+<td>1,38</td>
+<td>1,38</td>
+<td>-0,10</td>
+<td>-1,46</td>
+<td>108,83</td>
+<td>-0,10</td>
+<td>5,75</td>
+<td>1,38</td>
+<td>-7,25</td>
+<td>-0,35</td>
+<td>-</td>
+<td>191,09</td>
+<td>-0,07</td>
+<td>0,19</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>01.01.2023 02:00</td>
+<td>01.01.2023 03:00</td>
+<td>-1,47</td>
+<td>8,91</td>
+<td>-1,46</td>
+<td>0,09</td>
+<td>0,09</td>
+<td>-1,33</td>
+<td>-1,52</td>
+<td>102,39</td>
+<td>-0,66</td>
+<td>5,27</td>
+<td>0,09</td>
+<td>-3,99</td>
+<td>-0,97</td>
+<td>-</td>
+<td>187,95</td>
+<td>-0,47</td>
+<td>0,07</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>01.01.2023 03:00</td>
+<td>01.01.2023 04:00</td>
+<td>-5,08</td>
+<td>6,58</td>
+<td>-5,27</td>
+<td>0,08</td>
+<td>0,08</td>
+<td>-4,08</td>
+<td>-5,00</td>
+<td>92,36</td>
+<td>-1,99</td>
+<td>5,74</td>
+<td>0,08</td>
+<td>-7,71</td>
+<td>-1,93</td>
+<td>-</td>
+<td>187,82</td>
+<td>-1,56</td>
+<td>0,01</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>01.01.2023 04:00</td>
+<td>01.01.2023 05:00</td>
+<td>-4,49</td>
+<td>5,42</td>
+<td>-4,41</td>
+<td>0,05</td>
+<td>0,05</td>
+<td>-4,16</td>
+<td>-4,60</td>
+<td>82,66</td>
+<td>-2,42</td>
+<td>5,22</td>
+<td>0,05</td>
+<td>-9,71</td>
+<td>-3,07</td>
+<td>-</td>
+<td>187,74</td>
+<td>-1,94</td>
+<td>-0,77</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p>In the output, the data type <code>object</code> indicates that no column types were automatically recognized. In the first rows of the dataset, the comma is used as the decimal separator, while the default for <code>pd.read_csv()</code> is a period. After specifying the decimal separator, the numeric columns should be correctly recognized.</p>
+<div id="cd6d4c61" class="cell" data-execution_count="26">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>prices <span class="op">=</span> pd.read_csv(filepath_or_buffer <span class="op">=</span> file_path, sep<span class="op">=</span><span class="st">';'</span>, decimal<span class="op">=</span><span class="st">','</span>)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(prices.info())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 8760 entries, 0 to 8759
+Data columns (total 19 columns):
+ #   Column                                             Non-Null Count  Dtype  
+---  ------                                             --------------  -----  
+ 0   Datum von                                          8760 non-null   object 
+ 1   Datum bis                                          8760 non-null   object 
+ 2   Deutschland/Luxemburg [€/MWh] Originalauflösungen  8760 non-null   float64
+ 3   ∅ Anrainer DE/LU [€/MWh] Originalauflösungen       8760 non-null   float64
+ 4   Belgien [€/MWh] Originalauflösungen                8760 non-null   float64
+ 5   Dänemark 1 [€/MWh] Originalauflösungen             8760 non-null   float64
+ 6   Dänemark 2 [€/MWh] Originalauflösungen             8760 non-null   float64
+ 7   Frankreich [€/MWh] Originalauflösungen             8760 non-null   float64
+ 8   Niederlande [€/MWh] Originalauflösungen            8760 non-null   float64
+ 9   Norwegen 2 [€/MWh] Originalauflösungen             8760 non-null   float64
+ 10  Österreich [€/MWh] Originalauflösungen             8760 non-null   float64
+ 11  Polen [€/MWh] Originalauflösungen                  8760 non-null   float64
+ 12  Schweden 4 [€/MWh] Originalauflösungen             8760 non-null   float64
+ 13  Schweiz [€/MWh] Originalauflösungen                8760 non-null   float64
+ 14  Tschechien [€/MWh] Originalauflösungen             8760 non-null   float64
+ 15  DE/AT/LU [€/MWh] Originalauflösungen               8760 non-null   object 
+ 16  Italien (Nord) [€/MWh] Originalauflösungen         8760 non-null   float64
+ 17  Slowenien [€/MWh] Originalauflösungen              8760 non-null   float64
+ 18  Ungarn [€/MWh] Originalauflösungen                 8760 non-null   float64
+dtypes: float64(16), object(3)
+memory usage: 1.3+ MB
+None</code></pre>
+</div>
+</div>
+<p>The data type of the column <code>DE/AT/LU [€/MWh] Originalauflösungen</code> is not recognized as <code>float64</code>. The output shows that at least in the first rows, missing values are marked with ‘-’. Using the <code>.describe()</code> method, it can be checked whether the column contains any numeric values at all.</p>
+<div id="93715774" class="cell" data-execution_count="27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>prices[<span class="st">'DE/AT/LU [€/MWh] Originalauflösungen'</span>].describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="27">
+<pre><code>count     8760
+unique       1
+top          -
+freq      8760
+Name: DE/AT/LU [€/MWh] Originalauflösungen, dtype: object</code></pre>
+</div>
+</div>
+<p>Since this is not the case, the column can be removed. The first two columns can then be converted to a date format using <code>pd.to_datetime()</code>. One cell contains strings in the format ‘01.01.2023 00:00’. Using the <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior">strftime documentation</a>, the date format can be passed to the function.</p>
+<div id="778739eb" class="cell" data-execution_count="28">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>prices.drop(labels<span class="op">=</span><span class="st">'DE/AT/LU [€/MWh] Originalauflösungen'</span>, axis<span class="op">=</span><span class="st">'columns'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="co">## Convert date columns</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>prices[<span class="st">'Datum von'</span>] <span class="op">=</span> pd.to_datetime(prices[<span class="st">'Datum von'</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"</span><span class="sc">%d</span><span class="st">.%m.%Y %H:%M"</span>)</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>prices[<span class="st">'Datum bis'</span>] <span class="op">=</span> pd.to_datetime(prices[<span class="st">'Datum bis'</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"</span><span class="sc">%d</span><span class="st">.%m.%Y %H:%M"</span>)</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(prices.info())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 8760 entries, 0 to 8759
+Data columns (total 18 columns):
+ #   Column                                             Non-Null Count  Dtype         
+---  ------                                             --------------  -----         
+ 0   Datum von                                          8760 non-null   datetime64[ns]
+ 1   Datum bis                                          8760 non-null   datetime64[ns]
+ 2   Deutschland/Luxemburg [€/MWh] Originalauflösungen  8760 non-null   float64       
+ 3   ∅ Anrainer DE/LU [€/MWh] Originalauflösungen       8760 non-null   float64       
+ 4   Belgien [€/MWh] Originalauflösungen                8760 non-null   float64       
+ 5   Dänemark 1 [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 6   Dänemark 2 [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 7   Frankreich [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 8   Niederlande [€/MWh] Originalauflösungen            8760 non-null   float64       
+ 9   Norwegen 2 [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 10  Österreich [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 11  Polen [€/MWh] Originalauflösungen                  8760 non-null   float64       
+ 12  Schweden 4 [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 13  Schweiz [€/MWh] Originalauflösungen                8760 non-null   float64       
+ 14  Tschechien [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 15  Italien (Nord) [€/MWh] Originalauflösungen         8760 non-null   float64       
+ 16  Slowenien [€/MWh] Originalauflösungen              8760 non-null   float64       
+ 17  Ungarn [€/MWh] Originalauflösungen                 8760 non-null   float64       
+dtypes: datetime64[ns](2), float64(16)
+memory usage: 1.2 MB
+None</code></pre>
+</div>
+</div>
+<p>If the internal structure of a file is known, the necessary parameters can also be passed directly when reading the file with <code>pd.read_csv</code> (arguments <code>usecols</code>, <code>parse_dates</code>, and <code>date_format</code>).</p>
+<div id="bf0349b6" class="cell" data-execution_count="29">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>prices <span class="op">=</span> pd.read_csv(</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>    filepath_or_buffer <span class="op">=</span> file_path,</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>    sep<span class="op">=</span><span class="st">';'</span>,</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>    decimal<span class="op">=</span><span class="st">','</span>,</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>    usecols<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">15</span>)) <span class="op">+</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">16</span>, <span class="dv">19</span>)),  <span class="co"># select columns to read</span></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>    parse_dates<span class="op">=</span>[<span class="st">'Datum von'</span>, <span class="st">'Datum bis'</span>], date_format<span class="op">=</span><span class="st">"</span><span class="sc">%d</span><span class="st">.%m.%Y %H:%M"</span>  <span class="co"># date formatting</span></span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(prices.info())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 8760 entries, 0 to 8759
+Data columns (total 18 columns):
+ #   Column                                             Non-Null Count  Dtype         
+---  ------                                             --------------  -----         
+ 0   Datum von                                          8760 non-null   datetime64[ns]
+ 1   Datum bis                                          8760 non-null   datetime64[ns]
+ 2   Deutschland/Luxemburg [€/MWh] Originalauflösungen  8760 non-null   float64       
+ 3   ∅ Anrainer DE/LU [€/MWh] Originalauflösungen       8760 non-null   float64       
+ 4   Belgien [€/MWh] Originalauflösungen                8760 non-null   float64       
+ 5   Dänemark 1 [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 6   Dänemark 2 [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 7   Frankreich [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 8   Niederlande [€/MWh] Originalauflösungen            8760 non-null   float64       
+ 9   Norwegen 2 [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 10  Österreich [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 11  Polen [€/MWh] Originalauflösungen                  8760 non-null   float64       
+ 12  Schweden 4 [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 13  Schweiz [€/MWh] Originalauflösungen                8760 non-null   float64       
+ 14  Tschechien [€/MWh] Originalauflösungen             8760 non-null   float64       
+ 15  Italien (Nord) [€/MWh] Originalauflösungen         8760 non-null   float64       
+ 16  Slowenien [€/MWh] Originalauflösungen              8760 non-null   float64       
+ 17  Ungarn [€/MWh] Originalauflösungen                 8760 non-null   float64       
+dtypes: datetime64[ns](2), float64(16)
+memory usage: 1.2 MB
+None</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="accessing-time-series" class="level2" data-number="46.3">
+<h2 data-number="46.3" class="anchored" data-anchor-id="accessing-time-series"><span class="header-section-number">46.3</span> Accessing Time Series</h2>
+<p>Pandas provides numerous attributes and methods to extract information from <code>datetime64</code> objects. NumPy does not currently support comparable functions natively. An overview of all available attributes and methods can be obtained with <code>dir(pd.to_datetime(0))</code>.</p>
+<div id="83f3fe80" class="cell" data-execution_count="30">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Attributes</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Year:"</span>, pd.to_datetime(<span class="dv">0</span>).year)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Month:"</span>, pd.to_datetime(<span class="dv">0</span>).month)</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Day:"</span>, pd.to_datetime(<span class="dv">0</span>).day)</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Hour:"</span>, pd.to_datetime(<span class="dv">0</span>).hour)</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Minute:"</span>, pd.to_datetime(<span class="dv">0</span>).minute)</span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Second:"</span>, pd.to_datetime(<span class="dv">0</span>).second)</span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Day of year:"</span>, pd.to_datetime(<span class="dv">0</span>).dayofyear)</span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Weekday:"</span>, pd.to_datetime(<span class="dv">0</span>).dayofweek)</span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Days in month:"</span>, pd.to_datetime(<span class="dv">0</span>).days_in_month)</span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Leap year:"</span>, pd.to_datetime(<span class="dv">0</span>).is_leap_year)</span>
+<span id="cb63-12"><a href="#cb63-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-13"><a href="#cb63-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Methods</span></span>
+<span id="cb63-14"><a href="#cb63-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Date:"</span>, pd.to_datetime(<span class="dv">0</span>).date())</span>
+<span id="cb63-15"><a href="#cb63-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Time:"</span>, pd.to_datetime(<span class="dv">0</span>).time())</span>
+<span id="cb63-16"><a href="#cb63-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Weekday (0-6):"</span>, pd.to_datetime(<span class="dv">0</span>).weekday())</span>
+<span id="cb63-17"><a href="#cb63-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Month name:"</span>, pd.to_datetime(<span class="dv">0</span>).month_name())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Year: 1970
+Month: 1
+Day: 1
+Hour: 0
+Minute: 0
+Second: 0
+Day of year: 1
+Weekday: 3
+Days in month: 31
+Leap year: False
+
+Date: 1970-01-01
+Time: 00:00:00
+Weekday (0-6): 3
+Month name: January</code></pre>
+</div>
+</div>
+<p>For <code>pd.Series</code>, access is done via the <code>.dt</code> accessor (see <a href="https://pandas.pydata.org/docs/user_guide/basics.html#basics-dt-accessors">.dt accessor</a>). Accessing different information via an attribute (without parentheses) or via a method (with parentheses) can differ (see the following example).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>The dt Accessor
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div id="4d22e0ee" class="cell" data-execution_count="31">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Attributes</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Date:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.date)  <span class="co"># difference</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Time:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.time)  <span class="co"># difference</span></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Year:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.year)</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Month:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.month)</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Day:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.day)</span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Hour:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.hour)</span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Minute:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.minute)</span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Second:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.second)</span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Day of year:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.dayofyear)</span>
+<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Weekday:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.dayofweek)</span>
+<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Weekday:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.weekday)  <span class="co"># difference</span></span>
+<span id="cb65-14"><a href="#cb65-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Days in month:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.days_in_month)</span>
+<span id="cb65-15"><a href="#cb65-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Leap year:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.is_leap_year)</span>
+<span id="cb65-16"><a href="#cb65-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-17"><a href="#cb65-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Methods</span></span>
+<span id="cb65-18"><a href="#cb65-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Month name:"</span>, pd.Series(pd.to_datetime(<span class="dv">0</span>)).dt.month_name())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Date: 0    1970-01-01
+dtype: object
+Time: 0    00:00:00
+dtype: object
+Year: 0    1970
+dtype: int32
+Month: 0    1
+dtype: int32
+Day: 0    1
+dtype: int32
+Hour: 0    0
+dtype: int32
+Minute: 0    0
+dtype: int32
+Second: 0    0
+dtype: int32
+
+Day of year: 0    1
+dtype: int32
+Weekday: 0    3
+dtype: int32
+Weekday: 0    3
+dtype: int32
+Days in month: 0    31
+dtype: int32
+Leap year: 0    False
+dtype: bool
+
+Month name: 0    January
+dtype: object</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The wholesale electricity prices for 2023 read in the previous section should be analyzed for differences on weekdays and weekends. <strong>Compare the average electricity price in the Germany/Luxembourg area on weekdays (Monday - Friday) with the average price on weekends.</strong></p>
+<div id="tip-AveragePrice" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;46.3: Example Solution: Electricity Price Comparison
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div id="155e3e64" class="cell" data-execution_count="32">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Access with .dt for pd.Series</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Distinguish weekdays and weekend</span></span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>weekdays <span class="op">=</span> prices[<span class="st">'Datum von'</span>].dt.weekday.isin(<span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">5</span>)))</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>weekend <span class="op">=</span> prices[<span class="st">'Datum von'</span>].dt.weekday.isin(<span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">5</span>, <span class="dv">7</span>)))</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(weekdays.head())</span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(weekend.head())</span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare prices</span></span>
+<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a>weekday_price <span class="op">=</span> prices.loc[weekdays, <span class="st">'Deutschland/Luxemburg [€/MWh] Originalauflösungen'</span>].mean()</span>
+<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a>weekend_price <span class="op">=</span> prices.loc[weekend, <span class="st">'Deutschland/Luxemburg [€/MWh] Originalauflösungen'</span>].mean()</span>
+<span id="cb67-12"><a href="#cb67-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-13"><a href="#cb67-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Average price on weekdays: </span><span class="sc">{</span>weekday_price<span class="sc">:.2f}</span><span class="ss"> [€/MWh]</span><span class="ch">\n</span><span class="ss">Average price on weekends: </span><span class="sc">{</span>weekend_price<span class="sc">:.2f}</span><span class="ss"> [€/MWh]"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0    False
+1    False
+2    False
+3    False
+4    False
+Name: Datum von, dtype: bool
+0    True
+1    True
+2    True
+3    True
+4    True
+Name: Datum von, dtype: bool
+
+Average price on weekdays: 103.18 [€/MWh]
+Average price on weekends: 75.34 [€/MWh]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="missing-values-in-time-series" class="level2" data-number="46.4">
+<h2 data-number="46.4" class="anchored" data-anchor-id="missing-values-in-time-series"><span class="header-section-number">46.4</span> Missing Values in Time Series</h2>
+<p>NumPy and Pandas support <code>NaT</code> for <code>np.datetime64</code> and <code>np.timedelta64</code>.</p>
+<ul>
+<li><p>NumPy: <a href="https://numpy.org/doc/stable/reference/arrays.datetime.html" class="uri">https://numpy.org/doc/stable/reference/arrays.datetime.html</a><br>
+<code>NaT</code>, in any combination of lowercase/uppercase letters, for a “Not A Time”</p></li>
+<li><p>Pandas: <a href="https://pandas.pydata.org/docs/user_guide/missing_data.html" class="uri">https://pandas.pydata.org/docs/user_guide/missing_data.html</a></p></li>
+</ul>
+<div id="wrn-logicNaT" class="callout callout-style-simple callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning&nbsp;46.2: Warning: Logic!
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Logical checks for missing values differ for <code>None</code>, <code>np.nan</code>, <code>pd.NA</code>, and <code>pd.NaT</code>.</p>
+<div id="7f90c1c4" class="cell" data-execution_count="33">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>bool_values <span class="op">=</span> [<span class="va">None</span>, <span class="bu">float</span>(<span class="st">'nan'</span>), pd.NA, pd.NaT]</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> element <span class="kw">in</span> bool_values:</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>        bool_value <span class="op">=</span> <span class="bu">bool</span>(element)</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">TypeError</span> <span class="im">as</span> error:</span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(error)</span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"Truth value of"</span>, element, <span class="st">"is"</span>, bool_value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Truth value of None is False
+Truth value of nan is True
+boolean value of NA is ambiguous
+Truth value of NaT is True</code></pre>
+</div>
+</div>
+<p>The same applies to value equality.</p>
+<div id="83539c4e" class="cell" data-execution_count="34">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> element <span class="kw">in</span> bool_values:</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> element <span class="op">==</span> element</span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">TypeError</span> <span class="im">as</span> error:</span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(error)</span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"Value equality of"</span>, element, <span class="st">"is"</span>, result)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Value equality of None is True
+Value equality of nan is False
+Value equality of &lt;NA&gt; is &lt;NA&gt;
+Value equality of NaT is False</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-übungenzeitreihen" class="level2" data-number="46.5">
+<h2 data-number="46.5" class="anchored" data-anchor-id="sec-übungenzeitreihen"><span class="header-section-number">46.5</span> Exercises: Reading Time Series</h2>
+<div class="border quarto-layout-panel" data-layout="[[5, 90, 5], [1], [1]]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 90.0%;justify-content: flex-start;">
+<p>“everybody I know has war stories about cleaning up lousy datasets”<br>
+Nicholas J. Cox</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
+<p>Cox, Nicholas J. 2004: Exploratory Data Mining and Data Cleaning. Book Review 9. In: Journal of Statistical Software 2004, Volume 11. <a href="https://www.jstatsoft.org/article/view/v011b09/30" class="uri">https://www.jstatsoft.org/article/view/v011b09/30</a></p>
+</div>
+</div>
+</div>
+<p>The following exercises train the application of the tools introduced in this chapter and can be solved using either NumPy or Pandas.</p>
+<section id="easy-reading-english-date-format" class="level4" data-number="46.5.0.1">
+<h4 data-number="46.5.0.1" class="anchored" data-anchor-id="easy-reading-english-date-format"><span class="header-section-number">46.5.0.1</span> Easy: Reading English Date Format</h4>
+<p><strong>Task: Read the file at path ‘01-daten/Day-ahead_prices_202301010000_202401010000_Hour.csv’ so that the data types are correctly recognized. (Hints on the file see <a href="../../a-energiedatenanalyse-en/skript/energiedatenanalyse.html#wrn-SMARD" class="quarto-xref">Warning&nbsp;<span>78.1</span></a>, see <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior">strftime documentation for string formatting</a>)</strong></p>
+<div id="tip-electricityprices" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;46.4: Sample Solution: Electricity Prices
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="border">
+<div id="d68da0bc" class="cell" data-execution_count="35">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>file_path <span class="op">=</span> <span class="st">"01-daten/Day-ahead_prices_202301010000_202401010000_Hour.csv"</span></span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.read_csv(file_path, sep<span class="op">=</span><span class="st">";"</span>)   <span class="co"># Semicolon as separator must be specified</span></span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>data.info() <span class="co"># -&gt; shows that columns 0 "Start date" and 1 "End date" are recognized as dtype "object"</span></span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data.iloc[<span class="dv">0</span>:<span class="dv">10</span>, <span class="dv">0</span>:<span class="dv">2</span>], <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>) <span class="co"># show first few rows to see how the first two "object" columns are structured</span></span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Output example:</span></span>
+<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Start date: Jan 1, 2023 12:00 AM</span></span>
+<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a><span class="co"># End date: Jan 1, 2023 1:00 AM</span></span>
+<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Two approaches are possible:</span></span>
+<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 1st approach: specify date format while reading:</span></span>
+<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.read_csv(file_path, sep<span class="op">=</span><span class="st">";"</span>, parse_dates<span class="op">=</span>[<span class="dv">0</span>,<span class="dv">1</span>], date_format<span class="op">=</span><span class="st">"%b </span><span class="sc">%d</span><span class="st">, %Y %I:%M %p"</span>)   <span class="co"># parameter here is date_format, in 2nd approach it is only "format"</span></span>
+<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-18"><a href="#cb73-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 2nd approach: convert the two object-type columns after reading:</span></span>
+<span id="cb73-19"><a href="#cb73-19" aria-hidden="true" tabindex="-1"></a>data[<span class="st">"Start date"</span>] <span class="op">=</span> pd.to_datetime(data[<span class="st">"Start date"</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"%b </span><span class="sc">%d</span><span class="st">, %Y %I:%M %p"</span>)  <span class="co"># %b for month abbreviation, %I for hour in AM/PM, %p for AM/PM</span></span>
+<span id="cb73-20"><a href="#cb73-20" aria-hidden="true" tabindex="-1"></a>data[<span class="st">"End date"</span>] <span class="op">=</span> pd.to_datetime(data[<span class="st">"End date"</span>], <span class="bu">format</span><span class="op">=</span><span class="st">"%b </span><span class="sc">%d</span><span class="st">, %Y %I:%M %p"</span>)</span>
+<span id="cb73-21"><a href="#cb73-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data.iloc[<span class="dv">0</span>:<span class="dv">10</span>, <span class="dv">0</span>:<span class="dv">2</span>], <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb73-22"><a href="#cb73-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-23"><a href="#cb73-23" aria-hidden="true" tabindex="-1"></a>data.info()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 8760 entries, 0 to 8759
+Data columns (total 19 columns):
+ #   Column                                           Non-Null Count  Dtype  
+---  ------                                           --------------  -----  
+ 0   Start date                                       8760 non-null   object 
+ 1   End date                                         8760 non-null   object 
+ 2   Germany/Luxembourg [€/MWh] Original resolutions  8760 non-null   float64
+ 3   ∅ DE/LU neighbours [€/MWh] Original resolutions  8760 non-null   float64
+ 4   Belgium [€/MWh] Original resolutions             8760 non-null   float64
+ 5   Denmark 1 [€/MWh] Original resolutions           8760 non-null   float64
+ 6   Denmark 2 [€/MWh] Original resolutions           8760 non-null   float64
+ 7   France [€/MWh] Original resolutions              8760 non-null   float64
+ 8   Netherlands [€/MWh] Original resolutions         8760 non-null   float64
+ 9   Norway 2 [€/MWh] Original resolutions            8760 non-null   float64
+ 10  Austria [€/MWh] Original resolutions             8760 non-null   float64
+ 11  Poland [€/MWh] Original resolutions              8760 non-null   float64
+ 12  Sweden 4 [€/MWh] Original resolutions            8760 non-null   float64
+ 13  Switzerland [€/MWh] Original resolutions         8760 non-null   float64
+ 14  Czech Republic [€/MWh] Original resolutions      8760 non-null   float64
+ 15  DE/AT/LU [€/MWh] Original resolutions            8760 non-null   object 
+ 16  Northern Italy [€/MWh] Original resolutions      8760 non-null   float64
+ 17  Slovenia [€/MWh] Original resolutions            8760 non-null   float64
+ 18  Hungary [€/MWh] Original resolutions             8760 non-null   float64
+dtypes: float64(16), object(3)
+memory usage: 1.3+ MB
+
+
+             Start date              End date
+0  Jan 1, 2023 12:00 AM   Jan 1, 2023 1:00 AM
+1   Jan 1, 2023 1:00 AM   Jan 1, 2023 2:00 AM
+2   Jan 1, 2023 2:00 AM   Jan 1, 2023 3:00 AM
+3   Jan 1, 2023 3:00 AM   Jan 1, 2023 4:00 AM
+4   Jan 1, 2023 4:00 AM   Jan 1, 2023 5:00 AM
+5   Jan 1, 2023 5:00 AM   Jan 1, 2023 6:00 AM
+6   Jan 1, 2023 6:00 AM   Jan 1, 2023 7:00 AM
+7   Jan 1, 2023 7:00 AM   Jan 1, 2023 8:00 AM
+8   Jan 1, 2023 8:00 AM   Jan 1, 2023 9:00 AM
+9   Jan 1, 2023 9:00 AM  Jan 1, 2023 10:00 AM 
+
+           Start date            End date
+0 2023-01-01 00:00:00 2023-01-01 01:00:00
+1 2023-01-01 01:00:00 2023-01-01 02:00:00
+2 2023-01-01 02:00:00 2023-01-01 03:00:00
+3 2023-01-01 03:00:00 2023-01-01 04:00:00
+4 2023-01-01 04:00:00 2023-01-01 05:00:00
+5 2023-01-01 05:00:00 2023-01-01 06:00:00
+6 2023-01-01 06:00:00 2023-01-01 07:00:00
+7 2023-01-01 07:00:00 2023-01-01 08:00:00
+8 2023-01-01 08:00:00 2023-01-01 09:00:00
+9 2023-01-01 09:00:00 2023-01-01 10:00:00 
+
+&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 8760 entries, 0 to 8759
+Data columns (total 19 columns):
+ #   Column                                           Non-Null Count  Dtype         
+---  ------                                           --------------  -----         
+ 0   Start date                                       8760 non-null   datetime64[ns]
+ 1   End date                                         8760 non-null   datetime64[ns]
+ 2   Germany/Luxembourg [€/MWh] Original resolutions  8760 non-null   float64       
+ 3   ∅ DE/LU neighbours [€/MWh] Original resolutions  8760 non-null   float64       
+ 4   Belgium [€/MWh] Original resolutions             8760 non-null   float64       
+ 5   Denmark 1 [€/MWh] Original resolutions           8760 non-null   float64       
+ 6   Denmark 2 [€/MWh] Original resolutions           8760 non-null   float64       
+ 7   France [€/MWh] Original resolutions              8760 non-null   float64       
+ 8   Netherlands [€/MWh] Original resolutions         8760 non-null   float64       
+ 9   Norway 2 [€/MWh] Original resolutions            8760 non-null   float64       
+ 10  Austria [€/MWh] Original resolutions             8760 non-null   float64       
+ 11  Poland [€/MWh] Original resolutions              8760 non-null   float64       
+ 12  Sweden 4 [€/MWh] Original resolutions            8760 non-null   float64       
+ 13  Switzerland [€/MWh] Original resolutions         8760 non-null   float64       
+ 14  Czech Republic [€/MWh] Original resolutions      8760 non-null   float64       
+ 15  DE/AT/LU [€/MWh] Original resolutions            8760 non-null   object        
+ 16  Northern Italy [€/MWh] Original resolutions      8760 non-null   float64       
+ 17  Slovenia [€/MWh] Original resolutions            8760 non-null   float64       
+ 18  Hungary [€/MWh] Original resolutions             8760 non-null   float64       
+dtypes: datetime64[ns](2), float64(16), object(1)
+memory usage: 1.3+ MB</code></pre>
+</div>
+</div>
+<p>Solution example by Marc Sönnecken. For improved readability, the output using <code>print(data.head(10))</code> was replaced with <code>print(data.iloc[0:10, 0:2], "\n")</code>. However, to get an overview of a dataset, the <code>.head()</code> method is generally more suitable.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="medium-austrian-electricity-market-data" class="level4" data-number="46.5.0.2">
+<h4 data-number="46.5.0.2" class="anchored" data-anchor-id="medium-austrian-electricity-market-data"><span class="header-section-number">46.5.0.2</span> Medium: Austrian Electricity Market Data</h4>
+<p>The Austrian Power Grid AG (APG) publishes electricity market data at <a href="https://markttransparenz.apg.at/en/markt/Markttransparenz/erzeugung/Erzeugung-pro-Typ">https://markttransparenz.apg.at/</a>. Generation data for the year 2023 can be downloaded from this link.</p>
+<div id="wrn-ElectricityMarket-Austria" class="callout callout-style-simple callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning&nbsp;46.3
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+
+
+</div>
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/numpy-pandas.html" class="pagination-link" aria-label="The NumPy and Pandas modules">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">The NumPy and Pandas modules</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/marktdaten-oesterreich.html" class="pagination-link" aria-label="Download Austrian Market Transparency Data">
+        <span class="nav-page-text"><span class="chapter-number">47</span>&nbsp; <span class="chapter-title">Download Austrian Market Transparency Data</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en/blob/main/books/m-einlesen-strukturierter-datensaetze-en/skript/zeitreihen.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

@@ -1,0 +1,3414 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>63&nbsp; Exercise: Hooke’s Law – Python Building Blocks</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../books/m-sensordatenanalyse-en/skript/kalibrierung.html" rel="next">
+<link href="../../../books/m-sensordatenanalyse-en/skript/fehlerrechnung.html" rel="prev">
+<link href="../../../books/shared-media/logo/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-c117ac82edef17e21c58c619b1d4b9e4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../books/m-sensordatenanalyse-en/index.html">m-sensordatenanalyse-en</a></li><li class="breadcrumb-item"><a href="../../../books/m-sensordatenanalyse-en/skript/übung-hooke.html"><span class="chapter-number">63</span>&nbsp; <span class="chapter-title">Exercise: Hooke’s Law</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../../../index.html" class="sidebar-logo-link">
+      <img src="../../../books/shared-media/logo/logo_with_text.svg" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../../books/shared-media/logo/logo_with_text.svg" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../../">Python Building Blocks</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-pseudocode-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pseudocode-en/Pseudocode.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Pseudocode Tool Module</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-minimal-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python Tool Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Understanding Data Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/flusskontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Decisions and Loops</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/listen_iterationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Storing Multiple Values</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/funktionen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Reusable Code with Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/lesen_schreiben.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Working with Files</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python Tool Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction: Data Analysis with Python</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Data Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/funktionen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Functions: Basics</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/flusskontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Control Flow</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/sammeltypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Collection Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/funktionen-definieren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Defining Your Own Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/dateien-lesen-und-schreiben.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Reading and writing files</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/module-und-pakete-importieren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Importing Modules and Packages</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/daswichtigste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">The Essentials</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-numpy-grundlagen-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/introduction_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to NumPy</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_creation_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Creating NumPy Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_info_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Size, Structure, and Type</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_calculation_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Working with Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_slicing_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Slicing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_manipulation_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Array Manipulation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_read_n_write_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Reading and Writing Files</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_images_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Working with Images</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/assessment_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Learning Objective Check</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/uebungen/uebung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Exercise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/klausurfragen/klausurfragen_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Exam Questions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-pandas-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tool Module Pandas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/operationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Operations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/plotting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Plot Creation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Data Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/datetime.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Time Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/dateien.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Reading and Writing Files</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-matplotlib-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Matplotlib Tool Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Introduction to Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/basic_plot_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Plot Types in Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/adapting_plots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Customization and Adapting of Plots in Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/advanced_techniques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Advanced Techniques in Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/scientific_plotting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Best Practices in Matplotlib: Common Mistakes and Improvements</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-numerik-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-numerik-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-numerik-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Numerical Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-numerik-en/skript/intro_integrale.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Integration</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-numerik-en/skript/intro_ableitungen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Differentiation</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-einlesen-strukturierter-datensaetze-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reading Structured Datasets Method Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/grundlagen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Fundamentals: Characteristics of Datasets</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/datentypoperationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Data Type-Dependent Operations and Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/numpy-pandas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">The NumPy and Pandas modules</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/zeitreihen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">Time Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/marktdaten-oesterreich.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">47</span>&nbsp; <span class="chapter-title">Download Austrian Market Transparency Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/modul-glob.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">48</span>&nbsp; <span class="chapter-title">Accessing multiple local files: <code>glob</code> module</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/maskierte-arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">49</span>&nbsp; <span class="chapter-title">Masked Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/dateiformate.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">50</span>&nbsp; <span class="chapter-title">Scientific File Formats</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/daswichtigste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">51</span>&nbsp; <span class="chapter-title">Key Takeaways (possibly as a video)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/lernzielkontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">52</span>&nbsp; <span class="chapter-title">Learning Assessment</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-datenfitting-und-optimierung-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Fitting and Optimization Method Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">53</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/interpolation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">54</span>&nbsp; <span class="chapter-title">Interpolation – Filling in the Gaps</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/fitting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">55</span>&nbsp; <span class="chapter-title">Fitting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/splines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">56</span>&nbsp; <span class="chapter-title">Splines</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/glaetten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">57</span>&nbsp; <span class="chapter-title">Trend Smoothing – Reducing Noise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/uebungen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">58</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-sensordatenanalyse-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sensor Data Analysis Method Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">59</span>&nbsp; <span class="chapter-title">The Principle of Measurements</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/normalverteilung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">60</span>&nbsp; <span class="chapter-title">The Normal Distribution</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/lineare-parameterschätzung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">61</span>&nbsp; <span class="chapter-title">Linear Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/fehlerrechnung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">62</span>&nbsp; <span class="chapter-title">Error Calculation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/übung-hooke.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">63</span>&nbsp; <span class="chapter-title">Exercise: Hooke’s Law</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/kalibrierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">64</span>&nbsp; <span class="chapter-title">Calibration</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-analyse-von-zeitdaten-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/01-einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">65</span>&nbsp; <span class="chapter-title">1 Classification: Time Series as a Measurement Process</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/02-vorverarbeitung-validierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">66</span>&nbsp; <span class="chapter-title">2 Preprocessing &amp; Validation of a Time Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/03-resampling-alignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">67</span>&nbsp; <span class="chapter-title">3 Resampling &amp; Alignment</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/04-glaettung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">68</span>&nbsp; <span class="chapter-title">4 Smoothing &amp; Noise Reduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/05-trend-saison.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">69</span>&nbsp; <span class="chapter-title">5 Trend &amp; Season</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/06-lags-autokorrelation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">70</span>&nbsp; <span class="chapter-title">6 Lags &amp; Autocorrelation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/07-anomalien.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">71</span>&nbsp; <span class="chapter-title">7 Anomalies</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/08-forecasting-baselines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">72</span>&nbsp; <span class="chapter-title">8 Forecasting Baselines &amp; Evaluation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/09-lernzielkontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">73</span>&nbsp; <span class="chapter-title">9 Learning Objectives Check</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/10-uebung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">74</span>&nbsp; <span class="chapter-title">Exercise 10: Time Series Workflow</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/11-klausurfragen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">75</span>&nbsp; <span class="chapter-title">11 Exam Questions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true">
+ <span class="menu-text">a-energiedatenanalyse-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-energiedatenanalyse-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-energiedatenanalyse-en/skript/energiedatenanalyse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">76</span>&nbsp; <span class="chapter-title">Energy Data Analysis</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
+ <span class="menu-text">a-auswertung-fds-daten-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/skript/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">77</span>&nbsp; <span class="chapter-title">Introduction to ASET</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/skript/aset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">78</span>&nbsp; <span class="chapter-title">Available safe egress time</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/skript/fdsreader.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">79</span>&nbsp; <span class="chapter-title">Fdsreader</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/uebungen/uebung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">80</span>&nbsp; <span class="chapter-title">uebung.html</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/klausurfragen/klausurfragen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">81</span>&nbsp; <span class="chapter-title">klausurfragen.html</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#sec-reading-files" id="toc-sec-reading-files" class="nav-link active" data-scroll-target="#sec-reading-files"><span class="header-section-number">63.1</span> Reading Files</a></li>
+  <li><a href="#sec-task-reading" id="toc-sec-task-reading" class="nav-link" data-scroll-target="#sec-task-reading"><span class="header-section-number">63.2</span> Task: Reading Files</a></li>
+  <li><a href="#sec-solution-data-preparation" id="toc-sec-solution-data-preparation" class="nav-link" data-scroll-target="#sec-solution-data-preparation"><span class="header-section-number">63.3</span> Sample Solution: Data Preparation</a></li>
+  <li><a href="#sec-solution-springconstants" id="toc-sec-solution-springconstants" class="nav-link" data-scroll-target="#sec-solution-springconstants"><span class="header-section-number">63.4</span> Sample Solution: Determining Spring Constants</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en/blob/main/books/m-sensordatenanalyse-en/skript/übung-hooke.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../books/m-sensordatenanalyse-en/index.html">m-sensordatenanalyse-en</a></li><li class="breadcrumb-item"><a href="../../../books/m-sensordatenanalyse-en/skript/übung-hooke.html"><span class="chapter-number">63</span>&nbsp; <span class="chapter-title">Exercise: Hooke’s Law</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">63</span>&nbsp; <span class="chapter-title">Exercise: Hooke’s Law</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Sensor data often come in multiple files. Possible reasons for this include measurements being taken</p>
+<ul>
+<li>by different people,</li>
+<li>at different locations,</li>
+<li>at different times,</li>
+<li>using different devices, or</li>
+<li>for different measurement quantities.</li>
+</ul>
+<p>In the folder ‘01-daten/hooke’, there are several txt files containing measurements of spring extension. In this chapter, you will apply what you have learned so far and answer the following questions:</p>
+<ol type="1">
+<li>Are there any invalid measurements?</li>
+<li>What values can be determined for the spring constants?</li>
+<li>Were the measurements taken with the same spring (or with springs of the same spring constant) if a confidence level of 90% or 95% is assumed?</li>
+</ol>
+<p>In section <a href="#sec-reading-files" class="quarto-xref"><span>Section 63.1</span></a> you will find guidance, and in section <a href="#sec-task-reading" class="quarto-xref"><span>Section 63.2</span></a> a sample solution for reading the files. Afterwards, you are expected to work on the tasks independently. Section <a href="#sec-solution-data-preparation" class="quarto-xref"><span>Section 63.3</span></a> provides a sample solution for data preprocessing. Section <a href="#sec-solution-springconstants" class="quarto-xref"><span>Section 63.4</span></a> contains the sample solution for determining the spring constants.</p>
+<p><em>Note: Depending on the approach chosen, different results may arise (for example, when evaluating and handling extreme values / outliers).</em></p>
+<section id="sec-reading-files" class="level2" data-number="63.1">
+<h2 data-number="63.1" class="anchored" data-anchor-id="sec-reading-files"><span class="header-section-number">63.1</span> Reading Files</h2>
+<p>To read files, you can use the <code>glob</code> module (see <a href="https://bausteine-der-datenanalyse.github.io/m-einlesen-strukturierter-datensaetze-en/output/book/">Module on Reading Structured Datasets</a>).</p>
+<p>First, you can pass the argument <code>pathname = *</code> to the function <code>glob.glob()</code>. The wildcard <code>*</code> stands for any sequence of characters (except path elements like <code>/</code> or <code>.</code>), allowing you to list all files stored in the specified folder. This way, you can determine the number of files and their extensions if they are not yet known.</p>
+<div id="bea4be61" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>folder_path <span class="op">=</span> <span class="st">'01-daten/hooke'</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>file_path_list <span class="op">=</span> glob.glob(pathname<span class="op">=</span><span class="st">'*'</span>, root_dir<span class="op">=</span>folder_path, recursive<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(file_path_list)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of files: </span><span class="sc">{</span><span class="bu">len</span>(file_path_list)<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>['team_fabi.txt', 'team_ma.txt', 'team_die_ahnungslosen.txt', 'team_kreativkoepfe.txt']
+Number of files: 4</code></pre>
+</div>
+</div>
+<p>Using the file paths, the files can be read into a list using a loop. Initially, only the first 3 rows of each file are read to get an impression of the file structure.</p>
+<div id="956e16a1" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file_path <span class="kw">in</span> file_path_list:</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  temp_storage <span class="op">=</span> pd.read_csv(filepath_or_buffer <span class="op">=</span> folder_path <span class="op">+</span> <span class="st">'/'</span> <span class="op">+</span> file_path, nrows <span class="op">=</span> <span class="dv">3</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(file_path, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>, temp_storage, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>, sep <span class="op">=</span> <span class="st">''</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>team_fabi.txt
+   09:17:54\t110.31 cm\t0
+0  09:17:57\t110.29 cm\t0
+1  09:18:03\t110.74 cm\t0
+2  09:18:06\t109.95 cm\t0
+
+team_ma.txt
+   10:09:38\t109.26 cm\t0
+0  10:09:41\t109.26 cm\t0
+1  10:09:44\t109.28 cm\t0
+2  10:09:47\t109.18 cm\t0
+
+team_die_ahnungslosen.txt
+   11:03:23\t109.66 cm\t0
+0  11:03:23\t109.62 cm\t0
+1  11:03:23\t109.73 cm\t0
+2  11:03:23\t109.55 cm\t0
+
+team_kreativkoepfe.txt
+   10:33:02\t109.64 cm\t0
+0  10:33:05\t109.62 cm\t0
+1  10:33:08\t109.64 cm\t0
+2  10:33:11\t109.62 cm\t0
+</code></pre>
+</div>
+</div>
+<p>The files do not contain column headers and use the tab character <code>\t</code> as a delimiter. The first column contains a timestamp, the second the measured spring extension, and the third (presumably) the attached weight.</p>
+</section>
+<section id="sec-task-reading" class="level2" data-number="63.2">
+<h2 data-number="63.2" class="anchored" data-anchor-id="sec-task-reading"><span class="header-section-number">63.2</span> Task: Reading Files</h2>
+<p>Now read in the files. While doing so, check:</p>
+<ul>
+<li>whether the data types are correctly interpreted, and</li>
+<li>for missing values.</li>
+</ul>
+<p>You can:</p>
+<ol type="a">
+<li>Read each file individually.<br>
+</li>
+<li>Use the <code>glob</code> module to read the files automatically and store each in a separate object (<em>Note:</em> This approach is demonstrated in the <a href="https://bausteine-der-datenanalyse.github.io/m-einlesen-strukturierter-datensaetze-en/output/book/">Module on Reading Structured Datasets</a>).</li>
+<li>Use the <code>glob</code> module to read the files automatically and merge them into a single file.</li>
+</ol>
+<p>These options require increasing levels of programming effort. The more separate files you want to analyze, the more automation is needed. Since sensor data analysis often involves numerous files, the model solution shows variant c).</p>
+<div id="tip-stepwise" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;63.1: Step-by-Step Approach
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Reading the files is likely to be the most time-consuming and error-prone step. Develop your solution step by step. Start with variant a). Once you have read the files, you can familiarize yourself with variant b) using the <code>glob</code> module. Building on that, variant c) allows you to automate the process for any number of files.</p>
+</div>
+</div>
+</div>
+<div id="tip-sample-files" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;63.2: Model Solution: Reading Files
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The first attempt to read the files may fail with an error message. Therefore, the instructions are embedded in a try-except structure to catch the problematic file. (If multiple files cause errors, they would need to be stored in a list and processed later with a loop, if possible.)</p>
+<div id="a9d9e958" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>hooke <span class="op">=</span> pd.DataFrame(columns <span class="op">=</span> [<span class="st">'Time'</span>, <span class="st">'Distance'</span>, <span class="st">'Weight'</span>, <span class="st">'Team'</span>]) <span class="co"># an empty DataFrame</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> path <span class="kw">in</span> file_path_list:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">try</span>:</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    temp_storage <span class="op">=</span> pd.read_csv(filepath_or_buffer <span class="op">=</span> folder_path <span class="op">+</span> <span class="st">'/'</span> <span class="op">+</span> path, sep <span class="op">=</span> <span class="st">'</span><span class="ch">\t</span><span class="st">'</span>, names <span class="op">=</span> [<span class="st">'Time'</span>, <span class="st">'Distance'</span>, <span class="st">'Weight'</span>])</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add filename as a column</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    temp_storage[<span class="st">'Team'</span>] <span class="op">=</span> path[<span class="dv">5</span>:<span class="op">-</span><span class="dv">4</span>] <span class="co"># remove 'team_' and the file extension</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    hooke <span class="op">=</span> pd.concat([hooke, temp_storage], ignore_index <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> error:</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Problematic file path: "</span>, path, error, sep <span class="op">=</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    problem_file_path <span class="op">=</span> path</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hooke.info(), <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Successfully read:</span><span class="ch">\n</span><span class="st">"</span>, hooke[<span class="st">'Team'</span>].unique(), sep <span class="op">=</span> <span class="st">''</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Problematic file path: 
+team_ma.txt
+Error tokenizing data. C error: Expected 3 fields in line 135, saw 4
+
+&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 359 entries, 0 to 358
+Data columns (total 4 columns):
+ #   Column    Non-Null Count  Dtype 
+---  ------    --------------  ----- 
+ 0   Time      355 non-null    object
+ 1   Distance  355 non-null    object
+ 2   Weight    355 non-null    object
+ 3   Team      359 non-null    object
+dtypes: object(4)
+memory usage: 11.3+ KB
+None 
+
+Successfully read:
+['fabi' 'die_ahnungslosen' 'kreativkoepfe']</code></pre>
+</div>
+</div>
+<p>According to the error message, line 135 contains 4 columns instead of 3. Therefore, the file causing the error is processed line by line, and each line with more than 3 entries is printed. For verification, the first 5 lines are also displayed.</p>
+<div id="81435047" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create an empty DataFrame with 3 columns</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(data <span class="op">=</span> [], columns <span class="op">=</span> [<span class="st">'Time'</span>, <span class="st">'Distance'</span>, <span class="st">'Weight'</span>])</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>problem_file_object <span class="op">=</span> <span class="bu">open</span>(<span class="bu">file</span> <span class="op">=</span> folder_path <span class="op">+</span> <span class="st">'/'</span> <span class="op">+</span> problem_file_path, mode <span class="op">=</span> <span class="st">'r'</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>index <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> line <span class="kw">in</span> problem_file_object:</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">try</span>:</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">buffer</span> <span class="op">=</span> line.split(sep <span class="op">=</span> <span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(<span class="bu">buffer</span>) <span class="op">&gt;</span> <span class="dv">3</span>:</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>      <span class="bu">print</span>(<span class="st">"Index ="</span>, index, <span class="st">":"</span>, <span class="bu">buffer</span>)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> index <span class="op">&lt;=</span> <span class="dv">5</span>:</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>      <span class="bu">print</span>(line)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    index <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> error:</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(error)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>problem_file_object.close()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>10:09:38    109.26 cm   0
+
+
+
+10:09:41    109.26 cm   0
+
+
+
+10:09:44    109.28 cm   0
+
+
+
+Index = 134 : ['10:29:27', '105.49 cm', '300', '\n']</code></pre>
+</div>
+</div>
+<p>Every second line is empty. In line 134, a newline ‘\n’ is read. Therefore, the file is processed again using an adjusted loop. The extra newline ‘\n’ is removed from the relevant line. Empty lines are skipped. The correct lines are appended to the DataFrame ‘hooke’.</p>
+<div id="86e81e15" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>problem_file_object <span class="op">=</span> <span class="bu">open</span>(<span class="bu">file</span> <span class="op">=</span> folder_path <span class="op">+</span> <span class="st">'/'</span> <span class="op">+</span> problem_file_path, mode <span class="op">=</span> <span class="st">'r'</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> line <span class="kw">in</span> problem_file_object:</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">try</span>:</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">buffer</span> <span class="op">=</span> line.split(sep <span class="op">=</span> <span class="st">"</span><span class="ch">\t</span><span class="st">"</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(<span class="bu">buffer</span>) <span class="op">&gt;</span> <span class="dv">3</span>:</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>      <span class="bu">buffer</span> <span class="op">=</span> <span class="bu">buffer</span>[:<span class="dv">3</span>]</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> <span class="bu">len</span>(<span class="bu">buffer</span>) <span class="op">&lt;</span> <span class="dv">3</span>:  <span class="co"># skip empty lines</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>      <span class="cf">continue</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Append team name as 4th column</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">buffer</span>.append(problem_file_path[<span class="dv">5</span>:<span class="op">-</span><span class="dv">4</span>])  <span class="co"># remove 'team_' prefix and file extension</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    hooke.loc[<span class="bu">len</span>(hooke)] <span class="op">=</span> pd.Series(<span class="bu">buffer</span>).values</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> error:</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(error)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(pd.Series(<span class="bu">buffer</span>).values)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>problem_file_object.close()</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Successfully read:</span><span class="ch">\n</span><span class="st">"</span>, hooke[<span class="st">'Team'</span>].unique(), <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>, sep <span class="op">=</span> <span class="st">''</span>)</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hooke.info())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Successfully read:
+['fabi' 'die_ahnungslosen' 'kreativkoepfe' 'ma']
+
+&lt;class 'pandas.core.frame.DataFrame'&gt;
+Index: 537 entries, 0 to 536
+Data columns (total 4 columns):
+ #   Column    Non-Null Count  Dtype 
+---  ------    --------------  ----- 
+ 0   Time      533 non-null    object
+ 1   Distance  533 non-null    object
+ 2   Weight    533 non-null    object
+ 3   Team      537 non-null    object
+dtypes: object(4)
+memory usage: 21.0+ KB
+None</code></pre>
+</div>
+</div>
+<p>Next, we look at the rows that contain null values …</p>
+<div id="29132284" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hooke.loc[hooke.<span class="bu">apply</span>(pd.isna).<span class="bu">any</span>(axis<span class="op">=</span><span class="dv">1</span>), :])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Time Distance Weight              Team
+207  NaN      NaN    NaN  die_ahnungslosen
+247  NaN      NaN    NaN     kreativkoepfe
+267  NaN      NaN    NaN     kreativkoepfe
+272  NaN      NaN    NaN     kreativkoepfe</code></pre>
+</div>
+</div>
+<p>… and removed.</p>
+<div id="ef6dbd9e" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>hooke.drop(np.where(hooke.<span class="bu">apply</span>(pd.isna).<span class="bu">any</span>(axis<span class="op">=</span><span class="dv">1</span>))[<span class="dv">0</span>], inplace<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, the data types are checked.</p>
+<ul>
+<li>The time can remain as a string, since it is not needed for the analysis.</li>
+<li>The measured distance is noted with ’ cm’ – this string will be removed. Afterwards, the column should be recognized as numeric.</li>
+<li>The weight should contain numeric values, but is read in as an object type and needs further investigation.</li>
+<li>The Team column could be assigned the <a href="https://pandas.pydata.org/docs/user_guide/categorical.html">Pandas category datatype</a>, but this is not necessary.</li>
+</ul>
+<p>Remove the string ’ cm’.</p>
+<div id="77872415" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>hooke.replace(<span class="st">' cm'</span>, <span class="st">''</span>, regex <span class="op">=</span> <span class="va">True</span>, inplace <span class="op">=</span> <span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>You can check if all elements of a column are numeric using the Pandas method <code>pd.Series.str.isnumeric()</code>. A look at the data shows the cause.</p>
+<div id="2f42b9bf" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hooke[<span class="st">'Weight'</span>].<span class="bu">str</span>.isnumeric().<span class="bu">sum</span>())</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hooke[<span class="st">'Weight'</span>].head())</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hooke[<span class="st">'Weight'</span>].tail())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1
+0    0
+1    0
+2    0
+3    0
+4    0
+Name: Weight, dtype: object
+532    850\n
+533    850\n
+534    850\n
+535    850\n
+536    850\n
+Name: Weight, dtype: object</code></pre>
+</div>
+</div>
+<p>The line breaks are also removed.</p>
+<div id="ea499f35" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>hooke.replace(<span class="st">'</span><span class="ch">\n</span><span class="st">'</span>, <span class="st">''</span>, regex<span class="op">=</span><span class="va">True</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hooke[<span class="st">'Weight'</span>].<span class="bu">str</span>.isnumeric().<span class="bu">sum</span>())</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hooke[<span class="st">'Weight'</span>].tail())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>178
+532    850
+533    850
+534    850
+535    850
+536    850
+Name: Weight, dtype: object</code></pre>
+</div>
+</div>
+<div id="96ddaf69" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hooke.info(), <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># explicit assignment</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>hooke[<span class="st">'Distance'</span>] <span class="op">=</span> hooke[<span class="st">'Distance'</span>].astype(<span class="st">'float'</span>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>hooke[<span class="st">'Weight'</span>] <span class="op">=</span> hooke[<span class="st">'Weight'</span>].astype(<span class="st">'float'</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hooke.info())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+Index: 533 entries, 0 to 536
+Data columns (total 4 columns):
+ #   Column    Non-Null Count  Dtype 
+---  ------    --------------  ----- 
+ 0   Time      533 non-null    object
+ 1   Distance  533 non-null    object
+ 2   Weight    533 non-null    object
+ 3   Team      533 non-null    object
+dtypes: object(4)
+memory usage: 20.8+ KB
+None 
+
+&lt;class 'pandas.core.frame.DataFrame'&gt;
+Index: 533 entries, 0 to 536
+Data columns (total 4 columns):
+ #   Column    Non-Null Count  Dtype  
+---  ------    --------------  -----  
+ 0   Time      533 non-null    object 
+ 1   Distance  533 non-null    float64
+ 2   Weight    533 non-null    float64
+ 3   Team      533 non-null    object 
+dtypes: float64(2), object(2)
+memory usage: 20.8+ KB
+None</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The result might look like this:</p>
+<div id="058b9c7c" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>hooke.groupby(by <span class="op">=</span> [<span class="st">'Team'</span>, <span class="st">'Weight'</span>], sort <span class="op">=</span> <span class="va">False</span>)[<span class="st">'Distance'</span>].describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">mean</th>
+<th data-quarto-table-cell-role="th">std</th>
+<th data-quarto-table-cell-role="th">min</th>
+<th data-quarto-table-cell-role="th">25%</th>
+<th data-quarto-table-cell-role="th">50%</th>
+<th data-quarto-table-cell-role="th">75%</th>
+<th data-quarto-table-cell-role="th">max</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Team</th>
+<th data-quarto-table-cell-role="th">Weight</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th rowspan="10" data-quarto-table-cell-role="th" data-valign="top">fabi</th>
+<th data-quarto-table-cell-role="th">0.0</th>
+<td>10.0</td>
+<td>110.366000</td>
+<td>0.253693</td>
+<td>109.95</td>
+<td>110.2900</td>
+<td>110.310</td>
+<td>110.5800</td>
+<td>110.74</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">50.0</th>
+<td>12.0</td>
+<td>110.425833</td>
+<td>0.210992</td>
+<td>110.22</td>
+<td>110.3050</td>
+<td>110.310</td>
+<td>110.6225</td>
+<td>110.77</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">101.0</th>
+<td>9.0</td>
+<td>108.238889</td>
+<td>0.231163</td>
+<td>107.96</td>
+<td>107.9900</td>
+<td>108.410</td>
+<td>108.4200</td>
+<td>108.47</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">152.0</th>
+<td>10.0</td>
+<td>106.902000</td>
+<td>0.335685</td>
+<td>106.45</td>
+<td>106.6000</td>
+<td>106.980</td>
+<td>106.9950</td>
+<td>107.43</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">201.0</th>
+<td>10.0</td>
+<td>105.253000</td>
+<td>1.052416</td>
+<td>102.30</td>
+<td>105.4600</td>
+<td>105.470</td>
+<td>105.5775</td>
+<td>105.90</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">253.0</th>
+<td>11.0</td>
+<td>104.279091</td>
+<td>0.466036</td>
+<td>103.55</td>
+<td>103.9400</td>
+<td>104.100</td>
+<td>104.6600</td>
+<td>104.91</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">302.0</th>
+<td>12.0</td>
+<td>102.650000</td>
+<td>0.390943</td>
+<td>102.09</td>
+<td>102.4650</td>
+<td>102.560</td>
+<td>103.0100</td>
+<td>103.35</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">353.0</th>
+<td>11.0</td>
+<td>100.673636</td>
+<td>0.199613</td>
+<td>100.50</td>
+<td>100.5500</td>
+<td>100.580</td>
+<td>100.7800</td>
+<td>101.03</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">403.0</th>
+<td>14.0</td>
+<td>99.447143</td>
+<td>0.424815</td>
+<td>98.97</td>
+<td>99.1025</td>
+<td>99.410</td>
+<td>99.5900</td>
+<td>100.26</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">455.0</th>
+<td>11.0</td>
+<td>97.839091</td>
+<td>0.228099</td>
+<td>97.51</td>
+<td>97.6200</td>
+<td>97.880</td>
+<td>98.0350</td>
+<td>98.15</td>
+</tr>
+<tr class="odd">
+<th rowspan="10" data-quarto-table-cell-role="th" data-valign="top">die_ahnungslosen</th>
+<th data-quarto-table-cell-role="th">0.0</th>
+<td>10.0</td>
+<td>109.759000</td>
+<td>0.180705</td>
+<td>109.55</td>
+<td>109.6300</td>
+<td>109.730</td>
+<td>109.7925</td>
+<td>110.09</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">50.0</th>
+<td>8.0</td>
+<td>108.912500</td>
+<td>0.180930</td>
+<td>108.53</td>
+<td>108.8800</td>
+<td>108.930</td>
+<td>109.0250</td>
+<td>109.11</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">100.0</th>
+<td>12.0</td>
+<td>107.725833</td>
+<td>0.704446</td>
+<td>106.76</td>
+<td>107.1975</td>
+<td>107.735</td>
+<td>108.0725</td>
+<td>108.92</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">150.0</th>
+<td>19.0</td>
+<td>106.265789</td>
+<td>0.759505</td>
+<td>104.67</td>
+<td>105.7050</td>
+<td>106.120</td>
+<td>106.7100</td>
+<td>107.87</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">200.0</th>
+<td>18.0</td>
+<td>104.616111</td>
+<td>0.392955</td>
+<td>103.96</td>
+<td>104.2650</td>
+<td>104.590</td>
+<td>104.8150</td>
+<td>105.23</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">250.0</th>
+<td>18.0</td>
+<td>102.906667</td>
+<td>0.221519</td>
+<td>102.35</td>
+<td>102.8025</td>
+<td>102.890</td>
+<td>102.9750</td>
+<td>103.33</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">300.0</th>
+<td>11.0</td>
+<td>101.840000</td>
+<td>0.894561</td>
+<td>101.00</td>
+<td>101.3650</td>
+<td>101.460</td>
+<td>101.8150</td>
+<td>104.15</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">350.0</th>
+<td>14.0</td>
+<td>100.264286</td>
+<td>0.265930</td>
+<td>99.98</td>
+<td>100.1475</td>
+<td>100.170</td>
+<td>100.2625</td>
+<td>101.06</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">400.0</th>
+<td>11.0</td>
+<td>99.239091</td>
+<td>0.232786</td>
+<td>98.94</td>
+<td>99.0500</td>
+<td>99.130</td>
+<td>99.4150</td>
+<td>99.57</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">450.0</th>
+<td>12.0</td>
+<td>98.042500</td>
+<td>0.468016</td>
+<td>97.51</td>
+<td>97.6750</td>
+<td>97.970</td>
+<td>98.2850</td>
+<td>99.08</td>
+</tr>
+<tr class="odd">
+<th rowspan="12" data-quarto-table-cell-role="th" data-valign="top">kreativkoepfe</th>
+<th data-quarto-table-cell-role="th">0.0</th>
+<td>9.0</td>
+<td>109.676667</td>
+<td>0.053619</td>
+<td>109.62</td>
+<td>109.6400</td>
+<td>109.640</td>
+<td>109.7300</td>
+<td>109.74</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">50.0</th>
+<td>8.0</td>
+<td>108.557500</td>
+<td>0.489949</td>
+<td>107.84</td>
+<td>108.2325</td>
+<td>108.495</td>
+<td>108.8675</td>
+<td>109.33</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">100.0</th>
+<td>10.0</td>
+<td>107.093000</td>
+<td>0.922726</td>
+<td>106.30</td>
+<td>106.3800</td>
+<td>106.875</td>
+<td>107.2700</td>
+<td>109.11</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">150.0</th>
+<td>10.0</td>
+<td>105.934000</td>
+<td>0.599967</td>
+<td>104.87</td>
+<td>105.6125</td>
+<td>106.020</td>
+<td>106.3075</td>
+<td>106.84</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">200.0</th>
+<td>10.0</td>
+<td>105.453000</td>
+<td>1.618278</td>
+<td>103.52</td>
+<td>104.0750</td>
+<td>105.035</td>
+<td>106.7700</td>
+<td>108.27</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">250.0</th>
+<td>10.0</td>
+<td>102.527000</td>
+<td>0.796228</td>
+<td>101.10</td>
+<td>102.1700</td>
+<td>102.410</td>
+<td>102.7625</td>
+<td>103.89</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">300.0</th>
+<td>10.0</td>
+<td>101.236000</td>
+<td>0.702095</td>
+<td>100.29</td>
+<td>100.7625</td>
+<td>101.010</td>
+<td>101.8350</td>
+<td>102.45</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">350.0</th>
+<td>10.0</td>
+<td>98.804000</td>
+<td>1.471629</td>
+<td>97.43</td>
+<td>97.5725</td>
+<td>98.155</td>
+<td>100.3600</td>
+<td>100.84</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">400.0</th>
+<td>9.0</td>
+<td>96.827778</td>
+<td>1.036783</td>
+<td>95.80</td>
+<td>95.8900</td>
+<td>96.900</td>
+<td>97.4100</td>
+<td>98.78</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">450.0</th>
+<td>9.0</td>
+<td>95.515556</td>
+<td>1.115954</td>
+<td>93.91</td>
+<td>94.6300</td>
+<td>95.750</td>
+<td>95.8300</td>
+<td>97.24</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">500.0</th>
+<td>8.0</td>
+<td>95.336250</td>
+<td>1.564298</td>
+<td>93.30</td>
+<td>94.4575</td>
+<td>95.140</td>
+<td>96.5625</td>
+<td>97.69</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">550.0</th>
+<td>9.0</td>
+<td>93.155556</td>
+<td>0.352956</td>
+<td>92.76</td>
+<td>92.8700</td>
+<td>92.950</td>
+<td>93.4000</td>
+<td>93.76</td>
+</tr>
+<tr class="odd">
+<th rowspan="18" data-quarto-table-cell-role="th" data-valign="top">ma</th>
+<th data-quarto-table-cell-role="th">0.0</th>
+<td>10.0</td>
+<td>109.258000</td>
+<td>0.042374</td>
+<td>109.18</td>
+<td>109.2600</td>
+<td>109.260</td>
+<td>109.2800</td>
+<td>109.31</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">50.0</th>
+<td>10.0</td>
+<td>107.179000</td>
+<td>1.809588</td>
+<td>105.83</td>
+<td>106.0875</td>
+<td>106.185</td>
+<td>107.9575</td>
+<td>110.81</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">100.0</th>
+<td>10.0</td>
+<td>102.101000</td>
+<td>2.958804</td>
+<td>99.37</td>
+<td>99.6725</td>
+<td>101.120</td>
+<td>104.4825</td>
+<td>106.67</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">150.0</th>
+<td>11.0</td>
+<td>106.656364</td>
+<td>4.727985</td>
+<td>100.29</td>
+<td>100.9900</td>
+<td>109.730</td>
+<td>110.1600</td>
+<td>110.60</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">200.0</th>
+<td>9.0</td>
+<td>108.456667</td>
+<td>1.666816</td>
+<td>106.74</td>
+<td>107.2900</td>
+<td>107.740</td>
+<td>110.1700</td>
+<td>111.06</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">250.0</th>
+<td>10.0</td>
+<td>106.931000</td>
+<td>0.957838</td>
+<td>105.66</td>
+<td>105.9325</td>
+<td>107.540</td>
+<td>107.6975</td>
+<td>107.80</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">300.0</th>
+<td>10.0</td>
+<td>105.696000</td>
+<td>0.194376</td>
+<td>105.46</td>
+<td>105.5075</td>
+<td>105.715</td>
+<td>105.8650</td>
+<td>105.94</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">350.0</th>
+<td>10.0</td>
+<td>104.838000</td>
+<td>0.530949</td>
+<td>104.10</td>
+<td>104.5150</td>
+<td>104.685</td>
+<td>105.1475</td>
+<td>105.94</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">400.0</th>
+<td>10.0</td>
+<td>104.790000</td>
+<td>0.602974</td>
+<td>104.31</td>
+<td>104.4775</td>
+<td>104.550</td>
+<td>104.6925</td>
+<td>106.09</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">450.0</th>
+<td>10.0</td>
+<td>104.517000</td>
+<td>0.475513</td>
+<td>103.91</td>
+<td>104.2225</td>
+<td>104.510</td>
+<td>104.7125</td>
+<td>105.56</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">500.0</th>
+<td>10.0</td>
+<td>104.456000</td>
+<td>0.569097</td>
+<td>103.65</td>
+<td>104.0925</td>
+<td>104.420</td>
+<td>104.6400</td>
+<td>105.71</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">550.0</th>
+<td>10.0</td>
+<td>103.004000</td>
+<td>0.800475</td>
+<td>101.55</td>
+<td>102.7650</td>
+<td>103.065</td>
+<td>103.5000</td>
+<td>104.20</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">600.0</th>
+<td>10.0</td>
+<td>101.403000</td>
+<td>0.621183</td>
+<td>100.22</td>
+<td>101.5000</td>
+<td>101.580</td>
+<td>101.7800</td>
+<td>101.94</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">650.0</th>
+<td>10.0</td>
+<td>100.109000</td>
+<td>0.082523</td>
+<td>99.97</td>
+<td>100.0475</td>
+<td>100.110</td>
+<td>100.1875</td>
+<td>100.21</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">700.0</th>
+<td>10.0</td>
+<td>98.871000</td>
+<td>0.534155</td>
+<td>98.24</td>
+<td>98.5425</td>
+<td>98.715</td>
+<td>99.1850</td>
+<td>100.02</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">750.0</th>
+<td>9.0</td>
+<td>97.966667</td>
+<td>0.729315</td>
+<td>96.86</td>
+<td>97.5000</td>
+<td>97.980</td>
+<td>98.6800</td>
+<td>98.77</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">800.0</th>
+<td>11.0</td>
+<td>97.115455</td>
+<td>0.540210</td>
+<td>96.19</td>
+<td>96.7000</td>
+<td>97.330</td>
+<td>97.5050</td>
+<td>97.72</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">850.0</th>
+<td>8.0</td>
+<td>95.715000</td>
+<td>0.245822</td>
+<td>95.35</td>
+<td>95.5625</td>
+<td>95.750</td>
+<td>95.8775</td>
+<td>96.07</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="sec-solution-data-preparation" class="level2" data-number="63.3">
+<h2 data-number="63.3" class="anchored" data-anchor-id="sec-solution-data-preparation"><span class="header-section-number">63.3</span> Sample Solution: Data Preparation</h2>
+<p>In the next step, the data will be checked and, if necessary, cleaned. This includes the following steps:</p>
+<ul>
+<li>checking for outliers (using studentized z-scores and visually) and cleaning if necessary,</li>
+<li>normalizing the distance measurement to the zero point and converting the units used to SI units, and</li>
+<li>graphical representation.</li>
+</ul>
+<div id="wrn-globgroupby" class="callout callout-style-simple callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning&nbsp;63.1: glob, pd.groupby, and SciPy
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The execution of the following code may vary locally, depending on the order in which files are read using the glob module. In the following, index positions in a groupby object are determined where a condition is true. These index positions are then used to access the original DataFrame. Pandas sorts the groups in a groupby object alphabetically by default (<code>sort=True</code>). If the files read with glob are not in alphabetical order, incorrect index positions may be used to access the DataFrame.</p>
+<p>This can be avoided either by sorting the DataFrame according to the groupby criteria or, as shown here, by using the argument <code>pd.groupby(by=condition, sort=False)</code>. The latter approach is more flexible.</p>
+<p>Also, <code>scipy.stats.zscore()</code> may return either a <code>pd.Series</code> or a <code>np.array</code> depending on the version. Accordingly, methods from Pandas or NumPy should be used.</p>
+</div>
+</div>
+<ol type="1">
+<li><strong>Are there invalid measurements?</strong></li>
+</ol>
+<section id="checking-for-outliers" class="level3" data-number="63.3.1">
+<h3 data-number="63.3.1" class="anchored" data-anchor-id="checking-for-outliers"><span class="header-section-number">63.3.1</span> Checking for Outliers</h3>
+<p>Outliers can be checked (among other methods) using studentized z-scores and visually.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Determining Outliers</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Combined Output of Measurement Series</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<ol type="1">
+<li>Determine the number of outliers and display their positions.</li>
+</ol>
+<div id="fedc874c" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find z-scores greater than or equal to abs(3)</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co">## Solution for SciPy 1.14.1 (returns pd.Series)</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co">## z_values_ge3_sum = hooke.groupby(by=['Team', 'Weight'])['Distance'].apply(lambda x: scipy.stats.zscore(x, ddof=1)).abs().ge(3).sum()</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co">## Solution for SciPy 1.15 and later (returns np.array)</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>z_values_ge3_sum <span class="op">=</span> hooke.groupby(by<span class="op">=</span>[<span class="st">'Team'</span>, <span class="st">'Weight'</span>], sort<span class="op">=</span><span class="va">False</span>)[<span class="st">'Distance'</span>].<span class="bu">apply</span>(scipy.stats.zscore, ddof<span class="op">=</span><span class="dv">1</span>).<span class="bu">apply</span>(np.<span class="bu">abs</span>).<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.greater_equal(x, <span class="dv">3</span>)).<span class="bu">apply</span>(<span class="bu">sum</span>).<span class="bu">sum</span>()</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of studentized z-scores with absolute value ≥ 3:"</span>, z_values_ge3_sum, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Find z-scores greater than or equal to abs(2.5)</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="co">## Solution for SciPy 1.14.1 (returns pd.Series)</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="co">## z_values_ge25_sum = hooke.groupby(by=['Team', 'Weight'])['Distance'].apply(lambda x: scipy.stats.zscore(x, ddof=1)).abs().ge(2.5).sum()</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="co">## Solution for SciPy 1.15 and later (returns np.array)</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>z_values_ge25_sum <span class="op">=</span> hooke.groupby(by<span class="op">=</span>[<span class="st">'Team'</span>, <span class="st">'Weight'</span>], sort<span class="op">=</span><span class="va">False</span>)[<span class="st">'Distance'</span>].<span class="bu">apply</span>(scipy.stats.zscore, ddof<span class="op">=</span><span class="dv">1</span>).<span class="bu">apply</span>(np.<span class="bu">abs</span>).<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.greater_equal(x, <span class="fl">2.5</span>)).<span class="bu">apply</span>(<span class="bu">sum</span>).<span class="bu">sum</span>()</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of studentized z-scores with absolute value ≥ 2.5:"</span>, z_values_ge25_sum)</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Display rows with z-scores greater than abs(2.5)</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a><span class="co">## Solution for SciPy 1.14.1 (returns pd.Series)</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a><span class="co">## bool_index = hooke.groupby(by=['Team', 'Weight'])['Distance'].apply(lambda x: scipy.stats.zscore(x, ddof=1)).abs().ge(2.5).values</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a><span class="co">## Solution for SciPy 1.15 and later (returns np.array)</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a><span class="co">### Step 1: Capture boolean values</span></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>bool_index <span class="op">=</span> hooke.groupby(by<span class="op">=</span>[<span class="st">'Team'</span>, <span class="st">'Weight'</span>], sort<span class="op">=</span><span class="va">False</span>)[<span class="st">'Distance'</span>].<span class="bu">apply</span>(scipy.stats.zscore, ddof<span class="op">=</span><span class="dv">1</span>).<span class="bu">apply</span>(np.<span class="bu">abs</span>).<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.greater_equal(x, <span class="fl">2.5</span>)).values</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a><span class="co">### Step 2: Flatten to a 1D array</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>bool_index <span class="op">=</span> np.hstack(bool_index)</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Outliers are located at these index positions:"</span>, np.nonzero(bool_index))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of studentized z-scores with absolute value ≥ 3: 0 
+
+Number of studentized z-scores with absolute value ≥ 2.5: 4
+
+Outliers are located at these index positions: (array([ 44, 186, 201, 206]),)</code></pre>
+</div>
+</div>
+<ol start="2" type="1">
+<li>Output of the lines from the measurement series</li>
+</ol>
+<div id="445db04f" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Selecting rows with z-values greater than or equal to 2.5</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>z_values_ge_25 <span class="op">=</span> hooke.iloc[bool_index , :]  <span class="co"># --&gt; The problem is likely here</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(z_values_ge_25, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Determine combinations of Weight &amp; Team</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Determining combinations of Weight &amp; Team"</span>)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>teams <span class="op">=</span> z_values_ge_25[<span class="st">'Team'</span>].unique()</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="co">## Iterate through teams and store corresponding weights</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>team_weights <span class="op">=</span> []  <span class="co"># empty list</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(teams)):</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(teams[i])</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(z_values_ge_25.loc[z_values_ge_25[<span class="st">'Team'</span>] <span class="op">==</span> teams[i], <span class="st">'Weight'</span>], <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  team_weights.append(z_values_ge_25.loc[z_values_ge_25[<span class="st">'Team'</span>] <span class="op">==</span> teams[i], <span class="st">'Weight'</span>].values)</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a><span class="co"># print("As a list of arrays:")</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a><span class="co"># print(team_weights, "\n")</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Time  Distance  Weight              Team
+44   09:27:18    102.30   201.0              fabi
+186  11:10:38    102.35   250.0  die_ahnungslosen
+201  11:11:42    104.15   300.0  die_ahnungslosen
+206  11:12:43    101.06   350.0  die_ahnungslosen 
+
+Determining combinations of Weight &amp; Team
+fabi
+44    201.0
+Name: Weight, dtype: float64 
+
+die_ahnungslosen
+186    250.0
+201    300.0
+206    350.0
+Name: Weight, dtype: float64 
+</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>This output is intended for illustration and verification.</p>
+<div id="b2e6de7d" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select measurement series</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>measurement_series <span class="op">=</span> pd.DataFrame()</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(teams)):</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(team_weights[i])):</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(teams[i], team_weights[i][j])</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>        measurement_series <span class="op">=</span> pd.concat([measurement_series, hooke.loc[(hooke[<span class="st">'Team'</span>] <span class="op">==</span> teams[i]) <span class="op">&amp;</span> (hooke[<span class="st">'Weight'</span>] <span class="op">==</span> team_weights[i][j]) ]])</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute studentized z-scores of the measurement series</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="co">## Solution for SciPy 1.14.1 (returns pd.Series)</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="co">## measurement_series_z_scores = measurement_series.groupby(by=['Team', 'Weight'])['Distance'].apply(lambda x: scipy.stats.zscore(x, ddof=1)).reset_index(drop=True)</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="co">## Solution for SciPy 1.15 and newer (returns np.array)</span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a><span class="co">## Convert row-wise return to a one-dimensional array:</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>measurement_series_z_scores <span class="op">=</span> np.hstack(</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>    measurement_series.groupby(by<span class="op">=</span>[<span class="st">'Team'</span>, <span class="st">'Weight'</span>], sort<span class="op">=</span><span class="va">False</span>)[<span class="st">'Distance'</span>]</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(<span class="kw">lambda</span> x: scipy.stats.zscore(x, ddof<span class="op">=</span><span class="dv">1</span>))</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Combined output of the data</span></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a><span class="co">## Solution for SciPy 1.14.1 (returns pd.Series)</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a><span class="co">## measurement_series.insert(loc=2, column='z-Score Distance', value=measurement_series_z_scores.values)</span></span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a><span class="co">## Solution for SciPy 1.15 and newer (returns np.array)</span></span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>measurement_series.insert(loc<span class="op">=</span><span class="dv">2</span>, column<span class="op">=</span><span class="st">'z-Score Distance'</span>, value<span class="op">=</span>measurement_series_z_scores)</span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(measurement_series)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>fabi 201.0
+die_ahnungslosen 250.0
+die_ahnungslosen 300.0
+die_ahnungslosen 350.0
+         Time  Distance  z-Score Distance  Weight              Team
+41   09:27:09    105.47          0.206192   201.0              fabi
+42   09:27:12    105.90          0.614776   201.0              fabi
+43   09:27:15    105.54          0.272706   201.0              fabi
+44   09:27:18    102.30         -2.805925   201.0              fabi
+45   09:27:21    105.90          0.614776   201.0              fabi
+46   09:27:24    105.47          0.206192   201.0              fabi
+47   09:27:27    105.44          0.177686   201.0              fabi
+48   09:27:30    105.59          0.320216   201.0              fabi
+49   09:27:33    105.46          0.196690   201.0              fabi
+50   09:27:36    105.46          0.196690   201.0              fabi
+177  11:10:11    102.99          0.376191   250.0  die_ahnungslosen
+178  11:10:13    102.99          0.376191   250.0  die_ahnungslosen
+179  11:10:17    102.93          0.105333   250.0  die_ahnungslosen
+180  11:10:20    102.83         -0.346095   250.0  die_ahnungslosen
+181  11:10:23    103.16          1.143620   250.0  die_ahnungslosen
+182  11:10:26    102.80         -0.481524   250.0  die_ahnungslosen
+183  11:10:29    102.90         -0.030095   250.0  die_ahnungslosen
+184  11:10:32    103.33          1.911049   250.0  die_ahnungslosen
+185  11:10:35    102.78         -0.571810   250.0  die_ahnungslosen
+186  11:10:38    102.35         -2.512954   250.0  die_ahnungslosen
+187  11:10:41    102.93          0.105333   250.0  die_ahnungslosen
+188  11:10:44    102.88         -0.120381   250.0  die_ahnungslosen
+189  11:10:47    102.90         -0.030095   250.0  die_ahnungslosen
+190  11:10:50    102.88         -0.120381   250.0  die_ahnungslosen
+191  11:10:53    102.73         -0.797524   250.0  die_ahnungslosen
+192  11:10:56    102.81         -0.436381   250.0  die_ahnungslosen
+193  11:10:59    102.80         -0.481524   250.0  die_ahnungslosen
+194  11:11:02    103.33          1.911049   250.0  die_ahnungslosen
+195  11:11:24    101.37         -0.525397   300.0  die_ahnungslosen
+196  11:11:27    101.43         -0.458325   300.0  die_ahnungslosen
+197  11:11:30    102.80          1.073152   300.0  die_ahnungslosen
+198  11:11:33    101.72         -0.134144   300.0  die_ahnungslosen
+199  11:11:36    101.36         -0.536576   300.0  die_ahnungslosen
+200  11:11:39    101.46         -0.424789   300.0  die_ahnungslosen
+201  11:11:42    104.15          2.582271   300.0  die_ahnungslosen
+202  11:11:45    101.36         -0.536576   300.0  die_ahnungslosen
+203  11:11:48    101.00         -0.939008   300.0  die_ahnungslosen
+204  11:11:51    101.91          0.078251   300.0  die_ahnungslosen
+205  11:11:54    101.68         -0.178859   300.0  die_ahnungslosen
+206  11:12:43    101.06          2.992196   350.0  die_ahnungslosen
+208  11:12:46    100.17         -0.354551   350.0  die_ahnungslosen
+209  11:12:49     99.98         -1.069025   350.0  die_ahnungslosen
+210  11:12:52    100.07         -0.730590   350.0  die_ahnungslosen
+211  11:12:55    100.21         -0.204135   350.0  die_ahnungslosen
+212  11:12:58    100.21         -0.204135   350.0  die_ahnungslosen
+213  11:13:01    100.14         -0.467363   350.0  die_ahnungslosen
+214  11:13:04    100.17         -0.354551   350.0  die_ahnungslosen
+215  11:13:07    100.28          0.059092   350.0  die_ahnungslosen
+216  11:13:10    100.55          1.074397   350.0  die_ahnungslosen
+217  11:13:13    100.14         -0.467363   350.0  die_ahnungslosen
+218  11:13:16    100.17         -0.354551   350.0  die_ahnungslosen
+219  11:13:19    100.17         -0.354551   350.0  die_ahnungslosen
+220  11:13:22    100.38          0.435131   350.0  die_ahnungslosen</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The values can be visualized easily using the Pandas method <code>pd.plot()</code>. However, this method is not as flexible as the matplotlib package. For example, a scatter plot (<code>kind = 'scatter'</code>) is only available for DataFrames, not for groupby objects. This can be worked around by setting a marker and setting the line width to 0.</p>
+<div id="0a363e4c" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>measurement_series.reset_index(drop <span class="op">=</span> <span class="va">True</span>).groupby(by <span class="op">=</span> [<span class="st">'Team'</span>, <span class="st">'Weight'</span>], sort <span class="op">=</span> <span class="va">False</span>)[<span class="st">'Distance'</span>].plot(marker <span class="op">=</span> <span class="st">'o'</span>, lw <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Measurement'</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Distance'</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="übung-hooke_files/figure-html/cell-18-output-1.png" alt="Graphical representation of the measurement series containing studentized z-values >= 2.5." width="593" height="429" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p>Values with absolute studentized z-scores <span class="math inline">\(\ge\)</span> 2.5 could be considered outliers and removed. In this case, they are retained.</p>
+</section>
+<section id="conversion-of-measurement-quantities" class="level3" data-number="63.3.2">
+<h3 data-number="63.3.2" class="anchored" data-anchor-id="conversion-of-measurement-quantities"><span class="header-section-number">63.3.2</span> Conversion of Measurement Quantities</h3>
+<p>In the next step, the distance measurements are normalized to the zero point to represent the spring elongation. Similarly, the weight in <span class="math inline">\(g\)</span> is converted into the acting force in <span class="math inline">\(N\)</span>.</p>
+<div id="tip-units" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;63.3: Example Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<section id="normalize-distance-measurements-to-meters-and-zero-point" class="level4" data-number="63.3.2.1">
+<h4 data-number="63.3.2.1" class="anchored" data-anchor-id="normalize-distance-measurements-to-meters-and-zero-point"><span class="header-section-number">63.3.2.1</span> Normalize Distance Measurements to Meters and Zero Point</h4>
+<p>Normalize distance measurements to the zero point. Rename the column <code>Distance</code> to <code>Distance_Change</code>.</p>
+<div id="24391a3e" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>zero_points <span class="op">=</span> hooke.loc[hooke[<span class="st">'Weight'</span>] <span class="op">==</span> <span class="dv">0</span>, : ].groupby(by <span class="op">=</span> <span class="st">'Team'</span>, sort <span class="op">=</span> <span class="va">False</span>)[<span class="st">'Distance'</span>].mean()</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Zero points"</span>, zero_points, sep <span class="op">=</span> <span class="st">'</span><span class="ch">\n</span><span class="st">'</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>teams <span class="op">=</span> zero_points.index</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(teams)):</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  hooke.loc[hooke[<span class="st">'Team'</span>] <span class="op">==</span> teams[i] , <span class="st">'Distance'</span>] <span class="op">=</span> hooke.loc[hooke[<span class="st">'Team'</span>] <span class="op">==</span> teams[i] , <span class="st">'Distance'</span>].sub(zero_points.values[i]).mul(<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>hooke.rename(columns <span class="op">=</span> {<span class="st">'Distance'</span>: <span class="st">'Distance_Change'</span>}, inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>hooke[<span class="st">'Distance_Change'</span>] <span class="op">=</span> hooke[<span class="st">'Distance_Change'</span>].div(<span class="dv">100</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Zero points
+Team
+fabi                110.366000
+die_ahnungslosen    109.759000
+kreativkoepfe       109.676667
+ma                  109.258000
+Name: Distance, dtype: float64</code></pre>
+</div>
+</div>
+</section>
+<section id="convert-weight-to-acting-force" class="level4" data-number="63.3.2.2">
+<h4 data-number="63.3.2.2" class="anchored" data-anchor-id="convert-weight-to-acting-force"><span class="header-section-number">63.3.2.2</span> Convert Weight to Acting Force</h4>
+<p>Convert weight in <span class="math inline">\(g\)</span> to the acting force in <span class="math inline">\(N\)</span>. The column will be added to the dataset.</p>
+<div id="6787e034" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>hooke[<span class="st">'Force'</span>] <span class="op">=</span> hooke[<span class="st">'Weight'</span>].div(<span class="dv">1000</span>).mul(<span class="fl">9.81</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</div>
+</div>
+</div>
+<p>The result might look like this. The column <code>Distance</code> was renamed to <code>Distance_Change</code>.</p>
+<div id="3799d40c" class="cell" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>hooke.groupby(by <span class="op">=</span> [<span class="st">'Team'</span>, <span class="st">'Force'</span>], sort <span class="op">=</span> <span class="va">False</span>)[<span class="st">'Distance_Change'</span>].describe()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">mean</th>
+<th data-quarto-table-cell-role="th">std</th>
+<th data-quarto-table-cell-role="th">min</th>
+<th data-quarto-table-cell-role="th">25%</th>
+<th data-quarto-table-cell-role="th">50%</th>
+<th data-quarto-table-cell-role="th">75%</th>
+<th data-quarto-table-cell-role="th">max</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Team</th>
+<th data-quarto-table-cell-role="th">Force</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th rowspan="10" data-quarto-table-cell-role="th" data-valign="top">fabi</th>
+<th data-quarto-table-cell-role="th">0.00000</th>
+<td>10.0</td>
+<td>1.137111e-16</td>
+<td>0.002537</td>
+<td>-0.003740</td>
+<td>-0.002140</td>
+<td>0.000560</td>
+<td>0.000760</td>
+<td>0.004160</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">0.49050</th>
+<td>12.0</td>
+<td>-5.983333e-04</td>
+<td>0.002110</td>
+<td>-0.004040</td>
+<td>-0.002565</td>
+<td>0.000560</td>
+<td>0.000610</td>
+<td>0.001460</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0.99081</th>
+<td>9.0</td>
+<td>2.127111e-02</td>
+<td>0.002312</td>
+<td>0.018960</td>
+<td>0.019460</td>
+<td>0.019560</td>
+<td>0.023760</td>
+<td>0.024060</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1.49112</th>
+<td>10.0</td>
+<td>3.464000e-02</td>
+<td>0.003357</td>
+<td>0.029360</td>
+<td>0.033710</td>
+<td>0.033860</td>
+<td>0.037660</td>
+<td>0.039160</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1.97181</th>
+<td>10.0</td>
+<td>5.113000e-02</td>
+<td>0.010524</td>
+<td>0.044660</td>
+<td>0.047885</td>
+<td>0.048960</td>
+<td>0.049060</td>
+<td>0.080660</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2.48193</th>
+<td>11.0</td>
+<td>6.086909e-02</td>
+<td>0.004660</td>
+<td>0.054560</td>
+<td>0.057060</td>
+<td>0.062660</td>
+<td>0.064260</td>
+<td>0.068160</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2.96262</th>
+<td>12.0</td>
+<td>7.716000e-02</td>
+<td>0.003909</td>
+<td>0.070160</td>
+<td>0.073560</td>
+<td>0.078060</td>
+<td>0.079010</td>
+<td>0.082760</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3.46293</th>
+<td>11.0</td>
+<td>9.692364e-02</td>
+<td>0.001996</td>
+<td>0.093360</td>
+<td>0.095860</td>
+<td>0.097860</td>
+<td>0.098160</td>
+<td>0.098660</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3.95343</th>
+<td>14.0</td>
+<td>1.091886e-01</td>
+<td>0.004248</td>
+<td>0.101060</td>
+<td>0.107760</td>
+<td>0.109560</td>
+<td>0.112635</td>
+<td>0.113960</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4.46355</th>
+<td>11.0</td>
+<td>1.252691e-01</td>
+<td>0.002281</td>
+<td>0.122160</td>
+<td>0.123310</td>
+<td>0.124860</td>
+<td>0.127460</td>
+<td>0.128560</td>
+</tr>
+<tr class="odd">
+<th rowspan="10" data-quarto-table-cell-role="th" data-valign="top">die_ahnungslosen</th>
+<th data-quarto-table-cell-role="th">0.00000</th>
+<td>10.0</td>
+<td>-1.420088e-16</td>
+<td>0.001807</td>
+<td>-0.003310</td>
+<td>-0.000335</td>
+<td>0.000290</td>
+<td>0.001290</td>
+<td>0.002090</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">0.49050</th>
+<td>8.0</td>
+<td>8.465000e-03</td>
+<td>0.001809</td>
+<td>0.006490</td>
+<td>0.007340</td>
+<td>0.008290</td>
+<td>0.008790</td>
+<td>0.012290</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0.98100</th>
+<td>12.0</td>
+<td>2.033167e-02</td>
+<td>0.007044</td>
+<td>0.008390</td>
+<td>0.016865</td>
+<td>0.020240</td>
+<td>0.025615</td>
+<td>0.029990</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1.47150</th>
+<td>19.0</td>
+<td>3.493211e-02</td>
+<td>0.007595</td>
+<td>0.018890</td>
+<td>0.030490</td>
+<td>0.036390</td>
+<td>0.040540</td>
+<td>0.050890</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1.96200</th>
+<td>18.0</td>
+<td>5.142889e-02</td>
+<td>0.003930</td>
+<td>0.045290</td>
+<td>0.049440</td>
+<td>0.051690</td>
+<td>0.054940</td>
+<td>0.057990</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2.45250</th>
+<td>18.0</td>
+<td>6.852333e-02</td>
+<td>0.002215</td>
+<td>0.064290</td>
+<td>0.067840</td>
+<td>0.068690</td>
+<td>0.069565</td>
+<td>0.074090</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2.94300</th>
+<td>11.0</td>
+<td>7.919000e-02</td>
+<td>0.008946</td>
+<td>0.056090</td>
+<td>0.079440</td>
+<td>0.082990</td>
+<td>0.083940</td>
+<td>0.087590</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3.43350</th>
+<td>14.0</td>
+<td>9.494714e-02</td>
+<td>0.002659</td>
+<td>0.086990</td>
+<td>0.094965</td>
+<td>0.095890</td>
+<td>0.096115</td>
+<td>0.097790</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3.92400</th>
+<td>11.0</td>
+<td>1.051991e-01</td>
+<td>0.002328</td>
+<td>0.101890</td>
+<td>0.103440</td>
+<td>0.106290</td>
+<td>0.107090</td>
+<td>0.108190</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4.41450</th>
+<td>12.0</td>
+<td>1.171650e-01</td>
+<td>0.004680</td>
+<td>0.106790</td>
+<td>0.114740</td>
+<td>0.117890</td>
+<td>0.120840</td>
+<td>0.122490</td>
+</tr>
+<tr class="odd">
+<th rowspan="12" data-quarto-table-cell-role="th" data-valign="top">kreativkoepfe</th>
+<th data-quarto-table-cell-role="th">0.00000</th>
+<td>9.0</td>
+<td>7.894196e-17</td>
+<td>0.000536</td>
+<td>-0.000633</td>
+<td>-0.000533</td>
+<td>0.000367</td>
+<td>0.000367</td>
+<td>0.000567</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">0.49050</th>
+<td>8.0</td>
+<td>1.119167e-02</td>
+<td>0.004899</td>
+<td>0.003467</td>
+<td>0.008092</td>
+<td>0.011817</td>
+<td>0.014442</td>
+<td>0.018367</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0.98100</th>
+<td>10.0</td>
+<td>2.583667e-02</td>
+<td>0.009227</td>
+<td>0.005667</td>
+<td>0.024067</td>
+<td>0.028017</td>
+<td>0.032967</td>
+<td>0.033767</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1.47150</th>
+<td>10.0</td>
+<td>3.742667e-02</td>
+<td>0.006000</td>
+<td>0.028367</td>
+<td>0.033692</td>
+<td>0.036567</td>
+<td>0.040642</td>
+<td>0.048067</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1.96200</th>
+<td>10.0</td>
+<td>4.223667e-02</td>
+<td>0.016183</td>
+<td>0.014067</td>
+<td>0.029067</td>
+<td>0.046417</td>
+<td>0.056017</td>
+<td>0.061567</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2.45250</th>
+<td>10.0</td>
+<td>7.149667e-02</td>
+<td>0.007962</td>
+<td>0.057867</td>
+<td>0.069142</td>
+<td>0.072667</td>
+<td>0.075067</td>
+<td>0.085767</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2.94300</th>
+<td>10.0</td>
+<td>8.440667e-02</td>
+<td>0.007021</td>
+<td>0.072267</td>
+<td>0.078417</td>
+<td>0.086667</td>
+<td>0.089142</td>
+<td>0.093867</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3.43350</th>
+<td>10.0</td>
+<td>1.087267e-01</td>
+<td>0.014716</td>
+<td>0.088367</td>
+<td>0.093167</td>
+<td>0.115217</td>
+<td>0.121042</td>
+<td>0.122467</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3.92400</th>
+<td>9.0</td>
+<td>1.284889e-01</td>
+<td>0.010368</td>
+<td>0.108967</td>
+<td>0.122667</td>
+<td>0.127767</td>
+<td>0.137867</td>
+<td>0.138767</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4.41450</th>
+<td>9.0</td>
+<td>1.416111e-01</td>
+<td>0.011160</td>
+<td>0.124367</td>
+<td>0.138467</td>
+<td>0.139267</td>
+<td>0.150467</td>
+<td>0.157667</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4.90500</th>
+<td>8.0</td>
+<td>1.434042e-01</td>
+<td>0.015643</td>
+<td>0.119867</td>
+<td>0.131142</td>
+<td>0.145367</td>
+<td>0.152192</td>
+<td>0.163767</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5.39550</th>
+<td>9.0</td>
+<td>1.652111e-01</td>
+<td>0.003530</td>
+<td>0.159167</td>
+<td>0.162767</td>
+<td>0.167267</td>
+<td>0.168067</td>
+<td>0.169167</td>
+</tr>
+<tr class="odd">
+<th rowspan="18" data-quarto-table-cell-role="th" data-valign="top">ma</th>
+<th data-quarto-table-cell-role="th">0.00000</th>
+<td>10.0</td>
+<td>-7.105997e-17</td>
+<td>0.000424</td>
+<td>-0.000520</td>
+<td>-0.000220</td>
+<td>-0.000020</td>
+<td>-0.000020</td>
+<td>0.000780</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">0.49050</th>
+<td>10.0</td>
+<td>2.079000e-02</td>
+<td>0.018096</td>
+<td>-0.015520</td>
+<td>0.013005</td>
+<td>0.030730</td>
+<td>0.031705</td>
+<td>0.034280</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0.98100</th>
+<td>10.0</td>
+<td>7.157000e-02</td>
+<td>0.029588</td>
+<td>0.025880</td>
+<td>0.047755</td>
+<td>0.081380</td>
+<td>0.095855</td>
+<td>0.098880</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1.47150</th>
+<td>11.0</td>
+<td>2.601636e-02</td>
+<td>0.047280</td>
+<td>-0.013420</td>
+<td>-0.009020</td>
+<td>-0.004720</td>
+<td>0.082680</td>
+<td>0.089680</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1.96200</th>
+<td>9.0</td>
+<td>8.013333e-03</td>
+<td>0.016668</td>
+<td>-0.018020</td>
+<td>-0.009120</td>
+<td>0.015180</td>
+<td>0.019680</td>
+<td>0.025180</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2.45250</th>
+<td>10.0</td>
+<td>2.327000e-02</td>
+<td>0.009578</td>
+<td>0.014580</td>
+<td>0.015605</td>
+<td>0.017180</td>
+<td>0.033255</td>
+<td>0.035980</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2.94300</th>
+<td>10.0</td>
+<td>3.562000e-02</td>
+<td>0.001944</td>
+<td>0.033180</td>
+<td>0.033930</td>
+<td>0.035430</td>
+<td>0.037505</td>
+<td>0.037980</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3.43350</th>
+<td>10.0</td>
+<td>4.420000e-02</td>
+<td>0.005309</td>
+<td>0.033180</td>
+<td>0.041105</td>
+<td>0.045730</td>
+<td>0.047430</td>
+<td>0.051580</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3.92400</th>
+<td>10.0</td>
+<td>4.468000e-02</td>
+<td>0.006030</td>
+<td>0.031680</td>
+<td>0.045655</td>
+<td>0.047080</td>
+<td>0.047805</td>
+<td>0.049480</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4.41450</th>
+<td>10.0</td>
+<td>4.741000e-02</td>
+<td>0.004755</td>
+<td>0.036980</td>
+<td>0.045455</td>
+<td>0.047480</td>
+<td>0.050355</td>
+<td>0.053480</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4.90500</th>
+<td>10.0</td>
+<td>4.802000e-02</td>
+<td>0.005691</td>
+<td>0.035480</td>
+<td>0.046180</td>
+<td>0.048380</td>
+<td>0.051655</td>
+<td>0.056080</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5.39550</th>
+<td>10.0</td>
+<td>6.254000e-02</td>
+<td>0.008005</td>
+<td>0.050580</td>
+<td>0.057580</td>
+<td>0.061930</td>
+<td>0.064930</td>
+<td>0.077080</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">5.88600</th>
+<td>10.0</td>
+<td>7.855000e-02</td>
+<td>0.006212</td>
+<td>0.073180</td>
+<td>0.074780</td>
+<td>0.076780</td>
+<td>0.077580</td>
+<td>0.090380</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6.37650</th>
+<td>10.0</td>
+<td>9.149000e-02</td>
+<td>0.000825</td>
+<td>0.090480</td>
+<td>0.090705</td>
+<td>0.091480</td>
+<td>0.092105</td>
+<td>0.092880</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6.86700</th>
+<td>10.0</td>
+<td>1.038700e-01</td>
+<td>0.005342</td>
+<td>0.092380</td>
+<td>0.100730</td>
+<td>0.105430</td>
+<td>0.107155</td>
+<td>0.110180</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7.35750</th>
+<td>9.0</td>
+<td>1.129133e-01</td>
+<td>0.007293</td>
+<td>0.104880</td>
+<td>0.105780</td>
+<td>0.112780</td>
+<td>0.117580</td>
+<td>0.123980</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">7.84800</th>
+<td>11.0</td>
+<td>1.214255e-01</td>
+<td>0.005402</td>
+<td>0.115380</td>
+<td>0.117530</td>
+<td>0.119280</td>
+<td>0.125580</td>
+<td>0.130680</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">8.33850</th>
+<td>8.0</td>
+<td>1.354300e-01</td>
+<td>0.002458</td>
+<td>0.131880</td>
+<td>0.133805</td>
+<td>0.135080</td>
+<td>0.136955</td>
+<td>0.139080</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="graphical-representation" class="level3" data-number="63.3.3">
+<h3 data-number="63.3.3" class="anchored" data-anchor-id="graphical-representation"><span class="header-section-number">63.3.3</span> Graphical Representation</h3>
+<p>Since there are only four teams, the measurements can be visualized graphically. One possible representation can be found in the first tab, with intermediate steps and conclusions in the following tabs.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Graphical Representation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Calculating Means and Standard Errors</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">Code</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false" href="">Evaluation</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div id="2e9aeb5d" class="cell" data-execution_count="21">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="übung-hooke_files/figure-html/cell-22-output-1.png" alt="The x-axis shows spring extension in meters, the y-axis shows the applied force in Newtons. In addition to the data points, the mean for each weight is marked with a large X, and the range ± 1 standard error from the mean is shown." width="709" height="1142" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>The output is limited to the first few rows for space reasons.</p>
+<div id="216ced98" class="cell" data-execution_count="22">
+<div class="cell-output cell-output-stdout">
+<pre><code>Means of distance change by team and force:
+Team  Force  
+fabi  0.00000    1.137111e-16
+      0.49050   -5.983333e-04
+      0.99081    2.127111e-02
+      1.49112    3.464000e-02
+      1.97181    5.113000e-02
+Name: SpringExtension, dtype: float64
+
+Standard errors of means by team and force
+Team  Force  
+fabi  0.00000    0.000802
+      0.49050    0.000609
+      0.99081    0.000771
+      1.49112    0.001062
+      1.97181    0.003328
+Name: StandardError, dtype: float64</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div id="bf61fe1e" class="cell" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean values of teams by force</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>distance_means_by_team_and_force <span class="op">=</span> hooke.groupby(by <span class="op">=</span> [hooke[<span class="st">'Team'</span>], hooke[<span class="st">'Force'</span>]], sort <span class="op">=</span> <span class="va">False</span>)[<span class="st">'Distance_Change'</span>].mean()</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>distance_means_by_team_and_force.name <span class="op">=</span> <span class="st">'SpringExtension'</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Mean values of distance change by team and force:"</span>, distance_means_by_team_and_force.head(), sep <span class="op">=</span> <span class="st">'</span><span class="ch">\n</span><span class="st">'</span>)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>() <span class="co"># empty line</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Standard errors of teams by force</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>distance_stderrors_by_team_and_force <span class="op">=</span> hooke.groupby(by <span class="op">=</span> [hooke[<span class="st">'Team'</span>], hooke[<span class="st">'Force'</span>]], sort <span class="op">=</span> <span class="va">False</span>)[<span class="st">'Distance_Change'</span>].std(ddof <span class="op">=</span> <span class="dv">1</span>).div(np.sqrt(hooke[<span class="st">'Distance_Change'</span>].groupby(by <span class="op">=</span> [hooke[<span class="st">'Team'</span>], hooke[<span class="st">'Force'</span>]], sort <span class="op">=</span> <span class="va">False</span>).size()))</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>distance_stderrors_by_team_and_force.name <span class="op">=</span> <span class="st">'StandardError'</span></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Standard errors of the means by team and force"</span>, distance_stderrors_by_team_and_force.head(), sep <span class="op">=</span> <span class="st">'</span><span class="ch">\n</span><span class="st">'</span>)</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a><span class="co"># graphical representation</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>num_teams <span class="op">=</span> hooke[<span class="st">'Team'</span>].unique().size</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize <span class="op">=</span> (<span class="fl">7.5</span>, <span class="dv">12</span>))</span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_teams):</span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>  plt.subplot(<span class="dv">4</span>, <span class="dv">1</span>, i <span class="op">+</span> <span class="dv">1</span>) <span class="co"># plt.subplot counts from 1</span></span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># scatter plot</span></span>
+<span id="cb34-27"><a href="#cb34-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-28"><a href="#cb34-28" aria-hidden="true" tabindex="-1"></a>  plotting_data <span class="op">=</span> hooke.loc[hooke[<span class="st">'Team'</span>] <span class="op">==</span> hooke[<span class="st">'Team'</span>].unique()[i], :]</span>
+<span id="cb34-29"><a href="#cb34-29" aria-hidden="true" tabindex="-1"></a>  plt.scatter(x <span class="op">=</span> plotting_data[<span class="st">'Distance_Change'</span>], y <span class="op">=</span> plotting_data[<span class="st">'Force'</span>], alpha <span class="op">=</span> <span class="fl">0.6</span>)</span>
+<span id="cb34-30"><a href="#cb34-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-31"><a href="#cb34-31" aria-hidden="true" tabindex="-1"></a>  plt.title(label <span class="op">=</span> hooke[<span class="st">'Team'</span>].unique()[i])</span>
+<span id="cb34-32"><a href="#cb34-32" aria-hidden="true" tabindex="-1"></a>  plt.xlabel(<span class="st">"Spring extension in m"</span>)</span>
+<span id="cb34-33"><a href="#cb34-33" aria-hidden="true" tabindex="-1"></a>  plt.ylabel(<span class="st">"Applied force in N"</span>)</span>
+<span id="cb34-34"><a href="#cb34-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-35"><a href="#cb34-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># # error bars</span></span>
+<span id="cb34-36"><a href="#cb34-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-37"><a href="#cb34-37" aria-hidden="true" tabindex="-1"></a>  distance_means_by_force <span class="op">=</span> plotting_data.groupby(by <span class="op">=</span> plotting_data[<span class="st">'Force'</span>], sort <span class="op">=</span> <span class="va">False</span>)[<span class="st">'Distance_Change'</span>].mean()</span>
+<span id="cb34-38"><a href="#cb34-38" aria-hidden="true" tabindex="-1"></a>  distance_stderrors_by_force <span class="op">=</span> plotting_data.groupby(by <span class="op">=</span> plotting_data[<span class="st">'Force'</span>], sort <span class="op">=</span> <span class="va">False</span>)[<span class="st">'Distance_Change'</span>].std(ddof <span class="op">=</span> <span class="dv">1</span>).div(np.sqrt(plotting_data[<span class="st">'Distance_Change'</span>].groupby(by <span class="op">=</span> plotting_data[<span class="st">'Force'</span>], sort <span class="op">=</span> <span class="va">False</span>).size()))</span>
+<span id="cb34-39"><a href="#cb34-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-40"><a href="#cb34-40" aria-hidden="true" tabindex="-1"></a>  errorbar_container <span class="op">=</span> plt.errorbar(x <span class="op">=</span> distance_means_by_force, y <span class="op">=</span> distance_means_by_force.index, xerr <span class="op">=</span> distance_stderrors_by_force,</span>
+<span id="cb34-41"><a href="#cb34-41" aria-hidden="true" tabindex="-1"></a>  linestyle <span class="op">=</span> <span class="st">'none'</span>, marker <span class="op">=</span> <span class="st">'x'</span>, color <span class="op">=</span> <span class="st">'black'</span>, markersize <span class="op">=</span> <span class="dv">12</span>, elinewidth <span class="op">=</span> <span class="dv">3</span>, ecolor <span class="op">=</span> <span class="st">'red'</span>, capsize <span class="op">=</span> <span class="dv">12</span>)</span>
+<span id="cb34-42"><a href="#cb34-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-43"><a href="#cb34-43" aria-hidden="true" tabindex="-1"></a>  <span class="co"># see: [https://matplotlib.org/stable/api/container_api.html#matplotlib.container.ErrorbarContainer](https://matplotlib.org/stable/api/container_api.html#matplotlib.container.ErrorbarContainer)</span></span>
+<span id="cb34-44"><a href="#cb34-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-45"><a href="#cb34-45" aria-hidden="true" tabindex="-1"></a>  plt.legend([errorbar_container.lines[<span class="dv">0</span>], errorbar_container.lines[<span class="dv">2</span>][<span class="dv">0</span>]],</span>
+<span id="cb34-46"><a href="#cb34-46" aria-hidden="true" tabindex="-1"></a>  [<span class="st">'Mean'</span>, <span class="st">'Standard Error'</span>],</span>
+<span id="cb34-47"><a href="#cb34-47" aria-hidden="true" tabindex="-1"></a>  loc <span class="op">=</span> <span class="st">'upper left'</span>)</span>
+<span id="cb34-48"><a href="#cb34-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-49"><a href="#cb34-49" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb34-50"><a href="#cb34-50" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
+<ul>
+<li>The measurement series of the team <em>die_ahnungslosen</em> matches the expected linear trend.</li>
+<li>For team <em>fabi</em>, there seems to be an error in data collection for the first attached weight (50 grams). It was probably measured as 0 grams by mistake.</li>
+<li>The measurement series of the team <em>kreativköpfe</em> largely follows the expected linear trend.</li>
+<li>The measurement series of the team <em>ma</em> appears to be affected by significant measurement errors, at least for the first four attached weights.</li>
+</ul>
+<p>The measurement series of team <em>ma</em> will be removed from the dataset due to major measurement errors. For team <em>fabi</em>, the measurement for the 50-gram weight will be removed.</p>
+<div id="4715f3e3" class="cell" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>hooke.drop(index <span class="op">=</span> hooke.loc[hooke[<span class="st">'Team'</span>] <span class="op">==</span> <span class="st">'ma'</span>, :].index, inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>hooke.drop(index <span class="op">=</span> hooke.loc[(hooke[<span class="st">'Team'</span>] <span class="op">==</span> <span class="st">'fabi'</span>) <span class="op">&amp;</span> (hooke[<span class="st">'Weight'</span>] <span class="op">==</span> <span class="dv">50</span>), :].index, inplace <span class="op">=</span> <span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<div id="tip-manydatasets" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;63.4: Approach for Large Numbers of Datasets
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When dealing with a large number of datasets, graphical inspection alone can reach its limits. In this case, it is recommended to combine visual and metric-based methods to identify patterns and verify them across many measurements. For example, after a visual inspection of measurement series with extreme values or outliers, all series could be checked to see if the mean spring elongation increases with increasing weight, as expected. Deviating series could then be further checked graphically.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-solution-springconstants" class="level2" data-number="63.4">
+<h2 data-number="63.4" class="anchored" data-anchor-id="sec-solution-springconstants"><span class="header-section-number">63.4</span> Sample Solution: Determining Spring Constants</h2>
+<p>The next step is to determine the spring constants using linear regression.</p>
+<ol start="2" type="1">
+<li><strong>What values can be determined for the spring constants?</strong><br>
+</li>
+<li><strong>Were the measurements performed with the same spring, assuming a confidence level of 90% or 95%?</strong></li>
+</ol>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href=""><span class="math inline">\(\alpha = 0.10\)</span></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href=""><span class="math inline">\(\alpha = 0.05\)</span></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false" href="">Code</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-4" role="tab" aria-controls="tabset-3-4" aria-selected="false" href="">Evaluation</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div id="ba9bd559" class="cell" data-execution_count="25">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+fabi Confidence Level: 0.9
+y = 0.2373 + 34.1048 * x
+r = 0.9907 R2 = 0.9814 p = 0.0000
+Standard error of the slope: 0.4792
+33.309  ≤ 34.105 ≤ 34.901
+
+die_ahnungslosen Confidence Level: 0.9
+y = 0.1798 + 34.9183 * x
+r = 0.9886 R2 = 0.9773 p = 0.0000
+Standard error of the slope: 0.4651
+34.148  ≤ 34.918 ≤ 35.689
+
+kreativkoepfe Confidence Level: 0.9
+y = 0.3180 + 29.7643 * x
+r = 0.9773 R2 = 0.9552 p = 0.0000
+Standard error of the slope: 0.6148
+28.744  ≤ 29.764 ≤ 30.784</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div id="83520c7c" class="cell" data-execution_count="26">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+fabi Confidence level: 0.95
+y = 0.2373 + 34.1048 * x
+r = 0.9907 R2 = 0.9814 p = 0.0000
+Standard error of the slope: 0.4792
+33.154  ≤ 34.105 ≤ 35.056
+
+die_ahnungslosen Confidence level: 0.95
+y = 0.1798 + 34.9183 * x
+r = 0.9886 R2 = 0.9773 p = 0.0000
+Standard error of the slope: 0.4651
+33.998  ≤ 34.918 ≤ 35.838
+
+kreativkoepfe Confidence level: 0.95
+y = 0.3180 + 29.7643 * x
+r = 0.9773 R2 = 0.9552 p = 0.0000
+Standard error of the slope: 0.6148
+28.546  ≤ 29.764 ≤ 30.983</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
+<div id="f1179dce" class="cell" data-execution_count="27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>num_teams <span class="op">=</span> hooke[<span class="st">'Team'</span>].unique().size</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>alpha <span class="op">=</span> <span class="fl">0.10</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_teams):</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  reg_data <span class="op">=</span> hooke.loc[hooke[<span class="st">'Team'</span>] <span class="op">==</span> hooke[<span class="st">'Team'</span>].unique()[i], :]</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  x <span class="op">=</span> reg_data[<span class="st">'Distance_Change'</span>]</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  y <span class="op">=</span> reg_data[<span class="st">'Force'</span>]</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  n <span class="op">=</span> <span class="bu">len</span>(x)</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>, hooke[<span class="st">'Team'</span>].unique()[i], <span class="st">" Confidence Level: "</span>, <span class="dv">1</span> <span class="op">-</span> alpha, sep<span class="op">=</span><span class="st">''</span>)</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>  slope, intercept, rvalue, pvalue, slope_stderr <span class="op">=</span> scipy.stats.linregress(x, y)</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="ss">f"y = </span><span class="sc">{</span>intercept<span class="sc">:.4f}</span><span class="ss"> + </span><span class="sc">{</span>slope<span class="sc">:.4f}</span><span class="ss"> * x</span><span class="ch">\n</span><span class="ss">"</span>,</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>  <span class="ss">f"r = </span><span class="sc">{</span>rvalue<span class="sc">:.4f}</span><span class="ss"> R2 = </span><span class="sc">{</span>rvalue <span class="op">**</span> <span class="dv">2</span><span class="sc">:.4f}</span><span class="ss"> p = </span><span class="sc">{</span>pvalue<span class="sc">:.4f}</span><span class="ch">\n</span><span class="ss">"</span>,</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>  <span class="ss">f"Standard Error of Slope: </span><span class="sc">{</span>slope_stderr<span class="sc">:.4f}</span><span class="ss">"</span>, sep<span class="op">=</span><span class="st">''</span>)</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>slope <span class="op">-</span> scipy<span class="sc">.</span>stats<span class="sc">.</span>t<span class="sc">.</span>ppf(q <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> alpha <span class="op">/</span> <span class="dv">2</span>, df <span class="op">=</span> n <span class="op">-</span> <span class="dv">2</span>) <span class="op">*</span> slope_stderr<span class="sc">:.3f}</span><span class="ss">  ≤ </span><span class="sc">{</span>slope<span class="sc">:.3f}</span><span class="ss"> ≤ </span><span class="sc">{</span>slope <span class="op">+</span> scipy<span class="sc">.</span>stats<span class="sc">.</span>t<span class="sc">.</span>ppf(q <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> alpha <span class="op">/</span> <span class="dv">2</span>, df <span class="op">=</span> n <span class="op">-</span> <span class="dv">2</span>) <span class="op">*</span> slope_stderr<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>alpha <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(num_teams):</span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a>  reg_data <span class="op">=</span> hooke.loc[hooke[<span class="st">'Team'</span>] <span class="op">==</span> hooke[<span class="st">'Team'</span>].unique()[i], :]</span>
+<span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a>  x <span class="op">=</span> reg_data[<span class="st">'Distance_Change'</span>]</span>
+<span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a>  y <span class="op">=</span> reg_data[<span class="st">'Force'</span>]</span>
+<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a>  n <span class="op">=</span> <span class="bu">len</span>(x)</span>
+<span id="cb38-28"><a href="#cb38-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-29"><a href="#cb38-29" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>, hooke[<span class="st">'Team'</span>].unique()[i], <span class="st">" Confidence Level: "</span>, <span class="dv">1</span> <span class="op">-</span> alpha, sep<span class="op">=</span><span class="st">''</span>)</span>
+<span id="cb38-30"><a href="#cb38-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-31"><a href="#cb38-31" aria-hidden="true" tabindex="-1"></a>  slope, intercept, rvalue, pvalue, slope_stderr <span class="op">=</span> scipy.stats.linregress(x, y)</span>
+<span id="cb38-32"><a href="#cb38-32" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="ss">f"y = </span><span class="sc">{</span>intercept<span class="sc">:.4f}</span><span class="ss"> + </span><span class="sc">{</span>slope<span class="sc">:.4f}</span><span class="ss"> * x</span><span class="ch">\n</span><span class="ss">"</span>,</span>
+<span id="cb38-33"><a href="#cb38-33" aria-hidden="true" tabindex="-1"></a>  <span class="ss">f"r = </span><span class="sc">{</span>rvalue<span class="sc">:.4f}</span><span class="ss"> R2 = </span><span class="sc">{</span>rvalue <span class="op">**</span> <span class="dv">2</span><span class="sc">:.4f}</span><span class="ss"> p = </span><span class="sc">{</span>pvalue<span class="sc">:.4f}</span><span class="ch">\n</span><span class="ss">"</span>,</span>
+<span id="cb38-34"><a href="#cb38-34" aria-hidden="true" tabindex="-1"></a>  <span class="ss">f"Standard Error of Slope: </span><span class="sc">{</span>slope_stderr<span class="sc">:.4f}</span><span class="ss">"</span>, sep<span class="op">=</span><span class="st">''</span>)</span>
+<span id="cb38-35"><a href="#cb38-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-36"><a href="#cb38-36" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>slope <span class="op">-</span> scipy<span class="sc">.</span>stats<span class="sc">.</span>t<span class="sc">.</span>ppf(q <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> alpha <span class="op">/</span> <span class="dv">2</span>, df <span class="op">=</span> n <span class="op">-</span> <span class="dv">2</span>) <span class="op">*</span> slope_stderr<span class="sc">:.3f}</span><span class="ss">  ≤ </span><span class="sc">{</span>slope<span class="sc">:.3f}</span><span class="ss"> ≤ </span><span class="sc">{</span>slope <span class="op">+</span> scipy<span class="sc">.</span>stats<span class="sc">.</span>t<span class="sc">.</span>ppf(q <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> alpha <span class="op">/</span> <span class="dv">2</span>, df <span class="op">=</span> n <span class="op">-</span> <span class="dv">2</span>) <span class="op">*</span> slope_stderr<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<div id="tabset-3-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-4-tab">
+<p>The point estimate of the spring constant for Team fabi 34.105 lies within the 95% confidence interval of Team die_ahnungslosen’ measurement 33.998 ≤ 34.918 ≤ 35.838. However, the point estimate of the spring constant for Team fabi 34.105 <strong>does not lie within the 90% confidence interval</strong> of Team die_ahnungslosen’ measurement 34.148 ≤ 34.918 ≤ 35.689.</p>
+<p>Regardless of the chosen confidence level, the point estimate of the spring constant for Team kreativkoepfe 29.764 does not lie within the confidence intervals of the other two teams.</p>
+<div id="wrn-results" class="callout callout-style-simple callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning&nbsp;63.2: Results
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Depending on the chosen approach, different outcomes are possible, for example by removing individual values classified as outliers or by treating Team fabi’s measurement series for the attached 50-gram weight differently.</p>
+</div>
+</div>
+
+
+</div>
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../../books/m-sensordatenanalyse-en/skript/fehlerrechnung.html" class="pagination-link" aria-label="Error Calculation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">62</span>&nbsp; <span class="chapter-title">Error Calculation</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../../books/m-sensordatenanalyse-en/skript/kalibrierung.html" class="pagination-link" aria-label="Calibration">
+        <span class="nav-page-text"><span class="chapter-number">64</span>&nbsp; <span class="chapter-title">Calibration</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en/blob/main/books/m-sensordatenanalyse-en/skript/übung-hooke.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

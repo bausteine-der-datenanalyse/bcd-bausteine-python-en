@@ -1,0 +1,2555 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>62&nbsp; Error Calculation – Python Building Blocks</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../books/m-sensordatenanalyse-en/skript/übung-hooke.html" rel="next">
+<link href="../../../books/m-sensordatenanalyse-en/skript/lineare-parameterschätzung.html" rel="prev">
+<link href="../../../books/shared-media/logo/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-c117ac82edef17e21c58c619b1d4b9e4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../books/m-sensordatenanalyse-en/index.html">m-sensordatenanalyse-en</a></li><li class="breadcrumb-item"><a href="../../../books/m-sensordatenanalyse-en/skript/fehlerrechnung.html"><span class="chapter-number">62</span>&nbsp; <span class="chapter-title">Error Calculation</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../../../index.html" class="sidebar-logo-link">
+      <img src="../../../books/shared-media/logo/logo_with_text.svg" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../../books/shared-media/logo/logo_with_text.svg" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../../">Python Building Blocks</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-pseudocode-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pseudocode-en/Pseudocode.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Pseudocode Tool Module</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-minimal-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python Tool Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Understanding Data Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/flusskontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Decisions and Loops</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/listen_iterationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Storing Multiple Values</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/funktionen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Reusable Code with Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-minimal-en/skript/lesen_schreiben.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Working with Files</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python Tool Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction: Data Analysis with Python</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Data Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/funktionen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Functions: Basics</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/flusskontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Control Flow</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/sammeltypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Collection Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/funktionen-definieren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Defining Your Own Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/dateien-lesen-und-schreiben.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Reading and writing files</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/module-und-pakete-importieren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Importing Modules and Packages</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-en/skript/daswichtigste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">The Essentials</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-numpy-grundlagen-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/introduction_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to NumPy</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_creation_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Creating NumPy Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_info_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Size, Structure, and Type</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_calculation_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Working with Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_slicing_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Slicing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_manipulation_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Array Manipulation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_read_n_write_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Reading and Writing Files</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/array_images_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Working with Images</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/skript/assessment_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Learning Objective Check</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/uebungen/uebung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Exercise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-numpy-grundlagen-en/klausurfragen/klausurfragen_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Exam Questions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-pandas-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tool Module Pandas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/operationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Operations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/plotting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Plot Creation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Data Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/datetime.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Time Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-pandas-en/skript/dateien.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Reading and Writing Files</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-matplotlib-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Matplotlib Tool Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Introduction to Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/basic_plot_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Plot Types in Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/adapting_plots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Customization and Adapting of Plots in Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/advanced_techniques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Advanced Techniques in Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/w-python-matplotlib-en/skript/scientific_plotting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Best Practices in Matplotlib: Common Mistakes and Improvements</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-numerik-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-numerik-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-numerik-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Numerical Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-numerik-en/skript/intro_integrale.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Integration</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-numerik-en/skript/intro_ableitungen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Differentiation</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-einlesen-strukturierter-datensaetze-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reading Structured Datasets Method Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/grundlagen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Fundamentals: Characteristics of Datasets</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/datentypoperationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Data Type-Dependent Operations and Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/numpy-pandas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">The NumPy and Pandas modules</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/zeitreihen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">Time Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/marktdaten-oesterreich.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">47</span>&nbsp; <span class="chapter-title">Download Austrian Market Transparency Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/modul-glob.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">48</span>&nbsp; <span class="chapter-title">Accessing multiple local files: <code>glob</code> module</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/maskierte-arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">49</span>&nbsp; <span class="chapter-title">Masked Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/dateiformate.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">50</span>&nbsp; <span class="chapter-title">Scientific File Formats</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/daswichtigste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">51</span>&nbsp; <span class="chapter-title">Key Takeaways (possibly as a video)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-einlesen-strukturierter-datensaetze-en/skript/lernzielkontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">52</span>&nbsp; <span class="chapter-title">Learning Assessment</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-datenfitting-und-optimierung-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Fitting and Optimization Method Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">53</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/interpolation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">54</span>&nbsp; <span class="chapter-title">Interpolation – Filling in the Gaps</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/fitting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">55</span>&nbsp; <span class="chapter-title">Fitting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/splines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">56</span>&nbsp; <span class="chapter-title">Splines</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/glaetten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">57</span>&nbsp; <span class="chapter-title">Trend Smoothing – Reducing Noise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-datenfitting-und-optimierung-en/skript/uebungen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">58</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-sensordatenanalyse-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sensor Data Analysis Method Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">59</span>&nbsp; <span class="chapter-title">The Principle of Measurements</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/normalverteilung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">60</span>&nbsp; <span class="chapter-title">The Normal Distribution</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/lineare-parameterschätzung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">61</span>&nbsp; <span class="chapter-title">Linear Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/fehlerrechnung.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">62</span>&nbsp; <span class="chapter-title">Error Calculation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/übung-hooke.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">63</span>&nbsp; <span class="chapter-title">Exercise: Hooke’s Law</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-sensordatenanalyse-en/skript/kalibrierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">64</span>&nbsp; <span class="chapter-title">Calibration</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-analyse-von-zeitdaten-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/01-einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">65</span>&nbsp; <span class="chapter-title">1 Classification: Time Series as a Measurement Process</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/02-vorverarbeitung-validierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">66</span>&nbsp; <span class="chapter-title">2 Preprocessing &amp; Validation of a Time Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/03-resampling-alignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">67</span>&nbsp; <span class="chapter-title">3 Resampling &amp; Alignment</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/04-glaettung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">68</span>&nbsp; <span class="chapter-title">4 Smoothing &amp; Noise Reduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/05-trend-saison.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">69</span>&nbsp; <span class="chapter-title">5 Trend &amp; Season</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/06-lags-autokorrelation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">70</span>&nbsp; <span class="chapter-title">6 Lags &amp; Autocorrelation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/07-anomalien.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">71</span>&nbsp; <span class="chapter-title">7 Anomalies</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/08-forecasting-baselines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">72</span>&nbsp; <span class="chapter-title">8 Forecasting Baselines &amp; Evaluation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/09-lernzielkontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">73</span>&nbsp; <span class="chapter-title">9 Learning Objectives Check</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/10-uebung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">74</span>&nbsp; <span class="chapter-title">Exercise 10: Time Series Workflow</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/m-analyse-von-zeitdaten-en/skript/11-klausurfragen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">75</span>&nbsp; <span class="chapter-title">11 Exam Questions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true">
+ <span class="menu-text">a-energiedatenanalyse-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-energiedatenanalyse-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-energiedatenanalyse-en/skript/energiedatenanalyse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">76</span>&nbsp; <span class="chapter-title">Energy Data Analysis</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
+ <span class="menu-text">a-auswertung-fds-daten-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/skript/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">77</span>&nbsp; <span class="chapter-title">Introduction to ASET</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/skript/aset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">78</span>&nbsp; <span class="chapter-title">Available safe egress time</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/skript/fdsreader.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">79</span>&nbsp; <span class="chapter-title">Fdsreader</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/uebungen/uebung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">80</span>&nbsp; <span class="chapter-title">uebung.html</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../books/a-auswertung-fds-daten-en/klausurfragen/klausurfragen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">81</span>&nbsp; <span class="chapter-title">klausurfragen.html</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#before-we-begin" id="toc-before-we-begin" class="nav-link active" data-scroll-target="#before-we-begin"><span class="header-section-number">62.1</span> Before we begin</a></li>
+  <li><a href="#types-of-errors" id="toc-types-of-errors" class="nav-link" data-scroll-target="#types-of-errors"><span class="header-section-number">62.2</span> Types of Errors</a></li>
+  <li><a href="#fundamental-concepts-according-to-din-1319" id="toc-fundamental-concepts-according-to-din-1319" class="nav-link" data-scroll-target="#fundamental-concepts-according-to-din-1319"><span class="header-section-number">62.3</span> Fundamental Concepts According to DIN 1319</a></li>
+  <li><a href="#absolute-and-relative-errors" id="toc-absolute-and-relative-errors" class="nav-link" data-scroll-target="#absolute-and-relative-errors"><span class="header-section-number">62.4</span> Absolute and Relative Errors</a></li>
+  <li><a href="#maximum-error" id="toc-maximum-error" class="nav-link" data-scroll-target="#maximum-error"><span class="header-section-number">62.5</span> Maximum Error</a></li>
+  <li><a href="#significant-figures" id="toc-significant-figures" class="nav-link" data-scroll-target="#significant-figures"><span class="header-section-number">62.6</span> Significant Figures</a></li>
+  <li><a href="#methods-of-error-analysis" id="toc-methods-of-error-analysis" class="nav-link" data-scroll-target="#methods-of-error-analysis"><span class="header-section-number">62.7</span> Methods of Error Analysis</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en/blob/main/books/m-sensordatenanalyse-en/skript/fehlerrechnung.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../books/m-sensordatenanalyse-en/index.html">m-sensordatenanalyse-en</a></li><li class="breadcrumb-item"><a href="../../../books/m-sensordatenanalyse-en/skript/fehlerrechnung.html"><span class="chapter-number">62</span>&nbsp; <span class="chapter-title">Error Calculation</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">62</span>&nbsp; <span class="chapter-title">Error Calculation</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="border quarto-layout-panel" data-layout="[[5, 90, 5], [1]]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 90.0%;justify-content: flex-start;">
+<p>“Experimentation is a thorny path, and one is never completely certain.”</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
+<p>Wagner, Paul. 2015. “Introduction to Physics I. PH I - 04 - Measurement Accuracy / Error Calculation Part 1.” University of Vienna Physics, <a href="https://youtu.be/sF2_1YNiWXI?feature=shared&amp;t=245">YouTube</a>, timestamp 04:05</p>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<p>No measuring instrument is exact, and not all environmental influences can be controlled. The goal of error calculation is to quantify the resulting deviation of the measured values from the true value of a quantity.</p>
+<section id="before-we-begin" class="level2" data-number="62.1">
+<h2 data-number="62.1" class="anchored" data-anchor-id="before-we-begin"><span class="header-section-number">62.1</span> Before we begin</h2>
+<p>However, the topic comes with some challenges that make initial engagement and independent study difficult.</p>
+<section id="the-concept-of-error" class="level3" data-number="62.1.1">
+<h3 data-number="62.1.1" class="anchored" data-anchor-id="the-concept-of-error"><span class="header-section-number">62.1.1</span> The Concept of Error</h3>
+<p>Although the word “error” appears in the title of this chapter, it has not been a standardized term since 1995. DIN 1319 standardizes fundamental concepts and procedures in metrology. The standard replaces the term “error” with <strong>measurement deviation</strong> and <strong>measurement uncertainty</strong>, while also encompassing a variety of related definitions, notes, and remarks.</p>
+<p>This chapter uses the terms commonly employed in error analysis to connect them to the standardized terminology. Generally, the standardized terms are used. To simplify the topic, this chapter is limited to measurements with:</p>
+<ul>
+<li>uncorrelated input quantities and</li>
+<li>negligible uncertainty in the systematic measurement deviation.</li>
+</ul>
+</section>
+<section id="confidence-level" class="level3" data-number="62.1.2">
+<h3 data-number="62.1.2" class="anchored" data-anchor-id="confidence-level"><span class="header-section-number">62.1.2</span> Confidence Level</h3>
+<p>Repeated measurements contain a random component of statistical uncertainty. Statistical uncertainty can only be expressed with a probability of confidence. The calculation of confidence intervals was covered in <a href="normalverteilung.html" class="quarto-xref"><span>Chapter 60</span></a> and <a href="lineare-parameterschätzung.html" class="quarto-xref"><span>Chapter 61</span></a>.</p>
+<p>The first step in statistical analysis is to define the confidence level. From this, the multiples of the standard deviation <span class="math inline">\(s\)</span> or the correction factor <span class="math inline">\(t\)</span> to be used are derived. Different disciplines follow different conventions.</p>
+<div class="quarto-layout-panel" data-layout="[5, 90, 5]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 90.0%;justify-content: flex-start;">
+<p>“In physics and surveying, a statistical confidence of 68.3% is sufficient, hence t = 1 […] (In industry t = 2, in biology t = 3 is preferred.)” <span class="citation" data-cites="HS-Aalen-2016">[@HS-Aalen-2016 p. 4]</span></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 5.0%;justify-content: flex-start;">
+<p>&nbsp;</p>
+</div>
+</div>
+</div>
+<p>In engineering literature, this step is not always explicitly stated (since <span class="math inline">\(1 s\)</span> or <span class="math inline">\(1 t\)</span> is commonly used). DIN 1319 states: “It is customary to specify the confidence level (<span class="math inline">\(1 - \alpha\)</span>) as a percentage, usually <span class="math inline">\(\alpha = 0.05\)</span> (confidence level: 95%).” <span class="citation" data-cites="DIN1319-1">[@DIN1319-1, p. 17]</span></p>
+</section>
+<section id="notation" class="level3" data-number="62.1.3">
+<h3 data-number="62.1.3" class="anchored" data-anchor-id="notation"><span class="header-section-number">62.1.3</span> Notation</h3>
+<p>The notation is complex: alongside the Latin and Greek alphabets, the Cyrillic alphabet is also used. Nevertheless, symbol duplication for formula symbols and units cannot always be avoided (the spring constant is particularly unfortunate in this respect).</p>
+<p>Notation is also inconsistently applied. While DIN 1319 uses <span class="math inline">\(e\)</span> for measurement deviations, literature often uses <span class="math inline">\(\epsilon\)</span> (epsilon) and <span class="math inline">\(\Delta\)</span> (Delta), with the latter also used for maximum error.</p>
+<p>By the way: the <span class="math inline">\(e\)</span> in DIN stands for “error” ( ¯\_(ツ)_/¯ ).</p>
+</section>
+</section>
+<section id="types-of-errors" class="level2" data-number="62.2">
+<h2 data-number="62.2" class="anchored" data-anchor-id="types-of-errors"><span class="header-section-number">62.2</span> Types of Errors</h2>
+<p>Measurements can exhibit different types of deviations from the true value of the quantity. The most common classification is into gross, systematic, and random <em>errors</em>. According to DIN 1319, it is better to speak of systematic and random measurement deviations. Gross errors are not covered by the standard, and the term “error” is appropriate here.</p>
+<ul>
+<li><p>Systematic measurement deviations: constant deviations under identical conditions, i.e., with the same magnitude and sign, caused by instrument inaccuracies, for example:</p>
+<ul>
+<li>dependent on temperature</li>
+<li>faulty calibration</li>
+<li>aging of components</li>
+<li>type of measurement, e.g., reading and scale errors, measurement interval in digital instruments (<a href="https://en.wikipedia.org/wiki/Quantization_error">quantization error</a>)</li>
+</ul></li>
+<li><p>Random measurement deviations: statistical spread of values around the expectation, for example:</p>
+<ul>
+<li>sampling error</li>
+<li>reading errors</li>
+</ul></li>
+<li><p>Gross errors: distort the measurement result, for example due to:</p>
+<ul>
+<li>incorrect experimental setup</li>
+<li>unsuitable instruments</li>
+<li>incorrect reading, e.g., ignoring the <a href="https://en.wikipedia.org/wiki/Settling_time">settling time</a> or inattentiveness, such as weighing the container</li>
+</ul></li>
+</ul>
+<p><span class="citation" data-cites="Hempel-2016 EdenGebhard-2024">[@Hempel-2016, p. 1-2; @EdenGebhard-2024, p. 17-18]</span></p>
+<p>Some actions, like reading a value, can be associated with multiple error types:</p>
+<ul>
+<li>Inattentive reading and careless mistakes are gross errors,</li>
+<li>angle- and position-dependent errors like <a href="https://en.wikipedia.org/wiki/Parallax_error">parallax error</a> are systematic deviations,</li>
+<li>errors due to limited visual resolution lead to random deviations.</li>
+</ul>
+<div id="tip-handlingerrors" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;62.1: Handling Different Types of Measurement Deviations
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p>Gross errors: discard affected values and repeat the measurement.</p></li>
+<li><p>Systematic deviations: corrected if known.</p></li>
+<li><p>Random deviations: quantify the statistical spread around the expectation.</p></li>
+</ol>
+<p>Some systematic and random deviations can only be reduced with significant effort (more precise instruments, larger number of measurements). The effort must be weighed against the gain in accuracy: Is the measurement result acceptable with the stated uncertainty?</p>
+<p>(<span class="citation" data-cites="Hempel-2016">@Hempel-2016</span>, p.&nbsp;2)</p>
+</div>
+</div>
+</section>
+<section id="fundamental-concepts-according-to-din-1319" class="level2" data-number="62.3">
+<h2 data-number="62.3" class="anchored" data-anchor-id="fundamental-concepts-according-to-din-1319"><span class="header-section-number">62.3</span> Fundamental Concepts According to DIN 1319</h2>
+<p>DIN 1319 standardizes fundamental concepts and procedures in metrology.</p>
+<ul>
+<li>Part 1 DIN 1319-1 and Part 2 DIN 1319-2 define basic metrology terms and measurement instruments.</li>
+<li>Part 3 DIN 1319-3 deals with evaluating measurements of a <em>single</em> quantity and its measurement uncertainty. It also applies when the quantity is calculated from other quantities via a given function (e.g., velocity <span class="math inline">\(v\)</span> as distance <span class="math inline">\(s\)</span> divided by time <span class="math inline">\(t\)</span>).</li>
+<li>Part 4 DIN 1319-4 addresses reporting measurement results and their uncertainties when quantities are calculated from other quantities, e.g., via a least squares fit.</li>
+</ul>
+<p>DIN 1319-4 deals with calculating a result <span class="math inline">\(Y\)</span> through a function, e.g., a linear regression. The case in the previous chapter, determining the spring constant via regression coefficient <span class="math inline">\(\beta_1\)</span>, is not addressed in the standard and thus not presented here.</p>
+<p>The learning goal of this chapter is to explain the following figure from DIN 1319.</p>
+<div class="border">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="00-bilder/fehlerarten-nach-DIN-1319.png" class="img-fluid figure-img"></p>
+<figcaption>Measurement result according to DIN 1319</figcaption>
+</figure>
+</div>
+<p><span class="citation" data-cites="DIN1319-1">[@DIN1319-1, p. 30]</span></p>
+</div>
+<p>&nbsp;</p>
+<p>The three most important fundamental concepts are:</p>
+<ol type="1">
+<li>Measurement deviation,</li>
+<li>Measurement uncertainty, and</li>
+<li>Complete measurement result.</li>
+</ol>
+<section id="measurement-deviation" class="level3" data-number="62.3.1">
+<h3 data-number="62.3.1" class="anchored" data-anchor-id="measurement-deviation"><span class="header-section-number">62.3.1</span> Measurement Deviation</h3>
+<p>In error analysis, the term “error” generally refers to measurement deviation per DIN 1319, i.e., the <em>actual deviation</em> of a single measurement or the mean of a series of measurements (uncorrected measurement result) from the true value.</p>
+<div id="imp-measurementdeviation" class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important&nbsp;62.1: Measurement Deviation According to DIN 1319
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Measurement deviation is: “the deviation of a value obtained from measurements and assigned to a quantity […] from the true value […]. If <span class="math inline">\(m\)</span> is the value assigned to the quantity and <span class="math inline">\(x_w\)</span> the true value, then the measurement deviation of the assigned value is <span class="math inline">\(m - x_w\)</span> […].” <span class="citation" data-cites="DIN1319-1">[@DIN1319-1, p. 12]</span></p>
+</div>
+</div>
+<p>The deviation of the <strong>uncorrected measurement result</strong> consists additively of the random deviation <span class="math inline">\(e_r\)</span> and systematic deviation <span class="math inline">\(e_s\)</span>.</p>
+<ul>
+<li>Systematic deviation is the difference between the expected value <span class="math inline">\(\mu\)</span> and the true value <span class="math inline">\(x_w\)</span>: <span class="math inline">\(e_s = \mu - x_w\)</span></li>
+<li>The systematic deviation <span class="math inline">\(e_s\)</span> consists of a known part <span class="math inline">\(e_{s,b}\)</span> and an unknown part <span class="math inline">\(e_{s,u}\)</span>.</li>
+<li>The known systematic deviation <span class="math inline">\(e_{s,b}\)</span>, when applied with opposite sign <span class="math inline">\(- e_{s,b}\)</span>, is called a <em>correction</em>.</li>
+</ul>
+<p>The <strong>(corrected) measurement result</strong> <span class="math inline">\(\bar{x}_E\)</span> is the arithmetic mean of a series of measurements <span class="math inline">\(\bar{x}\)</span> corrected for the known systematic measurement deviation <span class="math inline">\(e_{s,b}\)</span>, and it is used as an estimator of the true value <span class="math inline">\(x_w\)</span>. <span class="math inline">\(\bar{x}_E = \bar{x} - e_{s,b}\)</span></p>
+<p><span class="citation" data-cites="DIN1319-1">[@DIN1319-1, p. 11-13]</span></p>
+</section>
+<section id="measurement-uncertainty" class="level3" data-number="62.3.2">
+<h3 data-number="62.3.2" class="anchored" data-anchor-id="measurement-uncertainty"><span class="header-section-number">62.3.2</span> Measurement Uncertainty</h3>
+<p>The true value is generally unknown, so the actual deviation is also unknown. Only an <em>estimate from the measurements</em>, the measurement uncertainty, can be stated. In a broader sense, “error” refers to measurement uncertainty per DIN 1319.</p>
+<div id="imp-measurementuncertainty" class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important&nbsp;62.2: Measurement Uncertainty According to DIN 1319
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>“A quantity obtained from measurements […] used together with the measurement result […] to characterize a <strong>range of values</strong> for the true value of the quantity […]” <span class="citation" data-cites="DIN1319-1">[@DIN1319-1, p. 14, emphasis added]</span></p>
+<p>While measurement deviation is a single value, uncertainty specifies a range: “Measurement uncertainty must be distinguished from measurement deviation. The latter is only the difference between a value assigned to the quantity […] and the true value. Measurement deviation can be zero without being known. This ignorance is expressed in a measurement uncertainty greater than zero.” <span class="citation" data-cites="DIN1319-3">[@DIN1319-3, p. 3]</span></p>
+</div>
+</div>
+<p>Measurement uncertainty of a quantity <span class="math inline">\(Y\)</span> consists of the random deviation <span class="math inline">\(e_r\)</span> and the uncertainty of the systematic deviation <span class="math inline">\(u(e_s)\)</span>.</p>
+<p><strong>Random Deviation</strong></p>
+<p>If a measured quantity <span class="math inline">\(Y = y(x)\)</span> is determined through multiple direct measurements, the measured values <span class="math inline">\(x_i\)</span> randomly scatter around their expected value <span class="math inline">\(\mu\)</span> with a standard deviation <span class="math inline">\(\sigma\)</span>. The expected value <span class="math inline">\(\mu\)</span> and the standard deviation <span class="math inline">\(\sigma\)</span> are usually unknown and are estimated from the measured values using the arithmetic mean <span class="math inline">\(\bar x\)</span> and the empirical standard deviation <span class="math inline">\(s_{n-1}\)</span>. (see <a href="einleitung.html" class="quarto-xref"><span>Chapter 59</span></a>)</p>
+<p>The uncertainty of the random scatter is represented by the empirical standard deviation of the mean:</p>
+<p><span class="math display">\[
+u(\bar x) = \frac{s_{n-1}}{\sqrt{N}} ~ = ~ \sqrt{\frac{1}{N(N-1)} \sum_{i=1}^{N}(x_i - \bar{x})^2}
+\]</span></p>
+<p><span class="citation" data-cites="DIN1319-3">[@DIN1319-3, Equation (4), p. 5, notation adjusted]</span></p>
+<p><strong>systematic measurement error</strong></p>
+<p>The systematic measurement error <span class="math inline">\(e_s\)</span> consists of a known component <span class="math inline">\(e_{s,b}\)</span> and an unknown component <span class="math inline">\(e_{s,u}\)</span>. Since the unknown component cannot be determined, the total systematic measurement error is estimated using the known systematic error <span class="math inline">\(e_{s,b}\)</span>. This leads to an uncertainty about the actual total systematic measurement error <span class="math inline">\(u(e_s)\)</span>. This uncertainty exists even if the known systematic measurement error <span class="math inline">\(e_{s,b}\)</span> is zero, because the unknown component <span class="math inline">\(e_{s,u}\)</span> may be non-zero.</p>
+<p>DIN 1319 distinguishes two cases, depending on whether the uncertainty <span class="math inline">\(u(e_s)\)</span> is considered negligible or not. In this chapter, we assume the uncertainty <span class="math inline">\(u(e_s)\)</span> is negligible (for the second case, see the example).</p>
+<div id="nte-uncertaintynotnegligible" class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note&nbsp;62.1: <span class="math inline">\(u(e_s)\)</span> Not Negligible
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>If the systematic deviation uncertainty is non-negligible, DIN 1319-3 refers to calculation rules in section 6.2.5, not discussed here. (<span class="citation" data-cites="DIN1319-3">@DIN1319-3</span>, p.&nbsp;5-6)</p>
+<p>The uncertainty of the corrected result is the quadratic combination of random and systematic uncertainties:</p>
+<p><span class="math display">\[
+u(y) = \sqrt{u^2(\bar x) + u^2(e_s)}
+\]</span></p>
+<p><span class="citation" data-cites="DIN1319-3">[@DIN1319-3, Eq. (8), p. 6, notation adapted]</span></p>
+<div id="wrn-notation2" class="callout callout-style-simple callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning&nbsp;62.1: Notation in DIN 1319
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Random deviation is denoted as <span class="math inline">\(u^2(x_1)\)</span> instead of <span class="math inline">\(u^2(\bar x)\)</span>, and systematic uncertainty as <span class="math inline">\(u^2(x_2)\)</span> instead of <span class="math inline">\(u^2(e_s)\)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="complete-measurement-result" class="level3" data-number="62.3.3">
+<h3 data-number="62.3.3" class="anchored" data-anchor-id="complete-measurement-result"><span class="header-section-number">62.3.3</span> Complete Measurement Result</h3>
+<p>The <strong>corrected measurement result</strong> <span class="math inline">\(\bar{x}_E = y\)</span> (in DIN 1319, the notation changes from <span class="math inline">\(\bar{x}_E\)</span> to <span class="math inline">\(y\)</span>) is calculated by correcting the known systematic measurement deviation:</p>
+<p><span class="math display">\[
+y = \bar x - e_{s,b}
+\]</span></p>
+<p><span class="citation" data-cites="DIN1319-3">[@DIN1319-3, Equation (7), p. 6, notation adjusted]</span></p>
+<p>The <strong>complete measurement result</strong> <span class="math inline">\(Y\)</span> consists of the corrected measurement result and an indication of the measurement uncertainty, e.g., in the form:</p>
+<p><span class="math display">\[
+Y = y \pm u(y)
+\]</span></p>
+<p><span class="citation" data-cites="DIN1319-3">[@DIN1319-3, Equation (9), p. 6]</span></p>
+<p><em>Additionally</em>, a confidence interval (also called confidence range or confidence level) can be specified along with the complete measurement result. We have already introduced the calculation of confidence intervals in Chapter <a href="normalverteilung.html" class="quarto-xref"><span>Chapter 60</span></a>.</p>
+<p><span class="math display">\[
+y - t \cdot u(y) \le Y \le y + t \cdot u(y)
+\]</span></p>
+<p><span class="citation" data-cites="DIN1319-3">[@DIN1319-3, Equation (14), p. 7]</span></p>
+<p>The choice of a confidence interval is discretionary. DIN 1319 states: “It is customary to specify the confidence level (<span class="math inline">\(1 - \alpha\)</span>) as a percentage, with <span class="math inline">\(\alpha = 0.05\)</span> (confidence level: 95 %) most commonly used.” <span class="citation" data-cites="DIN1319-1">[@DIN1319-1, p. 17]</span> “This 95 % confidence level should be used, but not a higher one.” <span class="citation" data-cites="DIN1319-3">[@DIN1319-3, p. 7]</span></p>
+<p>For example, this yields:</p>
+<p><span class="math display">\[
+y - t_{\alpha / 2} \cdot \frac{s_{n-1}}{\sqrt{n}} \le Y \le y + t_{\alpha / 2} \cdot \frac{s_{n-1}}{\sqrt{n}}
+\]</span></p>
+<div id="wrn-notation1" class="callout callout-style-simple callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning&nbsp;62.2: Notation in DIN 1319
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The arithmetic mean of a series is denoted <span class="math inline">\(\bar{v}\)</span> instead of <span class="math inline">\(\bar{x}\)</span>.</p>
+</div>
+</div>
+</section>
+<section id="overview" class="level3" data-number="62.3.4">
+<h3 data-number="62.3.4" class="anchored" data-anchor-id="overview"><span class="header-section-number">62.3.4</span> Overview</h3>
+<p>DIN 1319 defines a number of additional terms, which are compiled in the following box together with the most important basic terms.</p>
+<div id="imp-DIN1319" class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important&nbsp;62.3: Basic Terms According to DIN 1319
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Measurement Deviation</strong>: “Deviation of a value obtained from measurements and assigned to the measurand […] from the true value […]. If <span class="math inline">\(m\)</span> is the value assigned to the measurand and <span class="math inline">\(x_w\)</span> is the true value, then the measurement deviation of the assigned value is <span class="math inline">\(m - x_w\)</span> […].” <span class="citation" data-cites="DIN1319-1">[@DIN1319-1, p. 12]</span></p>
+<ul>
+<li>The measurement deviation of the <strong>uncorrected measurement result</strong> consists additively of the random measurement deviation <span class="math inline">\(e_r\)</span> and the systematic measurement deviation <span class="math inline">\(e_s\)</span>.</li>
+<li>The systematic measurement deviation <span class="math inline">\(e_s\)</span> consists of a known part <span class="math inline">\(e_{s,b}\)</span> and an unknown part <span class="math inline">\(e_{s,u}\)</span>.</li>
+<li>The systematic measurement deviation is the difference between the expected value <span class="math inline">\(\mu\)</span> and the true value <span class="math inline">\(x_w\)</span>. <span class="math inline">\(e_s = \mu - x_w\)</span></li>
+<li>The known systematic measurement deviation <span class="math inline">\(e_{s,b}\)</span>, when applied with the opposite sign <span class="math inline">\(- e_{s,b}\)</span>, is called a <em>correction</em>.</li>
+</ul>
+<p>The <strong>measurement result</strong> <span class="math inline">\(\bar{x}_E\)</span> is the arithmetic mean of a series of measurements <span class="math inline">\(\bar{x}\)</span> corrected for the known systematic measurement deviation <span class="math inline">\(e_{s,b}\)</span>, used as an estimator for the expected value <span class="math inline">\(\mu\)</span>.<br>
+<span class="math inline">\(\bar{x}_E = \bar{x} - e_{s,b}\)</span></p>
+<p><span class="citation" data-cites="DIN1319-1">[@DIN1319-1, pp. 11-13]</span></p>
+<p><strong>Measurement Uncertainty</strong> <span class="math inline">\(u\)</span> or <span class="math inline">\(u(y)\)</span>: “Quantity derived from measurements […] and used together with the measurement result […] to characterize a range of values for the true value of the measurand […]” <span class="citation" data-cites="DIN1319-1">[@DIN1319-1, p. 14]</span></p>
+<ul>
+<li><p><strong>Standard measurement uncertainty</strong>, or simply standard uncertainty, is used when the measurement uncertainty is expressed by a standard deviation. <span class="citation" data-cites="DIN1319-3">[@DIN1319-3, p. 3]</span></p></li>
+<li><p><strong>Expanded measurement uncertainty</strong> <span class="math inline">\(U(y) = k \cdot u(y)\)</span>: Range that likely contains the true value of the measurand. The expansion factor <span class="math inline">\(k\)</span> should be set between 2 and 3, with <span class="math inline">\(k = 2\)</span> preferred. The expansion factor <span class="math inline">\(k\)</span> should be reported so that the standard measurement uncertainty <span class="math inline">\(u(y) = U(y) / k\)</span> can be determined. <span class="citation" data-cites="DIN1319-3">[@DIN1319-3, p. 7]</span><br>
+<em>Note: The expanded measurement uncertainty differs from a confidence interval in that no normal distribution is assumed – it is simply a factor ‘to be on the safe side’ that the true value is within the given range.</em></p></li>
+</ul>
+<p>The <strong>complete measurement result</strong> is the measurement result with quantitative information about the measurement uncertainty <span class="math inline">\(u\)</span>. <span class="math inline">\(x = \bar{x}_E \pm u\)</span>. <span class="citation" data-cites="DIN1319-1">[@DIN1319-1, p. 16]</span></p>
+<ul>
+<li><p>The <strong>confidence range</strong> <span class="math inline">\(\bar x - t \cdot u(y) \le Y \le \bar x + t \cdot u(y)\)</span> can additionally be provided along with the complete measurement result.</p>
+<ul>
+<li>If the systematic measurement deviation is known and has been corrected, the true value of the measurand <span class="math inline">\(Y\)</span> lies within the confidence range.</li>
+<li>If the systematic measurement deviation is unknown, the expected value <span class="math inline">\(\mu\)</span> of the distribution lies within the confidence range. <span class="citation" data-cites="DIN1319-3">[@DIN1319-3, p. 7]</span></li>
+</ul>
+<p><em>Note: In the DIN standard, the arithmetic mean of a measurement series is written as <span class="math inline">\(\bar{v}\)</span> instead of <span class="math inline">\(\bar{x}\)</span>.</em></p></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="absolute-and-relative-errors" class="level2" data-number="62.4">
+<h2 data-number="62.4" class="anchored" data-anchor-id="absolute-and-relative-errors"><span class="header-section-number">62.4</span> Absolute and Relative Errors</h2>
+<p>In error analysis, a distinction is made between absolute and relative <em>errors</em>. It is more precise to speak of absolute and relative measurement uncertainties.</p>
+<ul>
+<li><p>The <strong>absolute measurement uncertainty</strong> <span class="math inline">\(u\)</span> is given in the unit of the measured quantity: <span class="math inline">\(u(m) = 0.2~kg\)</span>. The complete measurement result is written as: <span class="math inline">\(m = 5.0 \pm 0.2~kg\)</span> or <span class="math inline">\(m = 5.0~kg \pm 0.2~kg\)</span>.</p></li>
+<li><p>The <strong>relative measurement uncertainty</strong> <span class="math inline">\(u_{rel}(m) = \frac{u(m)}{| m |}\)</span> is either given in the product form as <span class="math inline">\(m \cdot (1 \pm \frac{u(m)}{| m |})\)</span>, for example:</p>
+<p><span class="math inline">\(m = 5.0~kg \cdot \left(1 \pm \frac{0.2~kg}{5.0~kg}\right) = 5.0~kg \cdot (1 \pm 0.04)\)</span></p>
+<p>Alternatively, the relative measurement uncertainty can be expressed as a percentage: <span class="math inline">\(u_{rel}(m) = \frac{u(m)}{| m |} \cdot 100~\%\)</span>, for example:</p>
+<p><span class="math inline">\(m = 5.0~kg \pm 4~\%\)</span>.</p></li>
+</ul>
+<p><span class="citation" data-cites="DIN1319-1 DIN1319-3">[@DIN1319-1, pp. 9-10, 16; @DIN1319-3, p. 10]</span></p>
+<div id="wrn-notation" class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning&nbsp;62.3: (Alternative) Notations
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In DIN 1319, measurement deviations are denoted by <span class="math inline">\(e\)</span>, while measurement uncertainty is denoted by <span class="math inline">\(u\)</span>. In error analysis literature, the term (measurement) <em>error</em> is more commonly used. The notation, however, is not consistent.</p>
+<ul>
+<li><p>The absolute error is often denoted by <span class="math inline">\(\epsilon x\)</span> (epsilon x). Another common notation is <span class="math inline">\(\Delta x\)</span> (Delta), for example <span class="citation" data-cites="HS-Aalen-2016 Dinter-2011 SchrüferEtAl2022">[@HS-Aalen-2016; @Dinter-2011; @SchrüferEtAl2022]</span>. <span class="math inline">\(\Delta\)</span> is also used to denote the maximum error.</p></li>
+<li><p>The relative error is also denoted by <span class="math inline">\(\delta x\)</span> (delta x), for example: <span class="math inline">\(\delta x = 4~\%\)</span>.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="maximum-error" class="level2" data-number="62.5">
+<h2 data-number="62.5" class="anchored" data-anchor-id="maximum-error"><span class="header-section-number">62.5</span> Maximum Error</h2>
+<p>Systematic measurement deviations <span class="math inline">\(e(x)_{s}\)</span> cause a one-sided bias in the measurement result, so that the measured value is always either too high or too low. Random measurement deviations <span class="math inline">\(e(x)_{r}\)</span> lead uncontrolledly to either overestimation or underestimation of the measured value.</p>
+<p>In general, the different measurement deviations partially cancel each other out. The <strong>maximum error</strong> refers to the worst-case scenario, where all measurement deviations reinforce each other at their respective maximum (or minimum) values, so that the measured value shows the largest possible deviation from the (unknown) true value. The <strong>maximum error</strong> is denoted as <span class="math inline">\(\Delta x\)</span> (Delta x).</p>
+<p>The maximum error of a series of measurements for a quantity is determined by summing the absolute values of the individual measurement deviations.</p>
+<p><span class="math display">\[
+\Delta x = | e(x)_{s} | + | e(x)_{r} |
+\]</span></p>
+<p>Since measurements with gross errors are considered invalid, the contribution of gross errors <span class="math inline">\(| e(x)_{gross} |\)</span> is omitted.</p>
+<p>(<span class="citation" data-cites="EdenGebhard-2024">@EdenGebhard-2024</span>, pp.&nbsp;35-36)</p>
+<p>When multiple quantities are considered, the maximum errors of the involved quantities add up to the maximum error of the resulting quantity. For a quantity <span class="math inline">\(Y = f(x_1, x_2)\)</span>: <span class="math display">\[
+\Delta y = \Delta x_1 + \Delta x_2
+\]</span></p>
+<div id="tip-whicherror" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;62.2: Maximum Error
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The maximum error is not a standardized specification according to DIN 1319, but a simplified form of error estimation and overestimates the likely measurement uncertainty.</p>
+<p>“For many considerations, especially in introductory laboratory courses of the first semesters in technical, scientific, and engineering programs, it is sufficient to determine the maximum error (<em>absolute maximum error</em>).” (<span class="citation" data-cites="EdenGebhard-2024">@EdenGebhard-2024</span>, p.&nbsp;35)</p>
+</div>
+</div>
+</section>
+<section id="significant-figures" class="level2" data-number="62.6">
+<h2 data-number="62.6" class="anchored" data-anchor-id="significant-figures"><span class="header-section-number">62.6</span> Significant Figures</h2>
+<p>When reporting a complete measurement result, the number of significant or reliably known digits must be taken into account.</p>
+<div id="imp-signif" class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important&nbsp;62.4: Significant Figures
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>“Every reliably known digit, except for zeros that indicate the position of the decimal point, is called a significant figure.” <span class="citation" data-cites="EdenGebhard-2024">[@EdenGebhard-2024, p. 24]</span></p>
+<p>“Rounded numerical uncertainty values should be given <strong>with two (or if necessary three) significant digits</strong>. <strong>They must be rounded up.</strong> The measurement result should be rounded to the same place as the associated uncertainty, e.g., <span class="math inline">\(y = 245.5716 \text{ mm}\)</span> is rounded to <span class="math inline">\(y = 245.57 \text{ mm}\)</span> if <span class="math inline">\(u(y) = 0.4528 \text{ mm}\)</span> is rounded up to <span class="math inline">\(u(y) = 0.46 \text{ mm}\)</span>.” <span class="citation" data-cites="DIN1319-3">[@DIN1319-3, p. 6, emphasis added]</span></p>
+</div>
+</div>
+<p>For example, the distance measurements used in the previous chapter are given in the format <span class="math inline">\(153.29\)</span>, which means the measurements have 5 significant figures. Therefore, the arithmetic mean of a series of measurements, <span class="math inline">\(153.008889\)</span>, should also be reported with 5 significant figures. It is rounded at the first non-significant digit, so the arithmetic mean is reported as <span class="math inline">\(153.01\)</span>.</p>
+<p>However, the number of significant figures is not always straightforward to determine. The rules are:</p>
+<ol type="1">
+<li>All non-zero digits are always significant.</li>
+<li>Leading zeros are never significant. For example, 0012 km has 2 significant figures. 0.001 mm has 1 significant figure.</li>
+<li>Zeros at the end of a number are significant if they are to the right of the decimal point, e.g., 12.100 km has 5 significant figures.</li>
+<li>Zeros at the end of a number without a decimal point may or may not be significant. 1200 m can have two or four significant figures.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Significant Figures and Scientific Rounding
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Although uncertainty values are rounded up, it is useful to know: do you know the difference between commercial rounding and scientific rounding?</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/s0gPyypiGOs" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>“Rounding and Significant Figures (Mathematics Prep Course)” by Edmund Weitz is available on <a href="https://www.youtube.com/watch?v=q2iZDtotiM0">YouTube</a>, 2019.</p>
+<p>Python rounds scientifically:</p>
+<div id="6d8d4bd4" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">round</span>(<span class="fl">2.5</span>), <span class="bu">round</span>(<span class="fl">3.5</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2 4</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="methods-of-error-analysis" class="level2" data-number="62.7">
+<h2 data-number="62.7" class="anchored" data-anchor-id="methods-of-error-analysis"><span class="header-section-number">62.7</span> Methods of Error Analysis</h2>
+<p>The goal of error analysis is to determine uncertainty intervals for a measured quantity. Several methods are available:</p>
+<ol type="1">
+<li>Error estimation,</li>
+<li>Statistical error analysis, and</li>
+<li>Error propagation.</li>
+</ol>
+<p>There is some discretion in choosing the method. (<span class="citation" data-cites="Hempel-2016">@Hempel-2016</span>, p.&nbsp;2) For routine measurements, it is sufficient to report uncertainty in percentage terms. In calibration or when comparing with a <a href="https://en.wikipedia.org/wiki/Standard">standard</a>, more precise information is required. <span class="citation" data-cites="SchrüferEtAl2022">[@SchrüferEtAl2022, p. 33]</span></p>
+<p>The choice of the appropriate method also depends on the available information. For example, the spring constant determined in the previous chapter depends on three quantities:</p>
+<ol type="1">
+<li><p>the mass <span class="math inline">\(m\)</span>, measured with a kitchen scale, whose reading accuracy is estimated as <span class="math inline">\(e_r(m) = 0.5 g = 0.0005 kg\)</span>.</p></li>
+<li><p>the distance to the weight, or after data processing, the spring extension <span class="math inline">\(\Delta x\)</span>, measured with an electronic distance sensor and an Arduino (Ultrasonic Ranging Module HC - SR04).</p>
+<ul>
+<li>The reading accuracy of the measurement system is one unit of the measurement resolution, i.e., <span class="math inline">\(e_r = 0.01 cm = 0.0001 m\)</span>.</li>
+<li>The measurement deviation of the system is up to 3 mm according to the datasheet, symmetrically, i.e., <span class="math inline">\(e_r = 3 mm = 0.003 m\)</span>.</li>
+<li>The random component of the measurement deviation is therefore <span class="math inline">\(e_r(x) = 0.0001 m + 0.003 m = 0.0031 m\)</span>.</li>
+</ul></li>
+<li><p>the statistical estimate of the spring constant <span class="math inline">\(k = \frac{m \cdot g}{\Delta x} = 33.019 \pm 0.378\)</span>, or within the specified confidence interval <span class="math inline">\(k_{95\%} = 32.269 ≤ 33.019 ≤ 33.769\)</span>.</p></li>
+</ol>
+<div id="wrn-formelzeichen" class="callout callout-style-simple callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning&nbsp;62.4: Symbols and Units
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The same symbols are used for second and displacement <span class="math inline">\(s\)</span>, mass and meter <span class="math inline">\(m\)</span>, gram, the constant <span class="math inline">\(g\)</span>, and <span class="math inline">\(\Delta\)</span> for the change of a quantity and for the maximum error. Therefore, the formulas should be read carefully.</p>
+</div>
+</div>
+<section id="error-estimation" class="level3" data-number="62.7.1">
+<h3 data-number="62.7.1" class="anchored" data-anchor-id="error-estimation"><span class="header-section-number">62.7.1</span> 1. Error Estimation</h3>
+<p>Error estimation is used when</p>
+<ul>
+<li><strong>one quantity</strong></li>
+<li><strong>is measured only once</strong>.</li>
+</ul>
+<p>Since the true value of a measured quantity is unknown, error estimation aims to determine the maximum possible deviation of the measured value from the true value, i.e., the <strong>maximum error</strong>. For a single measurement, there is no statistical component. Therefore, the error estimation for a single measurement includes:</p>
+<ul>
+<li>the guaranteed error limit of the instrument, provided by the manufacturer on the device or in the manual (see example), i.e., the known systematic measurement deviation <span class="math inline">\(e_{s,b}\)</span>, and</li>
+<li>an estimated component depending on the specific experimental conditions, e.g., the scale division or reading conditions. This component can consist of a systematic part (e.g., an analog scale read from an angle) and a random part (e.g., reading accuracy of the instrument).</li>
+</ul>
+<p>The maximum error <span class="math inline">\(\Delta x\)</span> is obtained by adding the absolute values of the known systematic deviation and the estimated random deviation: <span class="math inline">\(\Delta x = |e(x)_{s,b}| + |e(x)_{r}|\)</span>.</p>
+<p>(<span class="citation" data-cites="Hempel-2016">@Hempel-2016</span>, p.&nbsp;3)</p>
+<section id="exercise-temperature-measurement" class="level4" data-number="62.7.1.1">
+<h4 data-number="62.7.1.1" class="anchored" data-anchor-id="exercise-temperature-measurement"><span class="header-section-number">62.7.1.1</span> Exercise: Temperature Measurement</h4>
+<p>A temperature <span class="math inline">\(T = 112.1 ~ °C\)</span> was measured using a digital thermometer with a K-type thermocouple. Which systematic and random measurement deviations are known and can be reported (see example)?</p>
+<div id="nte-thermometer" class="callout callout-style-default callout-note callout-titled" data-layout-ncol="2">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note&nbsp;62.2: Thermometer Guaranteed Error Limit
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../../skript/00-bilder/thermometer.jpg" class="img-fluid figure-img"></p>
+<figcaption>Thermometer</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../../skript/00-bilder/thermometerspecifications.jpg" class="img-fluid figure-img"></p>
+<figcaption>Specifications</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tip-skalengenauigkeit" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;62.3: Half or Full Scale Division?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<div class="border">
+<p>Digital instruments make this easy: the reading accuracy is one scale unit. For analog instruments, it is up to your judgment which measurement accuracy to report.</p>
+<p>If you are certain you can distinguish “exactly on the line” vs.&nbsp;“between two lines,” the reading error is half a scale division. If unsure, the reading error is one full scale division.</p>
+<p>(<a href="https://www.physik.uni-jena.de/pafmedia/9072/fehlerrechnungleichtgemachtpdf.pdf">Error Analysis Made Easy, FSU Jena</a>)</p>
+</div>
+</div>
+</div>
+<div id="tip-thermometer" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;62.4: Sample Solution: Temperature Measurement
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Systematic measurement deviation</strong></p>
+<p>The absolute measurement deviation is: <span class="math inline">\(u(T) = 0.3 ~ °C\)</span> The relative deviation is: <span class="math inline">\(0.05~ \%\)</span>. That means:</p>
+<p><span class="math inline">\(\frac{u(T)}{112.1 °C} \cdot 100~ \% = 0.05~ \%\)</span></p>
+<p><span class="math inline">\(\frac{u(T)}{112.1 °C} \cdot 100 = 0.05\)</span></p>
+<p><span class="math inline">\(u(T) = 0.05 \cdot \frac{112.1 °C}{100}\)</span></p>
+<p><span class="math inline">\(u(T) = 0.05605 °C\)</span></p>
+<p>Therefore, the known systematic measurement deviation is: <span class="math inline">\(e(T)_{s,b} = 0.3 ~ °C + 0.05605 ~ °C = 0.35605 ~ °C\)</span></p>
+<p><strong>Random measurement deviation</strong></p>
+<p>The random measurement deviation equals one scale unit: <span class="math inline">\(e(T)_r = 0.1 ~ °C\)</span></p>
+<p><strong>Maximum Error</strong></p>
+<p>The maximum error is:</p>
+<p><span class="math inline">\(\Delta T = |e(T)_{s,b}| + |e(T)_r|\)</span></p>
+<p>Rounding the measurement uncertainty to two decimal places:</p>
+<p><span class="math inline">\(\Delta T = |0.35605 °C| + |0.1 ~ °C| = 0.45605 ~ °C \approx 0.46 °C\)</span></p>
+<p>The complete measurement result is therefore: <span class="math inline">\(T = 112.1 \pm 0.46 ~ °C\)</span>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="example-measurement-conditions" class="level4" data-number="62.7.1.2">
+<h4 data-number="62.7.1.2" class="anchored" data-anchor-id="example-measurement-conditions"><span class="header-section-number">62.7.1.2</span> Example Measurement Conditions</h4>
+<p>What is meant by the concrete conditions of a measurement process? This is demonstrated using two simple measurement procedures.</p>
+<p><strong>You can participate here!</strong></p>
+<p>You will need:</p>
+<ul>
+<li>a suitable measuring instrument, e.g.&nbsp;a ruler, and</li>
+<li>a coin (ideally a 1-euro coin).</li>
+</ul>
+<p>In the first measurement procedure, the diameter of the 1-euro coin is to be determined.</p>
+<div id="nte-coin" class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note&nbsp;62.3: First Measurement Procedure: Coin
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The measurement is carried out using a <a href="https://en.wikipedia.org/wiki/Vernier_scale">vernier caliper</a> with a resolution of 0.05 mm according to DIN 862. DIN 862 standardizes symmetrical error limits for vernier calipers. The error limit depends on the scale resolution of the caliper as well as on the measured length and can be read from a table. (DIN 862 was replaced in 2011 by DIN EN ISO 13385-1, in which the term deviation is used. However, DIN 862 is still printed on the caliper.)</p>
+<p>Measured value: <span class="math inline">\(x = 23.25\ \text{mm}\)</span></p>
+<ul>
+<li>The scale division is 0.05 mm, so the random reading error <span class="math inline">\(e_r\)</span> is <span class="math inline">\(\pm 0.025\ \text{mm}\)</span>.</li>
+<li>DIN 862 standardizes error limits that increase with the measured length, but are at least 50 <span class="math inline">\(\mu m\)</span> or 0.05 mm. For the measured value of 23.25 mm, the known systematic measurement deviation is therefore <span class="math inline">\(e_{s,b} = \pm 0.05\ \text{mm}\)</span>.</li>
+</ul>
+<p>From the sum of the absolute values, the maximum error is obtained:<br>
+<span class="math inline">\(\Delta x = |0.05|\ \text{mm} + |0.025|\ \text{mm} = 0.075\ \text{mm}\)</span>.</p>
+<p>The complete measurement result, consisting of the measured value and the measurement uncertainty, is therefore:<br>
+<span class="math inline">\(23.25 \pm 0.075\ \text{mm}\)</span>.<br>
+The relative maximum error is: <span class="math inline">\(23.25\ \text{mm} \pm 0.32\%\)</span>.</p>
+</div>
+</div>
+</div>
+<p>In the second measurement procedure, the length of the thumb is to be determined. (<a href="https://en.wikipedia.org/wiki/Thumb">Anatomically, the thumb consists of only 2 phalange bones</a>)</p>
+<div id="nte-daumen" class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note&nbsp;62.4: Second Measurement Process – Thumb
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The measurement is carried out again using the vernier caliper.</p>
+<p>Measured value: <span class="math inline">\(x = 64.70 \, \text{mm}\)</span></p>
+<ul>
+<li>The scale division is 0.05 mm, therefore the random reading uncertainty is <span class="math inline">\(\pm 0.025 \, \text{mm}\)</span>.</li>
+<li>According to DIN 862, the standardized error limit for measured lengths between 50 and 300 mm is 50 <span class="math inline">\(\mu\)</span>m or 0.05 mm. For the measured value of 64.7 mm, the error limit is therefore <span class="math inline">\(\pm 0.05 \, \text{mm}\)</span>.</li>
+<li>In addition, a symmetric measurement deviation of 3 mm is assumed because
+<ul>
+<li>the measuring device was not applied straight,</li>
+<li>the base of the thumb could not be located exactly, and</li>
+<li>the elastic fingertip could not be fixed.</li>
+</ul></li>
+</ul>
+<p>From the sum of the absolute values, the maximum error is obtained: <span class="math inline">\(\Delta x = |0.025| \, \text{mm} + |0.05| \, \text{mm} + |3| \, \text{mm} = 3.075 \, \text{mm} \approx 3.08 \, \text{mm}\)</span>.</p>
+<p>The measurement result, consisting of the measured value and the error interval, is therefore: <span class="math inline">\(64.70 \pm 3.08 \, \text{mm}\)</span>.</p>
+<p>The relative maximum error is: <span class="math inline">\(64.70 \, \text{mm} \pm 4.76\%\)</span>.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="error-statistics" class="level3" data-number="62.7.2">
+<h3 data-number="62.7.2" class="anchored" data-anchor-id="error-statistics"><span class="header-section-number">62.7.2</span> 2. Error Statistics</h3>
+<p>Error statistics are used when</p>
+<ul>
+<li><strong>a quantity</strong></li>
+<li><strong>is measured multiple times</strong></li>
+</ul>
+<p>The error statistics are only considered reliable if the measurement deviations are random, meaning the values fluctuate in magnitude and sign. In this case, the measurement deviation is included in the calculated standard deviation. However, if a known systematic measurement error exists, the measurement result must be corrected accordingly: <span class="math inline">\(\bar x_E = \bar x - e_{s,b}\)</span>.</p>
+<p>In previous chapters, we anticipated error statistics with the statistical description of the empirical spread of the mean. To recap:</p>
+<ol type="1">
+<li>Set a significance level <span class="math inline">\(\alpha\)</span> or a two-sided confidence level <span class="math inline">\(1 - \frac{\alpha}{2}\)</span>.</li>
+<li>Determine the sample mean <span class="math inline">\(\bar{x}\)</span>.</li>
+<li>Determine the sample standard deviation <span class="math inline">\(s\)</span>, the sample size <span class="math inline">\(N\)</span>, and the empirical standard error <span class="math inline">\(\frac{s_{n-1}}{\sqrt{N}}\)</span>.</li>
+<li>Determine the values of the normal or t-distribution for the chosen confidence level — for a two-sided hypothesis test <span class="math inline">\(\frac{\alpha}{2}\)</span> and <span class="math inline">\(1 - \frac{\alpha}{2}\)</span>.</li>
+<li>Calculate the confidence interval <span class="math inline">\(\bar{x} \pm t_{\alpha / 2} ~ \frac{s_{n-1}}{\sqrt{n}}\)</span>.</li>
+</ol>
+<p>This confidence interval indicates, for a chosen probability, the range in which the mean of a repeated measurement series will lie, or, if the unknown systematic measurement error is zero (or negligible), the <em>true value</em>.<br>
+In contrast, the standard deviation <span class="math inline">\(s\)</span> indicates the range in which a single measurement value is likely to fall. The certainty of this statement can be increased by widening the confidence interval (e.g., <span class="math inline">\(2 \cdot s\)</span>).</p>
+<p><span class="citation" data-cites="Hempel-2016">[@Hempel-2016, pp. 3-7]</span></p>
+<p>The following example demonstrates the procedure. It also introduces the Pandas method <code>.sem()</code> for easy calculation of the standard error.</p>
+<div id="nte-error-statistics" class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note&nbsp;62.5: Statistical Error Analysis
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>From the previous chapter’s experiment, select the measurement series for weight 503g.</p>
+<div id="e614216f" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>filepath <span class="op">=</span> <span class="st">"01-daten/hooke_data.csv"</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>hooke <span class="op">=</span> pd.read_csv(filepath_or_buffer <span class="op">=</span> filepath, sep <span class="op">=</span> <span class="st">';'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>hooke.drop(index <span class="op">=</span> <span class="dv">113</span>, inplace <span class="op">=</span> <span class="va">True</span>) <span class="co"># missing value</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>hooke_503g <span class="op">=</span> hooke.loc[hooke[<span class="st">'mass'</span>] <span class="op">==</span> <span class="dv">503</span>, :]</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hooke_503g.head(), hooke_503g.describe(), sep <span class="op">=</span> <span class="st">"</span><span class="ch">\n\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    no  mass  distance
+40  40   503    158.43
+41  41   503    158.43
+42  42   503    158.60
+43  43   503    158.76
+44  44   503    159.05
+
+             no   mass    distance
+count  10.00000   10.0   10.000000
+mean   44.50000  503.0  159.314000
+std     3.02765    0.0    0.781099
+min    40.00000  503.0  158.430000
+25%    42.25000  503.0  158.640000
+50%    44.50000  503.0  159.220000
+75%    46.75000  503.0  159.965000
+max    49.00000  503.0  160.610000</code></pre>
+</div>
+</div>
+<p>Let us consider once again the arithmetic mean (the uncorrected measurement result) and the standard error of the mean (the statistical measure of dispersion of the mean) for this series of measurements. The method <code>.sem()</code> computes the empirical standard error of the mean (by default, the parameter <code>ddof = 1</code> is used).</p>
+<p>Output accurate to 3 decimal places.</p>
+<div id="94fcd0c0" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Weight in grams: </span><span class="sc">{</span>hooke_503g[<span class="st">'mass'</span>]<span class="sc">.</span>unique()<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"Mean of measurements: </span><span class="sc">{</span>hooke_503g[<span class="st">'distance'</span>]<span class="sc">.</span>mean()<span class="sc">:.3f}</span><span class="ss"> cm"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"Empirical standard error: </span><span class="sc">{</span>hooke_503g[<span class="st">'distance'</span>]<span class="sc">.</span>sem()<span class="sc">:.3f}</span><span class="ss"> cm"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      sep <span class="op">=</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Weight in grams: [503]
+Mean of measurements: 159.314 cm
+Empirical standard error: 0.247 cm</code></pre>
+</div>
+</div>
+<p>The measurement uncertainty is rounded up to 2 decimal places. For this, the NumPy function <code>np.ceil()</code> can be used. However, it rounds to the next integer, and there is no parameter to round to a specific decimal place. Therefore, the decimal place must be shifted by multiplying with the corresponding power of ten. For 2 decimal places, multiply by <span class="math inline">\(10^2\)</span>: <code>np.ceil(value * 100) / 100</code>.</p>
+<div id="48bbd5f5" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>value <span class="op">=</span> pd.Series([<span class="fl">0.247</span>])</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.ceil(value <span class="op">*</span> <span class="dv">100</span>) <span class="op">/</span> <span class="dv">100</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># using Pandas methods</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(value.mul(<span class="dv">100</span>).<span class="bu">apply</span>(np.ceil).div(<span class="dv">100</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0    0.25
+dtype: float64
+0    0.25
+dtype: float64</code></pre>
+</div>
+</div>
+<p>For chaining with further methods in Pandas, the return value of the function, a NumPy scalar or array, must be converted back into a <code>pd.Series</code>.</p>
+<div id="2dd9b275" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Weight in grams: </span><span class="sc">{</span>hooke_503g[<span class="st">'mass'</span>]<span class="sc">.</span>unique()<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"Mean of measurements: </span><span class="sc">{</span>hooke_503g[<span class="st">'distance'</span>]<span class="sc">.</span>mean()<span class="sc">:.3f}</span><span class="ss"> cm"</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"Empirical standard error: </span><span class="sc">{</span> ( sem_hooke_503g<span class="op">:=</span> pd.Series(hooke_503g[<span class="st">'distance'</span>].sem()).mul(<span class="dv">100</span>).<span class="bu">apply</span>(np.ceil).div(<span class="dv">100</span>) )<span class="sc">.</span>item() <span class="sc">:.3f}</span><span class="ss"> cm"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"Complete measurement result: </span><span class="sc">{</span>hooke_503g[<span class="st">'distance'</span>]<span class="sc">.</span>mean()<span class="sc">.</span><span class="bu">round</span>(<span class="dv">2</span>)<span class="sc">:.2f}</span><span class="ss"> cm ± </span><span class="sc">{</span>sem_hooke_503g<span class="sc">.</span>item()<span class="sc">}</span><span class="ss"> cm"</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>      sep <span class="op">=</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Weight in grams: [503]
+Mean of measurements: 159.314 cm
+Empirical standard error: 0.250 cm
+Complete measurement result: 159.31 cm ± 0.25 cm</code></pre>
+</div>
+</div>
+<p>Additional specification of the 95% confidence interval.</p>
+<div id="a9619dc1" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Determine t-value for significance level (choose alpha-level 1 - 95%)</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>alpha <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> hooke_503g.shape[<span class="dv">0</span>]  <span class="co"># Number of rows</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>t_value <span class="op">=</span> scipy.stats.t.ppf(q <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> alpha<span class="op">/</span><span class="dv">2</span>, df <span class="op">=</span> n <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"95% confidence interval : </span><span class="sc">{</span>hooke_503g[<span class="st">'distance'</span>]<span class="sc">.</span>mean()<span class="sc">.</span><span class="bu">round</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="ss"> cm  ± </span><span class="sc">{</span>t_value<span class="sc">:.4f}</span><span class="ss"> * </span><span class="sc">{</span>sem_hooke_503g<span class="sc">.</span>item()<span class="sc">}</span><span class="ss"> cm"</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"95% confidence interval : </span><span class="sc">{</span>hooke_503g[<span class="st">'distance'</span>]<span class="sc">.</span>mean()<span class="sc">.</span><span class="bu">round</span>(<span class="dv">2</span>)<span class="sc">}</span><span class="ss"> cm  ± </span><span class="sc">{</span>(t_value <span class="op">*</span> sem_hooke_503g.item())<span class="sc">.</span><span class="bu">round</span>(<span class="dv">2</span>)<span class="sc">:.2f}</span><span class="ss"> cm"</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"lower 95% interval limit: </span><span class="sc">{</span>hooke_503g[<span class="st">'distance'</span>]<span class="sc">.</span>mean()<span class="sc">.</span><span class="bu">round</span>(<span class="dv">2</span>) <span class="op">-</span> <span class="bu">round</span>(t_value <span class="op">*</span> sem_hooke_503g.item(), <span class="dv">2</span>)<span class="sc">:.2f}</span><span class="ss"> cm"</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"upper 95% interval limit: </span><span class="sc">{</span>hooke_503g[<span class="st">'distance'</span>]<span class="sc">.</span>mean()<span class="sc">.</span><span class="bu">round</span>(<span class="dv">2</span>) <span class="op">+</span> <span class="bu">round</span>(t_value <span class="op">*</span> sem_hooke_503g.item(), <span class="dv">2</span>)<span class="sc">:.2f}</span><span class="ss"> cm"</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>      sep<span class="op">=</span><span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>95% confidence interval : 159.31 cm  ± 2.2622 * 0.25 cm
+95% confidence interval : 159.31 cm  ± 0.57 cm
+lower 95% interval limit: 158.74 cm
+upper 95% interval limit: 159.88 cm</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="error-propagation" class="level3" data-number="62.7.3">
+<h3 data-number="62.7.3" class="anchored" data-anchor-id="error-propagation"><span class="header-section-number">62.7.3</span> 3. Error Propagation</h3>
+<p>Error propagation is used when</p>
+<ul>
+<li><strong>multiple input quantities</strong>,</li>
+<li><strong>that determine the output quantity through a function</strong>,</li>
+</ul>
+<p>are measured.</p>
+<p>To determine the measurement uncertainty of a quantity <span class="math inline">\(Y\)</span>, which is estimated by a function <span class="math inline">\(y = f(x_1, x_2, ..., x_m)\)</span>, there are two methods:</p>
+<ul>
+<li><strong>linear error propagation</strong> is used when the uncertainties of the involved quantities are determined from the <strong>error estimation of a single measurement</strong>.</li>
+<li><strong>Gaussian error propagation</strong> is used when the uncertainties are <strong>statistically determined from repeated measurements</strong> and given with confidence intervals.</li>
+</ul>
+<p><span class="citation" data-cites="Hempel-2016">[@Hempel-2016, pp. 8-9]</span></p>
+<section id="linear-error-propagation" class="level4" data-number="62.7.3.1">
+<h4 data-number="62.7.3.1" class="anchored" data-anchor-id="linear-error-propagation"><span class="header-section-number">62.7.3.1</span> Linear Error Propagation</h4>
+<p>Linear error propagation considers how the <strong>maximum errors</strong> of several measured quantities affect the result in the worst case. In other words, the <strong>maximum error</strong> of the desired quantity <span class="math inline">\(Y\)</span> is calculated. (cf. <span class="citation" data-cites="DIN1319-3">@DIN1319-3</span>, p.&nbsp;9)</p>
+<p>For a function with two input quantities <span class="math inline">\(f = f(x_1, x_2)\)</span>, the maximum error <span class="math inline">\(\Delta f\)</span> is determined from the maximum errors <span class="math inline">\(\Delta x_1\)</span> and <span class="math inline">\(\Delta x_2\)</span>.</p>
+<p><span class="math display">\[
+f + \Delta f = f(x_1 + \Delta x_1, x_2 + \Delta x_2)
+\]</span></p>
+<p>Assuming small errors relative to the measured values, the error <span class="math inline">\(\Delta f\)</span> can be calculated using the absolute values of the partial derivatives of the first term of the Taylor series (see example).</p>
+<p><span class="math display">\[
+f + \Delta f = f(x_1, x_2) + | \frac{\partial f(x_1, x_2)}{\partial x_1}  | \cdot \Delta x_1 + | \frac{\partial f(x_1, x_2)}{\partial x_2} | \cdot \Delta x_2
+\]</span></p>
+<p>When are the errors considered small relative to the measured values? Unfortunately, there is no absolute limit. It depends on whether, in the Taylor expansion, higher-order polynomials are significantly smaller than the linear term and can thus be neglected if <span class="math inline">\(x\)</span> is small. The decision ultimately depends on the required accuracy.</p>
+<div id="nte-taylorreihe" class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note&nbsp;62.6: Taylor Series
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/F2lKRaUguBM" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>The Taylor series - simply explained by Denkbar is available on <a href="https://www.youtube.com/watch?v=F2lKRaUguBM">YouTube</a>, 2015.</p>
+</div>
+</div>
+</div>
+<div id="nte-partielleableitung" class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note&nbsp;62.7: Partial Derivative
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-20" class="callout-20-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>A partial derivative is the derivative of a function with multiple variables with respect to one variable, treating all other variables as constants.</p>
+<p>For a function <span class="math inline">\(f(x, y) = 2x + y^2\)</span>, the partial derivative with respect to x is expressed as:</p>
+<p><span class="math inline">\(\frac{\partial f(x, y)}{\partial x}\)</span></p>
+<ul>
+<li>The symbol ∂ is the italic form of the Cyrillic lowercase letter д (d) and is read as “del”. It indicates that a partial derivative is being taken.</li>
+<li>In the numerator is the function to be differentiated. In the denominator is the variable with respect to which the derivative is taken. The term is read as “del f of x and y with respect to del x”.</li>
+</ul>
+<p>The partial derivative <span class="math inline">\(\frac{\partial f(x, y)}{\partial x} = 2\)</span>. <span class="math inline">\(y^2\)</span> is treated as a constant (e.g., <span class="math inline">\(5^2\)</span>) and differentiates to zero.</p>
+<p>The partial derivative <span class="math inline">\(\frac{\partial f(x, y)}{\partial y} = 2y\)</span>. <span class="math inline">\(2x\)</span> is treated as a constant (e.g., <span class="math inline">\(2 \cdot 3\)</span>) and differentiates to zero.</p>
+</div>
+</div>
+</div>
+<p>The maximum error is calculated as: <span class="math display">\[
+\Delta f = | \frac{\partial f(x_1, x_2)}{\partial x_1}  | \cdot \Delta x_1 + | \frac{\partial f(x_1, x_2)}{\partial x_2} | \cdot \Delta x_2
+\]</span></p>
+<p><span class="citation" data-cites="Hempel-2016">[@Hempel-2016, pp. 9-10]</span></p>
+<p>Or in shorthand notation for <span class="math inline">\(i = N\)</span> input quantities: <span class="math display">\[
+\Delta f(x_i) = \pm \sum_{i=1}^{N} | \frac{\partial f}{\partial x_i} \cdot \Delta x_i |
+\]</span></p>
+<p><span class="citation" data-cites="EdenGebhard-2024">[after @EdenGebhard-2024, p. 35, notation adjusted]</span></p>
+<div id="nte-beispiellineareff" class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note&nbsp;62.8: Example: Spring Constant
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-21" class="callout-21-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>As an example, we consider the first measurement from the series with a weight of 503 grams.</p>
+<div id="9e028f7e" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>hooke_503g_single_value <span class="op">=</span> hooke_503g.iloc[<span class="dv">0</span>, :].copy()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hooke_503g_single_value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>no           40.00
+mass        503.00
+distance    158.43
+Name: 40, dtype: float64</code></pre>
+</div>
+</div>
+<p>Since multiple magnitudes are considered, the measurements are converted to SI units. The zero point is defined as the first measurement in the series with a weight of 0 grams.</p>
+<div id="47695913" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>hooke_503g_single_value[<span class="st">'mass'</span>] <span class="op">=</span> hooke_503g_single_value[<span class="st">'mass'</span>] <span class="op">/</span> <span class="dv">1000</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>hooke_503g_single_value[<span class="st">'distance'</span>] <span class="op">=</span> hooke_503g_single_value[<span class="st">'distance'</span>] <span class="op">/</span> <span class="dv">100</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>zero_point <span class="op">=</span> hooke[hooke[<span class="st">'mass'</span>] <span class="op">==</span> <span class="dv">0</span>].loc[:, <span class="st">'distance'</span>].head(n<span class="op">=</span><span class="dv">1</span>) <span class="op">/</span> <span class="dv">100</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Zero point in meters: </span><span class="sc">{</span>zero_point<span class="sc">.</span>item()<span class="sc">:.3f}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>hooke_503g_single_value[<span class="st">'extension'</span>] <span class="op">=</span> (hooke_503g_single_value[<span class="st">'distance'</span>].item() <span class="op">-</span> zero_point.item()) <span class="op">*</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hooke_503g_single_value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Zero point in meters: 1.733
+
+no           40.0000
+mass          0.5030
+distance      1.5843
+extension     0.1489
+Name: 40, dtype: float64</code></pre>
+</div>
+</div>
+<p>For the spring constant (the change in displacement <span class="math inline">\(\Delta x\)</span> is denoted as <span class="math inline">\(s\)</span>):</p>
+<p><span class="math display">\[
+k = \frac{m \cdot g}{\Delta{x}} = \frac{m \cdot g}{s}
+\]</span></p>
+<p>Inserting the values (<span class="math inline">\(s\)</span> now stands for seconds, <span class="math inline">\(m\)</span> for meters): <span class="math display">\[
+k = \frac{0,503 kg \cdot 9,81 m}{0,1489 m \cdot s^2} = \frac{0,503 \cdot 9,81}{0,1489} \frac{N}{{m}} = 33.139 \frac{N}{{m}}
+\]</span></p>
+<p>The maximum error of the function is given by: <span class="math display">\[
+\Delta k(m, s) = \left| \frac{\partial f(m, s)}{\partial m} \right| \cdot \Delta m + \left| \frac{\partial f(m, s)}{\partial s} \right| \cdot \Delta s
+\]</span></p>
+<p>In the first step, the partial derivatives of the function <span class="math inline">\(k = \frac{m \cdot g}{s}\)</span> are calculated. The partial derivative with respect to <span class="math inline">\(m\)</span> using the constant factor rule is: <span class="math display">\[
+\frac{\partial f(m, s)}{\partial m} = \frac{\partial}{\partial m} \frac{m \cdot g}{s} = \frac{\partial}{\partial m} m \cdot \frac{g}{s} = 1 \cdot \frac{g}{s} = \frac{g}{s}
+\]</span></p>
+<p>The partial derivative with respect to <span class="math inline">\(s\)</span> is: <span class="math display">\[
+\frac{\partial f(m, s)}{\partial s} = \frac{\partial}{\partial s} \frac{m \cdot g}{s} = - \frac {m \cdot g}{s^{2}}
+\]</span></p>
+<p>Thus, the maximum error is: <span class="math display">\[
+\Delta k = \left| \frac{g}{s} \right| \cdot \Delta m + \left| - \frac {m \cdot g}{s^{2}} \right| \cdot \Delta s
+\]</span></p>
+<p>In the second step, the maximum errors of the quantities involved are determined.</p>
+<ul>
+<li>The mass <span class="math inline">\(m\)</span> of the weights was measured with a kitchen scale, whose reading error is estimated at <span class="math inline">\(e_r (m) = 0.5 \text{ g} = 0.0005 \text{ kg}\)</span>. No systematic measurement error is known. Therefore, the maximum error of the mass is <span class="math inline">\(\Delta m = 0.0005 \text{ kg}\)</span>.</li>
+<li>The maximum error of the displacement measurement is <span class="math inline">\(e_{r}(s) = 0.01 \text{ cm} + 0.3 \text{ cm} = 0.0031 \text{ m}\)</span>.</li>
+</ul>
+<p>The measured values, constant <span class="math inline">\(g\)</span>, and maximum errors are inserted: <span class="math display">\[
+\Delta k = \left| \frac{9.81 \text{ m/s}^2}{0.1489 \text{ m}} \right| \cdot 0.0005 \text{ kg} + \left| - \frac{0.503 \text{ kg} \cdot 9.81 \text{ m/s}^2}{(0.1489 \text{ m})^2} \right| \cdot 0.0031 \text{ m}
+\]</span></p>
+<p>Separate values and units: <span class="math display">\[
+\Delta k = \left| \frac{9.81 \cdot 0.0005}{0.1489} \frac{\text{kg m}}{\text{s}^2 \cdot \text{m}} \right| + \left| - \frac{0.503 \cdot 9.81 \cdot 0.0031}{0.02217121} \frac{\text{kg m}^2}{\text{s}^2 \cdot \text{m}^2} \right|
+\]</span></p>
+<p>Calculate and convert to Newtons (<span class="math inline">\(\frac{kg \cdot m}{s^2}\)</span>): <span class="math display">\[
+\Delta k = |0.0329 \frac{N}{m}| + | -0.6899 \frac{N \cdot m}{m^2} |
+\]</span></p>
+<p>Cancel meters in the second term: <span class="math display">\[
+\Delta k = |0.0329 \frac{N}{m}| + | -0.6899 \frac{N}{m} |
+\]</span></p>
+<p>Round the measurement uncertainty to two decimal places: <span class="math display">\[
+\Delta k = 0.7228 \frac{N}{m} \approx 0.73 \frac{N}{m}
+\]</span></p>
+<p>The complete measurement result is thus: <span class="math display">\[
+k = 33.14 \frac{N}{m}; \Delta k = 0.73 \frac{N}{m}
+\]</span></p>
+</div>
+</div>
+</div>
+</section>
+<section id="gaussian-error-propagation" class="level4" data-number="62.7.3.2">
+<h4 data-number="62.7.3.2" class="anchored" data-anchor-id="gaussian-error-propagation"><span class="header-section-number">62.7.3.2</span> Gaussian Error Propagation</h4>
+<p>In Gaussian error propagation, it is assumed that measurement uncertainties of the involved quantities may partially compensate each other. This allows a more realistic estimate of the measurement uncertainty.</p>
+<p>The determination of measurement uncertainty is regulated in DIN 1319-3. For a function <span class="math inline">\(Y = f(x_1, x_2, ..., x_m)\)</span>, the measurement uncertainty is determined from the uncertainties of the quantities involved. The variances of the mean values are used (<span class="citation" data-cites="DIN1319-3">@DIN1319-3</span>, Equation (29), p.&nbsp;11): <span class="math display">\[
+u^2(x_i) = s^2(\bar{x_i}) = s_i^2/n_i ; ~ s_i^2 = \frac{1}{n_i - 1} \sum_{j = 1}^{n_i} (x_{ij} - \bar{x_i})^2
+\]</span></p>
+<p><em>Note: Typically, the empirical standard deviation <span class="math inline">\(s_{n-1}\)</span> is used.</em> <em>In the DIN standard, the arithmetic mean of a series of measurements is denoted as <span class="math inline">\(\bar{v}\)</span> instead of <span class="math inline">\(\bar{x}\)</span>.</em></p>
+<p>The measurement uncertainty of the quantities is thus determined via the standard error of the mean of the quantities: <span class="math display">\[
+u(x_i) = s_i / \sqrt{n_i}
+\]</span></p>
+<p><em>Note: Typically, the empirical standard deviation <span class="math inline">\(s_{n-1} / \sqrt{N}\)</span> is used.</em></p>
+<p><span class="citation" data-cites="DIN1319-3">[@DIN1319-3, p. 11]</span></p>
+<p>The uncertainty of the function <span class="math inline">\(y = f(x_1, x_2, ..., x_m)\)</span> is calculated as follows (DIN 1319-3, Equation (43)): <span class="math display">\[
+u(y) = \sqrt{\sum_{i = 1}^{m} \left( \frac{\partial f}{\partial x_i} \right)^2 \cdot u^2(x_i)}
+\]</span></p>
+<p>The squared terms can also be combined: <span class="math display">\[
+u(y) = \sqrt{\sum_{i = 1}^{m} \left( \frac{\partial f}{\partial x_i} \cdot u(x_i) \right)^2}
+\]</span></p>
+<p>For a function with two input quantities <span class="math inline">\(y = f(x_1, x_2)\)</span>, the uncertainty of the result is: <span class="math display">\[
+u(y) = \sqrt{ \left( \frac{\partial f}{\partial x_1} \cdot \sigma_{x_1} \right)^2 + \left( \frac{\partial f}{\partial x_2} \cdot \sigma_{x_2} \right)^2 }
+\]</span></p>
+<p><em>Note: Typically, the empirical standard deviation <span class="math inline">\(s_{n-1} / \sqrt{N}\)</span> is used.</em></p>
+<div id="nte-example-503g" class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note&nbsp;62.9: Example: Measurement Series 503 Grams
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-22" class="callout-22-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Let’s revisit the measurement series for the 503-gram weight. The agreed confidence level of <span class="math inline">\(95 ~ \%\)</span> is assumed.</p>
+<div id="533b970a" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Restore measurement data from hooke.qmd</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">## Read file and remove error</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>filepath <span class="op">=</span> <span class="st">"01-daten/hooke_data.csv"</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>hooke <span class="op">=</span> pd.read_csv(filepath_or_buffer<span class="op">=</span>filepath, sep<span class="op">=</span><span class="st">';'</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>hooke.drop(index<span class="op">=</span><span class="dv">113</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Normalize displacement to zero point</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>zero_point <span class="op">=</span> hooke[hooke[<span class="st">'mass'</span>] <span class="op">==</span> <span class="dv">0</span>].loc[:, <span class="st">'distance'</span>].mean()</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>hooke[<span class="st">'extension'</span>] <span class="op">=</span> hooke[<span class="st">'distance'</span>].sub(zero_point).mul(<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Select measurement series for 503 grams</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>hooke_503g <span class="op">=</span> hooke.loc[hooke[<span class="st">'mass'</span>] <span class="op">==</span> <span class="dv">503</span>, :].copy()</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co">## Convert mass to kg, distance and extension to meters</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>hooke_503g[<span class="st">'mass'</span>] <span class="op">=</span> hooke_503g[<span class="st">'mass'</span>].div(<span class="dv">1000</span>)</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>hooke_503g[<span class="st">'distance'</span>] <span class="op">=</span> hooke_503g[<span class="st">'distance'</span>].div(<span class="dv">100</span>)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>hooke_503g[<span class="st">'extension'</span>] <span class="op">=</span> hooke_503g[<span class="st">'extension'</span>].div(<span class="dv">100</span>)</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Determine t-value for significance level (alpha) 1 - 95%</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>alpha <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>n_extension <span class="op">=</span> hooke_503g.shape[<span class="dv">0</span>]  <span class="co"># number of rows</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>t_value_extension <span class="op">=</span> scipy.stats.t.ppf(q <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> alpha<span class="op">/</span><span class="dv">2</span>, df <span class="op">=</span> n_extension <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Output</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Weight in kilograms: </span><span class="sc">{</span>hooke_503g[<span class="st">'mass'</span>]<span class="sc">.</span>unique()<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"Mean extension: </span><span class="sc">{</span>hooke_503g[<span class="st">'extension'</span>]<span class="sc">.</span>mean()<span class="sc">:.4f}</span><span class="ss"> m"</span>,</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"empirical standard error: </span><span class="sc">{</span>(sem_hooke_503g <span class="op">:=</span> pd.Series(hooke_503g[<span class="st">'extension'</span>].sem()))<span class="sc">.</span>item()<span class="sc">:.6f}</span><span class="ss"> m"</span>,</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"t-value of extension: </span><span class="sc">{</span>t_value_extension<span class="sc">:.4f}</span><span class="ss">"</span>,</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"95% confidence interval: </span><span class="sc">{</span>(hooke_503g[<span class="st">'extension'</span>].mean() <span class="op">-</span> t_value_extension <span class="op">*</span> sem_hooke_503g)<span class="sc">.</span>item()<span class="sc">:.4f}</span><span class="ss"> m ≤ </span><span class="sc">{</span>hooke_503g[<span class="st">'extension'</span>]<span class="sc">.</span>mean()<span class="sc">:.4f}</span><span class="ss"> m ≤ </span><span class="sc">{</span>(hooke_503g[<span class="st">'extension'</span>].mean() <span class="op">+</span> t_value_extension <span class="op">*</span> sem_hooke_503g)<span class="sc">.</span>item()<span class="sc">:.4f}</span><span class="ss"> m"</span>,</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>      sep<span class="op">=</span><span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Weight in kilograms: [0.503]
+Mean extension: 0.1432 m
+empirical standard error: 0.002470 m
+t-value of extension: 2.2622
+95% confidence interval: 0.1376 m ≤ 0.1432 m ≤ 0.1488 m</code></pre>
+</div>
+</div>
+<p>For the spring constant (the change in displacement <span class="math inline">\(\Delta x\)</span> is denoted by <span class="math inline">\(s\)</span>), the formula is: <span class="math display">\[
+k = \frac{m \cdot g}{\Delta{x}} = \frac{m \cdot g}{s}
+\]</span></p>
+<p><span class="math display">\[
+k = \frac{0.503\ \text{kg} \cdot 9.81\ \text{m/s}^2}{0.1432\ \text{m}} = \frac{0.503 \cdot 9.81}{0.1432} \frac{\text{N}}{\text{m}} = 34.458 \frac{\text{N}}{\text{m}}
+\]</span></p>
+<p>&nbsp;</p>
+<p>To determine the uncertainty of the resulting quantity <span class="math inline">\(k\)</span> using Gaussian error propagation, the mass of the weight used would also need to be determined through a series of measurements. (How measurement series and single measurements can be combined will be shown in the next section.) Therefore, it is assumed that multiple measurements were performed to determine the weight. The measurement series, along with its mean and standard error, could look as follows:</p>
+<div id="24b8e462" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>measurement_series_503g <span class="op">=</span> pd.Series([<span class="dv">503</span>, <span class="dv">503</span>, <span class="dv">504</span>, <span class="dv">502</span>, <span class="dv">503</span>, <span class="dv">502</span>, <span class="dv">503</span>, <span class="dv">504</span>])</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>measurement_series_503g <span class="op">/=</span> <span class="dv">1000</span>  <span class="co"># convert to kilograms</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Determine t-value for significance level (choose alpha = 1 - 95%)</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>alpha <span class="op">=</span> <span class="fl">0.05</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>n_mass <span class="op">=</span> measurement_series_503g.shape[<span class="dv">0</span>]  <span class="co"># number of elements</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>t_value_mass <span class="op">=</span> scipy.stats.t.ppf(q <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> alpha<span class="op">/</span><span class="dv">2</span>, df <span class="op">=</span> n_mass <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Output</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"arithmetic mean of mass: </span><span class="sc">{</span>measurement_series_503g<span class="sc">.</span>mean()<span class="sc">}</span><span class="ss"> kg"</span>,</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="ss">f"empirical standard error: </span><span class="sc">{</span>(sem_measurement_series_503g <span class="op">:=</span> pd.Series(measurement_series_503g.sem()))<span class="sc">.</span>item()<span class="sc">:.6f}</span><span class="ss"> kg"</span>,</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="ss">f"t-value of mass: </span><span class="sc">{</span>t_value_mass<span class="sc">:.4f}</span><span class="ss">"</span>,</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="ss">f"95% confidence interval: </span><span class="sc">{</span>(measurement_series_503g.mean() <span class="op">-</span> t_value_mass <span class="op">*</span> sem_measurement_series_503g)<span class="sc">.</span>item()<span class="sc">:.4f}</span><span class="ss"> kg - </span><span class="sc">{</span>(measurement_series_503g.mean() <span class="op">+</span> t_value_mass <span class="op">*</span> sem_measurement_series_503g)<span class="sc">.</span>item()<span class="sc">:.4f}</span><span class="ss"> kg"</span>,</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>sep<span class="op">=</span><span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>arithmetic mean of mass: 0.503 kg
+empirical standard error: 0.000267 kg
+t-value of mass: 2.3646
+95% confidence interval: 0.5024 kg - 0.5036 kg</code></pre>
+</div>
+</div>
+<p>The Gaussian error propagation is calculated similarly to linear error propagation.</p>
+<p><span class="math display">\[
+u(k(m, s)) = \sqrt{ (\frac{\partial f(m, s)}{\partial m} \cdot \sigma_{m})^2 + (\frac{\partial f(m, s)}{\partial s} \cdot \sigma_{s})^2 }
+\]</span></p>
+<p>The partial derivatives are inserted: <span class="math display">\[
+u(k(m, s)) = \sqrt{ ( \frac{g}{s} \cdot \sigma_{m})^2 + (- \frac {m \cdot g}{s^{2}} \cdot \sigma_{s})^2 }
+\]</span></p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Complete Measurement Result</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">95% Confidence Interval</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>The measured values, constant <span class="math inline">\(g\)</span>, and standard errors of the means are inserted: <span class="math display">\[
+u(k(m, s)) = \sqrt{ ( \frac{9.81 m}{{s}^2 \cdot  0.1432 m}  \cdot 0.000267 kg)^2 + ((-) \frac{0.503 kg \cdot 9.81  m}{{s}^2 \cdot ( 0.1432 m)^2} \cdot  0.00247 m)^2 }
+\]</span></p>
+<p>Separate values and units: <span class="math display">\[
+u(k(m, s)) = \sqrt{ ( \frac{9.81 \cdot 0.000267}{  0.1432 } \frac{m \cdot kg}{{s}^2 \cdot m})^2 + ((-) \frac{0.503 \cdot 9.81 \cdot 0.00247}{0.02051} \frac{kg \cdot m^2}{{s}^2 \cdot m^2})^2 }
+\]</span></p>
+<p>Calculation, inserting Newton <span class="math inline">\(\frac{kg \cdot m}{s^2}\)</span> and canceling meters in the 2nd term: <span class="math display">\[
+u(k(m, s)) = \sqrt{ ( \frac{9.81 \cdot 0.000267}{  0.1432 } \frac{N}{m})^2 + ((-) \frac{0.503 \cdot 9.81 \cdot 0.00247}{0.02051} \frac{N}{m})^2 }
+\]</span></p>
+<p>Combine terms: <span class="math display">\[
+u(k(m, s)) = \sqrt{ ( 0.0183 \frac{N}{m})^2 + ((-) 0.594 \frac{N}{m})^2 }
+\]</span></p>
+<p>Final result: <span class="math display">\[
+u(k(m, s)) = 0.595 \frac{N}{m} \approx 0.60 \frac{N}{m}
+\]</span></p>
+<p>Thus, the complete measurement result is: <span class="math display">\[
+k = 34.46 \frac{N}{m} \pm 0.60 \frac{N}{m}
+\]</span></p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>In addition to the complete measurement result, a confidence interval can be given. According to the agreed confidence level, the corresponding t-values are used as correction factors.</p>
+<p><span class="math display">\[
+u(k(m, s)) = \sqrt{ ( \frac{g}{s} \cdot t_{\alpha/2} \cdot \sigma_{m})^2 + (- \frac {m \cdot g}{s^{2}} \cdot t_{\alpha/2} \cdot \sigma_{s})^2 }
+\]</span></p>
+<p>For the mass, <span class="math inline">\(t = 2.3646\)</span> and for the extension, <span class="math inline">\(t = 2.2622\)</span>.</p>
+<p>Insert measured values, constant <span class="math inline">\(g\)</span>, standard error of the mean, and t-value in the first term: <span class="math display">\[
+(\frac{g}{s} \cdot t_{\alpha/2} \cdot \sigma_{m})^2 = ( \frac{9.81 m}{{s}^2 \cdot 0.1432 m}  \cdot 2.3646 \cdot 0.000267 kg)^2
+\]</span></p>
+<p>Separate values and units, inserting Newton <span class="math inline">\(\frac{kg \cdot m}{s^2}\)</span>: <span class="math display">\[
+(\frac{9.81 \cdot 2.3646 \cdot 0.000267}{  0.1432 } \frac{m \cdot kg}{{s}^2 \cdot m})^2 = (0.0433 \frac{N}{m})^2
+\]</span></p>
+<p>Insert measured values, constant <span class="math inline">\(g\)</span>, standard error of the mean, and t-value in the second term: <span class="math display">\[
+(- \frac {m \cdot g}{s^{2}} \cdot t_{\alpha/2} \cdot \sigma_{s})^2 =  ((-) \frac{0.503 kg \cdot 9.81  m}{{s}^2 \cdot ( 0.1432 m)^2} \cdot  2.2622 \cdot  0.00247 m)^2
+\]</span></p>
+<p>Separate values and units, inserting Newton <span class="math inline">\(\frac{kg \cdot m}{s^2}\)</span> and cancel meters: <span class="math display">\[
+((-) \frac{0.503 \cdot 9.81 \cdot  2.2622 \cdot 0.00247}{0.02051} \frac{kg \cdot m^2}{{s}^2 \cdot m^2})^2 = ((-) 1.344 \frac{N}{m})^2
+\]</span></p>
+<p>The formula becomes: <span class="math display">\[
+u(k(m, s)) = \sqrt{ ( 0.0433 \frac{N}{m})^2 + ((-) 1.344 \frac{N}{m})^2 }
+\]</span></p>
+<p>Calculate: <span class="math display">\[
+u(k(m, s)) = 1.345 \frac{N}{m} \approx 1.35 \frac{N}{m}
+\]</span></p>
+<p>The interval limits are thus: <span class="math display">\[
+k = 34.46 \frac{N}{m} \pm 1.35 \frac{N}{m}
+\]</span></p>
+<p>So: <span class="math display">\[
+k_{95\%} = 33,11 \frac{N}{m} \le 34,46 \frac{N}{m} \le 35,81 \frac{N}{m}
+\]</span></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="overview-of-error-propagation-for-basic-operations-and-powers" class="level4" data-number="62.7.3.3">
+<h4 data-number="62.7.3.3" class="anchored" data-anchor-id="overview-of-error-propagation-for-basic-operations-and-powers"><span class="header-section-number">62.7.3.3</span> Overview of Error Propagation for Basic Operations and Powers</h4>
+<p>Some functions are particularly easy to calculate. The following table lists calculation methods for determining measurement uncertainty according to Gaussian error propagation (standard error) and linear error propagation (maximum error).</p>
+<div class="border">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="00-bilder/tabelle-edengebhard2024.png" class="img-fluid figure-img"></p>
+<figcaption>Error propagation for basic operations and powers</figcaption>
+</figure>
+</div>
+<p><span class="citation" data-cites="EdenGebhard-2024">[@EdenGebhard-2024, p. 36]</span></p>
+</div>
+</section>
+<section id="special-case-error-propagation-with-single-values" class="level4" data-number="62.7.3.4">
+<h4 data-number="62.7.3.4" class="anchored" data-anchor-id="special-case-error-propagation-with-single-values"><span class="header-section-number">62.7.3.4</span> Special Case: Error Propagation with Single Values</h4>
+<p>A special case is determining measurement uncertainty when it arises from statistical confidence intervals and estimated error contributions from a single measurement.</p>
+<p>To calculate a total error, a compromise must be made:</p>
+<ol type="1">
+<li>Linear error propagation is applied using the estimated error and statistical confidence interval.</li>
+<li>Gaussian error propagation is applied with the statistical confidence interval, and an error component is added, determined from the linear error propagation of the estimated error.</li>
+</ol>
+<p>“Both methods are probably equally suitable (or unsuitable) as a compromise in laboratory practice.” (<span class="citation" data-cites="Hempel-2016">@Hempel-2016</span>, p.&nbsp;9)</p>
+<p>(<span class="citation" data-cites="Hempel-2016">@Hempel-2016</span>, pp.&nbsp;8–9)</p>
+<p>DIN 1319 only deals with Gaussian error propagation. If only a single value is available for an input quantity, it is used as an estimate for that quantity. The uncertainty is based on available information or experience, e.g., from previous measurements. <span class="citation" data-cites="DIN1319-3">[@DIN1319-3, p. 11]</span></p>
+<p>As an example, we again use the measurement series for the 503-gram weight.</p>
+<div id="nte-example-singlevalue" class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-23-contents" aria-controls="callout-23" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note&nbsp;62.10: Example Spring Constant
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-23" class="callout-23-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div id="dce39243" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Output</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Weight in kilograms: </span><span class="sc">{</span>hooke_503g[<span class="st">'mass'</span>]<span class="sc">.</span>unique()<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"Mean extension: </span><span class="sc">{</span>hooke_503g[<span class="st">'extension'</span>]<span class="sc">.</span>mean()<span class="sc">:.4f}</span><span class="ss"> m"</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"Empirical standard error: </span><span class="sc">{</span> (sem_hooke_503g<span class="op">:=</span> pd.Series(hooke_503g[<span class="st">'extension'</span>].sem()))<span class="sc">.</span>item() <span class="sc">:.6f}</span><span class="ss"> m"</span>,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"t-value of the extension: </span><span class="sc">{</span>t_value_extension<span class="sc">:.4f}</span><span class="ss">"</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"95%-confidence interval: </span><span class="sc">{</span>(hooke_503g[<span class="st">'extension'</span>].mean() <span class="op">-</span> t_value_extension <span class="op">*</span> sem_hooke_503g)<span class="sc">.</span>item()<span class="sc">:.4f}</span><span class="ss"> m ≤ </span><span class="sc">{</span>hooke_503g[<span class="st">'extension'</span>]<span class="sc">.</span>mean()<span class="sc">:.4f}</span><span class="ss"> m ≤ </span><span class="sc">{</span>(hooke_503g[<span class="st">'extension'</span>].mean() <span class="op">+</span> t_value_extension <span class="op">*</span> sem_hooke_503g)<span class="sc">.</span>item()<span class="sc">:.4f}</span><span class="ss"> m"</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>      sep <span class="op">=</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Weight in kilograms: [0.503]
+Mean extension: 0.1432 m
+Empirical standard error: 0.002470 m
+t-value of the extension: 2.2622
+95%-confidence interval: 0.1376 m ≤ 0.1432 m ≤ 0.1488 m</code></pre>
+</div>
+</div>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Linear Error Propagation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Gaussian Error Propagation</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p>Analogous to error estimation, the maximum error of the spring constant is given by: <span class="math display">\[
+\Delta k = | \frac{g}{s} | \cdot \Delta m ~ + ~ | (-) \frac {m \cdot g}{s^{2}} | \cdot \Delta s
+\]</span></p>
+<ul>
+<li>The reading error of the kitchen scale is estimated as <span class="math inline">\(e_r (m) = 0.5 g = 0.0005 kg\)</span>. No systematic measurement deviation is known. Therefore, the maximum error of the mass is <span class="math inline">\(\Delta m = 0.0005 kg\)</span>.</li>
+<li>The empirical standard error of the extension is <span class="math inline">\(\sigma_x = 0.00247 m\)</span>, corresponding to the agreed confidence level of <span class="math inline">\(\sigma_{x 95 \%} = 0.00247 m * 2.2622 = 0.00559 m\)</span>.</li>
+</ul>
+<p>Insert the measured values, the constant <span class="math inline">\(g\)</span>, and the maximum errors: <span class="math display">\[
+\Delta k = | \frac{9.81 m}{{s}^2 \cdot 0.1432 m} | \cdot 0.0005 kg ~ + ~ | (-) \frac{0.503 kg \cdot 9.81  m}{{s}^2 \cdot (0.1432 m)^2} | \cdot 0.00247 m
+\]</span></p>
+<p>Separate values and units: <span class="math display">\[
+\Delta k = | \frac{9.81 \cdot 0.0005}{ 0.1432 } \frac{m \cdot kg}{{s}^2 \cdot m} | ~ + | (-) \frac{0.503 \cdot 9.81 \cdot 0.00247}{0.020506} \frac{kg \cdot m^2}{{s}^2 \cdot m^2} |
+\]</span></p>
+<p>Compute and insert Newton <span class="math inline">\(\frac{kg \cdot m}{s^2}\)</span>: <span class="math display">\[
+\Delta k = | 0.0342 \frac{N}{{m}} | ~ + | (-) 0.594 \frac{N \cdot m}{{m^2}} |
+\]</span></p>
+<p>Cancel meters in the second term: <span class="math display">\[
+\Delta k = |0.0342 \frac{N}{{m}} | ~ + | (-) 0.594 \frac{N}{{m}} |
+\]</span></p>
+<p>Round the measurement uncertainty to two decimal places: <span class="math display">\[
+\Delta k = 0.628 \frac{N}{{m}} \approx 0.63 \frac{N}{{m}}
+\]</span></p>
+<p>Thus, the measured value and maximum error are: <span class="math display">\[
+k = 34.46 \frac{N}{m}; \Delta k = 0.63 \frac{N}{{m}}
+\]</span></p>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>The uncertainty of the spring constant is calculated as: <span class="math display">\[
+u(k(m, s)) = \sqrt{ ( \frac{g}{s} \cdot \Delta m)^2 + (- \frac {m \cdot g}{s^{2}} \cdot \sigma_{s})^2 }
+\]</span></p>
+<p>Insert the measured values, the constant <span class="math inline">\(g\)</span>, and the estimated error portion (maximum error) of the mass into the first term: <span class="math display">\[
+(\frac{g}{s} \cdot \Delta m)^2 = ( \frac{9.81 m}{{s}^2 \cdot 0.1432 m} \cdot 0.0005 kg)^2
+\]</span></p>
+<p>Separate values and units, insert Newton <span class="math inline">\(\frac{kg \cdot m}{s^2}\)</span>: <span class="math display">\[
+(\frac{9.81 \cdot 0.0005}{ 0.1432 } \frac{m \cdot kg}{{s}^2 \cdot m})^2 = (0.0342 \frac{N}{m})^2
+\]</span></p>
+<p>Insert the mass of the weight, constant <span class="math inline">\(g\)</span>, and standard error of the mean of the extension into the second term: <span class="math display">\[
+(- \frac {m \cdot g}{s^{2}} \cdot \sigma_{s})^2 =  ((-) \frac{0.503 kg \cdot 9.81  m}{{s}^2 \cdot ( 0.1432 m)^2} \cdot  0.00247 m)^2
+\]</span></p>
+<p>Separate values and units, insert Newton <span class="math inline">\(\frac{kg \cdot m}{s^2}\)</span>, and cancel <span class="math inline">\(m\)</span>: <span class="math display">\[
+((-) \frac{0.503 \cdot 9.81 \cdot 0.00247}{0.02051} \frac{kg \cdot m^2}{{s}^2 \cdot m^2})^2 = ((-) 0.594 \frac{N}{m})^2
+\]</span></p>
+<p>The formula becomes: <span class="math display">\[
+u(k(m, s)) = \sqrt{ ( 0.0342  \frac{N}{m})^2 + ((-) 0.594 \frac{N}{m})^2 }
+\]</span></p>
+<p>Compute: <span class="math display">\[
+u(k(m, s)) = 0.595 \frac{N}{m} \approx 0.60 \frac{N}{m}
+\]</span></p>
+<p>The complete measurement result is: <span class="math display">\[
+k = 34.46 \frac{N}{m}; \Delta k = 0.60 \frac{N}{{m}}
+\]</span></p>
+<p>For the 95% confidence interval, the t-value of the extension <span class="math inline">\(t = 2.2622\)</span> is used: <span class="math display">\[
+u(k(m, s)) = \sqrt{ ( \frac{g}{s} \cdot \Delta m)^2 + (- \frac {m \cdot g}{s^{2}} \cdot t_{\alpha/2} \cdot \sigma_{s})^2 }
+\]</span></p>
+<p>The first term remains unchanged: <span class="math display">\[
+(\frac{g}{s} \cdot \Delta m)^2 = ( \frac{9.81 m}{{s}^2 \cdot 0.1432 m} \cdot 0.0005 kg)^2 = ( 0.0342  \frac{N}{m})^2
+\]</span></p>
+<p>Insert the mass, constant <span class="math inline">\(g\)</span>, standard error of the mean of the extension, and the t-value <span class="math inline">\(t = 2.2622\)</span> into the second term: <span class="math display">\[
+(- \frac {m \cdot g}{s^{2}} \cdot t_{\alpha/2} \cdot \sigma_{s})^2 =  ((-) \frac{0.503 kg \cdot 9.81  m}{{s}^2 \cdot ( 0.1432 m)^2} \cdot  2.2622 \cdot  0.00247 m)^2
+\]</span></p>
+<p>Separate values and units, insert Newton <span class="math inline">\(\frac{kg \cdot m}{s^2}\)</span>, and cancel <span class="math inline">\(m\)</span>: <span class="math display">\[
+((-) \frac{0.503 \cdot 9.81 \cdot  2.2622 \cdot 0.00247}{0.02051} \frac{kg \cdot m^2}{{s}^2 \cdot m^2})^2 = ((-) 1.344 \frac{N}{m})^2
+\]</span></p>
+<p>The formula becomes: <span class="math display">\[
+u(k(m, s)) = \sqrt{ ( 0.0342  \frac{N}{m})^2 + ((-) 1.344 \frac{N}{m})^2 }
+\]</span></p>
+<p>Compute: <span class="math display">\[
+u(k(m, s)) = 1.344 \frac{N}{m} \approx 1.35 \frac{N}{m}
+\]</span></p>
+<p>The interval boundaries are: <span class="math display">\[
+k_{95\%} = 33.11 \frac{N}{m} \le 34.46 \frac{N}{m} \le 35.81 \frac{N}{m}
+\]</span></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../../books/m-sensordatenanalyse-en/skript/lineare-parameterschätzung.html" class="pagination-link" aria-label="Linear Parameter Estimation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">61</span>&nbsp; <span class="chapter-title">Linear Parameter Estimation</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../../books/m-sensordatenanalyse-en/skript/übung-hooke.html" class="pagination-link" aria-label="Exercise: Hooke's Law">
+        <span class="nav-page-text"><span class="chapter-number">63</span>&nbsp; <span class="chapter-title">Exercise: Hooke’s Law</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en/blob/main/books/m-sensordatenanalyse-en/skript/fehlerrechnung.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

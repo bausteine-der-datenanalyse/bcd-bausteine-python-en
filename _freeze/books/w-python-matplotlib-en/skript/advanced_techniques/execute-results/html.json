@@ -1,0 +1,12 @@
+{
+  "hash": "f0cf6a4de911f99be73fe9b548b813e6",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "# Advanced Techniques in Matplotlib\n\nIn this chapter, we explore some advanced features of Matplotlib that are especially useful for scientific data visualization.\n\n## 1. Logarithmic Scales\nLogarithmic scales are often used when values span several orders of magnitude.\n\n::: {#f4b57044 .cell execution_count=1}\n``` {.python .cell-code}\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nx = np.logspace(0.1, 2, 100)\ny = np.log10(x)\n\nplt.plot(x, y, label='log10(x)', color='b')\nplt.xscale('log')\nplt.xlabel('X Value (log scale)')\nplt.ylabel('Y Value')\nplt.title('Logarithmic Scaling')\nplt.legend()\nplt.grid(True, which='both', linestyle='--', alpha=0.7)\nplt.show()\n```\n\n::: {.cell-output .cell-output-display}\n![](advanced_techniques_files/figure-html/cell-2-output-1.png){width=597 height=451}\n:::\n:::\n\n\n## 2. Twin Axes for Different Scales\nSometimes you may want to display two different y-axes in one plot.\n\n::: {#6a555c1b .cell execution_count=2}\n``` {.python .cell-code}\nx = np.linspace(0, 10, 100)\ny1 = np.sin(x)\ny2 = np.exp(x / 3)\n\nfig, ax1 = plt.subplots()\nax2 = ax1.twinx()\nax1.plot(x, y1, 'g-', label='sin(x)')\nax2.plot(x, y2, 'b--', label='exp(x/3)')\n\nax1.set_xlabel('X Value')\nax1.set_ylabel('Sine', color='g')\nax2.set_ylabel('Exponential', color='b')\nax1.set_title('Twin Axes for Different Scales')\nplt.show()\n```\n\n::: {.cell-output .cell-output-display}\n![](advanced_techniques_files/figure-html/cell-3-output-1.png){width=653 height=449}\n:::\n:::\n\n\n## 3. Annotations in Plots\nImportant points or values in a plot can be highlighted using annotations.\n\n::: {#badf24c0 .cell execution_count=3}\n``` {.python .cell-code}\nx = np.linspace(0, 10, 100)\ny = np.sin(x)\n\nplt.plot(x, y, label='sin(x)')\nplt.xlabel('X Value')\nplt.ylabel('Amplitude')\nplt.title('Annotations in Matplotlib')\nplt.annotate('Maximum Value', xy=(np.pi/2, 1), xytext=(2, 1.2),\n             arrowprops=dict(facecolor='red', shrink=0.05))\nplt.legend()\nplt.show()\n```\n\n::: {.cell-output .cell-output-display}\n![](advanced_techniques_files/figure-html/cell-4-output-1.png){width=608 height=456}\n:::\n:::\n\n\n## Conclusion\nThese advanced features help make scientific plots more informative. In the next chapter, we will look at best practices and common mistakes in scientific visualization.\n\n",
+    "supporting": [
+      "advanced_techniques_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

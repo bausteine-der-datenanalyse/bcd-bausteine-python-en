@@ -1,0 +1,2748 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Lukas Arnold">
+<meta name="author" content="Simone Arnold">
+<meta name="author" content="Florian Bagemihl">
+<meta name="author" content="Matthias Baitsch">
+<meta name="author" content="Marc Fehr">
+<meta name="author" content="Franca Hollmann">
+<meta name="author" content="Maik Poetzsch">
+<meta name="author" content="Sebastian Seipel">
+<meta name="dcterms.date" content="2026-09-17">
+
+<title>1&nbsp; Pseudocode Tool Module – Python Building Blocks</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../books/w-python-minimal-en/index.html" rel="next">
+<link href="../../index.html" rel="prev">
+<link href="../../books/shared-media/logo/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-78a910f4612d4747d3744d8f4b04bc46.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link rel="shortcut icon" href="skript/00-bilder/favicon_bcd_new.svg">
+<link rel="icon" type="image/x-icon" href="logo.ico">
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../books/w-pseudocode-en/Pseudocode.html">w-pseudocode-en</a></li><li class="breadcrumb-item"><a href="../../books/w-pseudocode-en/Pseudocode.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Pseudocode Tool Module</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../../index.html" class="sidebar-logo-link">
+      <img src="../../books/shared-media/logo/logo_with_text.svg" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../books/shared-media/logo/logo_with_text.svg" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Python Building Blocks</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-pseudocode-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-pseudocode-en/Pseudocode.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Pseudocode Tool Module</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-minimal-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-minimal-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python Tool Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-minimal-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-minimal-en/skript/datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Understanding Data Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-minimal-en/skript/flusskontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Decisions and Loops</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-minimal-en/skript/listen_iterationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Storing Multiple Values</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-minimal-en/skript/funktionen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Reusable Code with Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-minimal-en/skript/lesen_schreiben.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Working with Files</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python Tool Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Introduction: Data Analysis with Python</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-en/skript/datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Data Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-en/skript/funktionen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Functions: Basics</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-en/skript/flusskontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Control Flow</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-en/skript/sammeltypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Collection Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-en/skript/funktionen-definieren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Defining Your Own Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-en/skript/dateien-lesen-und-schreiben.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Reading and writing files</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-en/skript/module-und-pakete-importieren.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Importing Modules and Packages</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-en/skript/daswichtigste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">The Essentials</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-numpy-grundlagen-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-numpy-grundlagen-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-numpy-grundlagen-en/skript/introduction_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Introduction to NumPy</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-numpy-grundlagen-en/skript/array_creation_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Creating NumPy Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-numpy-grundlagen-en/skript/array_info_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Size, Structure, and Type</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-numpy-grundlagen-en/skript/array_calculation_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Working with Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-numpy-grundlagen-en/skript/array_slicing_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Slicing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-numpy-grundlagen-en/skript/array_manipulation_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Array Manipulation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-numpy-grundlagen-en/skript/array_read_n_write_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Reading and Writing Files</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-numpy-grundlagen-en/skript/array_images_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Working with Images</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-numpy-grundlagen-en/skript/assessment_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Learning Objective Check</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-numpy-grundlagen-en/uebungen/uebung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Exercise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-numpy-grundlagen-en/klausurfragen/klausurfragen_en.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Exam Questions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-pandas-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-pandas-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tool Module Pandas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-pandas-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-pandas-en/skript/operationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Operations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-pandas-en/skript/plotting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Plot Creation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-pandas-en/skript/datentypen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Data Types</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-pandas-en/skript/datetime.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Time Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-pandas-en/skript/dateien.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Reading and Writing Files</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">w-python-matplotlib-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-matplotlib-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Matplotlib Tool Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-matplotlib-en/skript/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Introduction to Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-matplotlib-en/skript/basic_plot_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Plot Types in Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-matplotlib-en/skript/adapting_plots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Customization and Adapting of Plots in Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-matplotlib-en/skript/advanced_techniques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Advanced Techniques in Matplotlib</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/w-python-matplotlib-en/skript/scientific_plotting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Best Practices in Matplotlib: Common Mistakes and Improvements</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-numerik-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-numerik-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-numerik-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Numerical Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-numerik-en/skript/intro_integrale.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Integration</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-numerik-en/skript/intro_ableitungen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Differentiation</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-einlesen-strukturierter-datensaetze-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-einlesen-strukturierter-datensaetze-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reading Structured Datasets Method Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-einlesen-strukturierter-datensaetze-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-einlesen-strukturierter-datensaetze-en/skript/grundlagen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Fundamentals: Characteristics of Datasets</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-einlesen-strukturierter-datensaetze-en/skript/datentypoperationen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Data Type-Dependent Operations and Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-einlesen-strukturierter-datensaetze-en/skript/numpy-pandas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">The NumPy and Pandas modules</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-einlesen-strukturierter-datensaetze-en/skript/zeitreihen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">Time Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-einlesen-strukturierter-datensaetze-en/skript/marktdaten-oesterreich.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">47</span>&nbsp; <span class="chapter-title">Download Austrian Market Transparency Data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-einlesen-strukturierter-datensaetze-en/skript/modul-glob.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">48</span>&nbsp; <span class="chapter-title">Accessing multiple local files: <code>glob</code> module</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-einlesen-strukturierter-datensaetze-en/skript/maskierte-arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">49</span>&nbsp; <span class="chapter-title">Masked Arrays</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-einlesen-strukturierter-datensaetze-en/skript/dateiformate.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">50</span>&nbsp; <span class="chapter-title">Scientific File Formats</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-einlesen-strukturierter-datensaetze-en/skript/daswichtigste.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">51</span>&nbsp; <span class="chapter-title">Key Takeaways (possibly as a video)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-einlesen-strukturierter-datensaetze-en/skript/lernzielkontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">52</span>&nbsp; <span class="chapter-title">Learning Assessment</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-datenfitting-und-optimierung-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-datenfitting-und-optimierung-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Fitting and Optimization Method Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-datenfitting-und-optimierung-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">53</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-datenfitting-und-optimierung-en/skript/interpolation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">54</span>&nbsp; <span class="chapter-title">Interpolation – Filling in the Gaps</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-datenfitting-und-optimierung-en/skript/fitting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">55</span>&nbsp; <span class="chapter-title">Fitting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-datenfitting-und-optimierung-en/skript/splines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">56</span>&nbsp; <span class="chapter-title">Splines</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-datenfitting-und-optimierung-en/skript/glaetten.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">57</span>&nbsp; <span class="chapter-title">Trend Smoothing – Reducing Noise</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-datenfitting-und-optimierung-en/skript/uebungen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">58</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-sensordatenanalyse-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-sensordatenanalyse-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sensor Data Analysis Method Module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-sensordatenanalyse-en/skript/einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">59</span>&nbsp; <span class="chapter-title">The Principle of Measurements</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-sensordatenanalyse-en/skript/normalverteilung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">60</span>&nbsp; <span class="chapter-title">The Normal Distribution</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-sensordatenanalyse-en/skript/lineare-parameterschätzung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">61</span>&nbsp; <span class="chapter-title">Linear Parameter Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-sensordatenanalyse-en/skript/fehlerrechnung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">62</span>&nbsp; <span class="chapter-title">Error Calculation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-sensordatenanalyse-en/skript/übung-hooke.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">63</span>&nbsp; <span class="chapter-title">Exercise: Hooke’s Law</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-sensordatenanalyse-en/skript/kalibrierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">64</span>&nbsp; <span class="chapter-title">Calibration</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true">
+ <span class="menu-text">m-analyse-von-zeitdaten-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-analyse-von-zeitdaten-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-analyse-von-zeitdaten-en/skript/01-einleitung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">65</span>&nbsp; <span class="chapter-title">1 Classification: Time Series as a Measurement Process</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-analyse-von-zeitdaten-en/skript/02-vorverarbeitung-validierung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">66</span>&nbsp; <span class="chapter-title">2 Preprocessing &amp; Validation of a Time Series</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-analyse-von-zeitdaten-en/skript/03-resampling-alignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">67</span>&nbsp; <span class="chapter-title">3 Resampling &amp; Alignment</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-analyse-von-zeitdaten-en/skript/04-glaettung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">68</span>&nbsp; <span class="chapter-title">4 Smoothing &amp; Noise Reduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-analyse-von-zeitdaten-en/skript/05-trend-saison.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">69</span>&nbsp; <span class="chapter-title">5 Trend &amp; Season</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-analyse-von-zeitdaten-en/skript/06-lags-autokorrelation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">70</span>&nbsp; <span class="chapter-title">6 Lags &amp; Autocorrelation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-analyse-von-zeitdaten-en/skript/07-anomalien.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">71</span>&nbsp; <span class="chapter-title">7 Anomalies</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-analyse-von-zeitdaten-en/skript/08-forecasting-baselines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">72</span>&nbsp; <span class="chapter-title">8 Forecasting Baselines &amp; Evaluation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-analyse-von-zeitdaten-en/skript/09-lernzielkontrolle.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">73</span>&nbsp; <span class="chapter-title">9 Learning Objectives Check</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-analyse-von-zeitdaten-en/skript/10-uebung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">74</span>&nbsp; <span class="chapter-title">Exercise 10: Time Series Workflow</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/m-analyse-von-zeitdaten-en/skript/11-klausurfragen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">75</span>&nbsp; <span class="chapter-title">11 Exam Questions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true">
+ <span class="menu-text">a-energiedatenanalyse-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/a-energiedatenanalyse-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/a-energiedatenanalyse-en/skript/energiedatenanalyse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">76</span>&nbsp; <span class="chapter-title">Energy Data Analysis</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
+ <span class="menu-text">a-auswertung-fds-daten-en</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/a-auswertung-fds-daten-en/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preamble</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/a-auswertung-fds-daten-en/skript/introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">77</span>&nbsp; <span class="chapter-title">Introduction to ASET</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/a-auswertung-fds-daten-en/skript/aset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">78</span>&nbsp; <span class="chapter-title">Available safe egress time</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/a-auswertung-fds-daten-en/skript/fdsreader.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">79</span>&nbsp; <span class="chapter-title">Fdsreader</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/a-auswertung-fds-daten-en/uebungen/uebung.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">80</span>&nbsp; <span class="chapter-title">uebung.html</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../books/a-auswertung-fds-daten-en/klausurfragen/klausurfragen.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">81</span>&nbsp; <span class="chapter-title">klausurfragen.html</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title"><p>Pseudocode Tool Module</p>
+<p><img src="skript/00-bilder/logo_with_text_new.svg" class="img-fluid"></p></h2>
+   
+  <ul class="collapse">
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link active" data-scroll-target="#prerequisites"><span class="header-section-number">2</span> Prerequisites</a></li>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link" data-scroll-target="#learning-objectives"><span class="header-section-number">3</span> Learning Objectives</a></li>
+  <li><a href="#pseudocode" id="toc-pseudocode" class="nav-link" data-scroll-target="#pseudocode"><span class="header-section-number">4</span> Pseudocode</a>
+  <ul class="collapse">
+  <li><a href="#what-is-pseudocode" id="toc-what-is-pseudocode" class="nav-link" data-scroll-target="#what-is-pseudocode"><span class="header-section-number">4.1</span> What Is Pseudocode?</a></li>
+  <li><a href="#pseudocode-from-simple-to-detailed" id="toc-pseudocode-from-simple-to-detailed" class="nav-link" data-scroll-target="#pseudocode-from-simple-to-detailed"><span class="header-section-number">4.2</span> Pseudocode From Simple to Detailed</a></li>
+  </ul></li>
+  <li><a href="#writing-pseudocode" id="toc-writing-pseudocode" class="nav-link" data-scroll-target="#writing-pseudocode"><span class="header-section-number">5</span> Writing Pseudocode</a>
+  <ul class="collapse">
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">5.1</span> Exercises</a></li>
+  <li><a href="#using-eva-for-a-focus-sprint" id="toc-using-eva-for-a-focus-sprint" class="nav-link" data-scroll-target="#using-eva-for-a-focus-sprint"><span class="header-section-number">5.2</span> Using EVA for a Focus Sprint</a></li>
+  <li><a href="#program-description-in-pseudocode" id="toc-program-description-in-pseudocode" class="nav-link" data-scroll-target="#program-description-in-pseudocode"><span class="header-section-number">5.3</span> Program Description in Pseudocode</a></li>
+  <li><a href="#visualizing-program-flow" id="toc-visualizing-program-flow" class="nav-link" data-scroll-target="#visualizing-program-flow"><span class="header-section-number">5.4</span> Visualizing Program Flow</a></li>
+  </ul></li>
+  <li><a href="#sample-solutions" id="toc-sample-solutions" class="nav-link" data-scroll-target="#sample-solutions"><span class="header-section-number">6</span> Sample Solutions</a></li>
+  <li><a href="#key-points" id="toc-key-points" class="nav-link" data-scroll-target="#key-points"><span class="header-section-number">7</span> Key Points</a></li>
+  <li><a href="#learning-assessment" id="toc-learning-assessment" class="nav-link" data-scroll-target="#learning-assessment"><span class="header-section-number">8</span> Learning Assessment</a>
+  <ul class="collapse">
+  <li><a href="#skills-quiz" id="toc-skills-quiz" class="nav-link" data-scroll-target="#skills-quiz"><span class="header-section-number">8.1</span> Skills Quiz</a></li>
+  <li><a href="#exercises-1" id="toc-exercises-1" class="nav-link" data-scroll-target="#exercises-1"><span class="header-section-number">8.2</span> Exercises</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en/blob/main/books/w-pseudocode-en/Pseudocode.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../books/w-pseudocode-en/Pseudocode.html">w-pseudocode-en</a></li><li class="breadcrumb-item"><a href="../../books/w-pseudocode-en/Pseudocode.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Pseudocode Tool Module</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Pseudocode Tool Module</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Authors</div>
+    <div class="quarto-title-meta-contents">
+             <p>Lukas Arnold </p>
+             <p>Simone Arnold </p>
+             <p>Florian Bagemihl </p>
+             <p>Matthias Baitsch </p>
+             <p>Marc Fehr </p>
+             <p>Franca Hollmann </p>
+             <p>Maik Poetzsch </p>
+             <p>Sebastian Seipel </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 17, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<div id="Lizenz" class="border">
+<!-- Die Lizenz wird manuell in einer Div erstellt, um Vorgaben für OER hinsichtlich Position und Format zu entsprechen. (licence key im YAML-Header funktioniert in PDF nicht.) -->
+<div class="quarto-layout-panel" data-layout="[20, 80]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 20.0%;justify-content: flex-start;">
+<p><img src="skript/00-bilder/CC-BY.svg" class="img-fluid" alt="Symbol des Lizenzhinweises Creative Commons BY"> <!-- Grafik ohne Titel und Dateiendung einbinden --></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 80.0%;justify-content: flex-start;">
+<p>Bausteine Computergestützter Datenanalyse by Lukas Arnold, Simone Arnold, Florian Bagemihl, Matthias Baitsch, Marc Fehr, Franca Hollmann, Maik Poetzsch and Sebastian Seipel. Pseudocode Tool Module by Maik Poetzsch is licensed under <a href="https://creativecommons.org/licenses/by/4.0/deed.en">CC BY 4.0</a>. The work is available on <a href="https://github.com/bausteine-der-datenanalyse">GitHub</a>. Excluded from the license are all logos and otherwise marked content. 2025</p>
+</div>
+</div>
+</div>
+<p>Suggested Citation</p>
+<p>Arnold, Lukas, Simone Arnold, Florian Bagemihl, Matthias Baitsch, Marc Fehr, Franca Hollmann, Maik Poetzsch, and Sebastian Seipel. 2025. “Bausteine Computergestützter Datenanalyse. Pseudocode Tool Module”. <a href="https://github.com/bausteine-der-datenanalyse/w-pseudocode-en" class="uri">https://github.com/bausteine-der-datenanalyse/w-pseudocode-en</a>.</p>
+<p>BibTeX Template</p>
+<pre><code>@misc{BCD-pseudocode-2025,
+ title={Bausteine Computergestützter Datenanalyse. Pseudocode Tool Module},
+ author={Arnold, Lukas and Arnold, Simone and Bagemihl, Florian and Baitsch, Matthias and Fehr, Marc and Hollmann, Franca and Poetzsch, Maik and Seipel, Sebastian},
+ year={2025},
+ url={https://github.com/bausteine-der-datenanalyse/w-pseudocode-en}}</code></pre>
+</div>
+<div style="page-break-after: always;"></div>
+<section id="prerequisites" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Prerequisites</h1>
+<p>There are no prerequisites for working on this module. Depending on the scope of the exercises you choose to complete, the estimated working time is approximately 120 to 300 minutes.</p>
+<p>During the work on this module, flowcharts <em>can</em> be created using Python or R, among other tools. For this purpose, the following libraries are required:</p>
+<ul>
+<li><p>Python: <a href="https://pypi.org/project/schemdraw/">Schemdraw</a> and/or <a href="https://pypi.org/project/graphviz/">graphviz</a>. To run Graphviz, a local installation of the program <a href="https://www.graphviz.org/">Graphviz</a> is also required.</p></li>
+<li><p>R: <a href="https://cran.r-project.org/web/packages/DiagrammeR/index.html">DiagrammeR</a></p></li>
+</ul>
+<p>At the end of the module, there is the option to develop a program to evaluate a stock market trading strategy. For illustration purposes, an excerpt from the file <code>ie_data.xls</code> created by Robert Shiller, containing historical stock market data for the S&amp;P 500, is used. The file can be obtained from <a href="https://shillerdata.com/" class="uri">https://shillerdata.com/</a>.</p>
+</section>
+<section id="learning-objectives" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Learning Objectives</h1>
+<p>In this module, you will learn how to use pseudocode to structure (complex) problem statements and to develop a program for computer-based data analysis step by step. In addition, you will learn how to visualize the program flow in the form of a flowchart, both for your own understanding and for communication with others.</p>
+<p>After completing this module, you will be able to …</p>
+<ul>
+<li><p>use the development of pseudocode as a creativity technique,</p></li>
+<li><p>describe a program using pseudocode,</p></li>
+<li><p>break a program down into clearly defined intermediate steps and arrange them in a purposeful sequence,</p></li>
+<li><p>describe the dependencies between the intermediate steps,</p></li>
+<li><p>identify the prerequisites for executing each intermediate step as well as the entire program, and</p></li>
+<li><p>visualize the program flow as a flowchart.</p></li>
+</ul>
+<p>Keywords: developing ideas, program description, pseudocode, flowchart, DIN 66001</p>
+</section>
+<section id="pseudocode" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Pseudocode</h1>
+<div style="position: relative; width: 100%; aspect-ratio: 16 / 9;">
+<p><iframe src="https://av.tib.eu/player/71642" allowfullscreen="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></p>
+</div>
+<p>&nbsp;</p>
+<section id="what-is-pseudocode" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="what-is-pseudocode"><span class="header-section-number">4.1</span> What Is Pseudocode?</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="skript/00-bilder/festmahl-PCL.svg" class="img-fluid figure-img" style="width:50.0%" alt="Decorative image of a group of four people sitting at a set dining table. A man has stood up to make a toast."></p>
+<figcaption>&nbsp;</figcaption>
+</figure>
+</div>
+<div class="border">
+<p>Toast Dining Eating by OpenClipart-Vectors is licensed under the <a href="https://pixabay.com/service/license-summary/">Pixabay Content License</a>. The work is available on <a href="https://pixabay.com/vectors/toast-dining-eating-event-festive-153723/">Pixabay</a>. 2013</p>
+</div>
+<p>&nbsp;</p>
+<p>Think of preparing a festive meal. You have found a recipe online, bought all the ingredients from the ingredient list, and start cooking according to the preparation time stated so that everything is ready before your guests arrive. Sounds good, right? Well, this approach often results in hungry guests, because recipes are rarely complete step-by-step instructions but instead require some preparatory work:</p>
+<ul>
+<li><p>Sometimes ingredients are missing from the ingredient list; sometimes an ingredient that needs to be purchased is not mentioned in the recipe steps and is left unused at the end. In step four, the dough has already been resting in the refrigerator for two hours and the oven has already been preheated to 250 degrees. A complete task description requires preparation: only those who know all dependencies will finish on time.</p></li>
+<li><p>In the kitchen, a specialized technical language is used: Do you know what blanching means, why even clean vegetables should be trimmed, when pasta is al dente, or whether the sauce should already be flaming before it is deglazed? If not, some translation work into a language you understand is required first.</p></li>
+<li><p>If you do not have a knife, you cannot cut bread: ingredients are not everything; the right tools are also required for a successful dish. Do you have everything in your kitchen that you need for preparation?</p></li>
+</ul>
+<p>In short: you need your own plan—not only when cooking, but also when performing computer-based data analysis. Data analysis is rarely linear. Instead, steps for organizing, visualizing, analyzing, and further processing data alternate. A wide variety of programs with their own syntax are available for this purpose. Or is a self-written function better suited? Data are often available in different formats and must be transformed for use with specialized programs.<br>
+These are typical challenges of data analysis that can be addressed through good planning. Pseudocode helps you with this planning.</p>
+<p>Pseudocode describes a program and computer science concepts in an easily understandable, everyday language. Developing pseudocode can be used both as a creativity technique and as a template for the structured solution of tasks. Pseudocode allows you to initially focus on the conceptual solution of a task and the planning of the program structure. This can be useful for simplifying development by dividing the program into intermediate steps, identifying required programs, packages, and methods, or estimating the workload.</p>
+<p>Pseudocode is also a tool for communicating about a program with others, for example when discussing a problem in code. Because pseudocode does not require knowledge of a specific programming language, it is intuitively understandable. To support the communicative function of pseudocode, it can, for example, be visualized as a flowchart.</p>
+<div id="imp-Pseudocode" class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Definition&nbsp;4.1: Pseudocode
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Pseudocode describes a solution approach for computational tasks using a formalized everyday language instead of the expressions and syntax of a programming language. The prefix <em>pseudo</em> comes from Greek and means false or only appearing to be something. Pseudocode is “false” program code that is formed using natural language. <span class="citation" data-cites="Pseudocode-was-ist">(<a href="#ref-Pseudocode-was-ist" role="doc-biblioref">AAU 2019</a>)</span><br>
+Pseudocode is also a means of communication for discussing computational problems and their solutions with others (e.g., fellow students, supervisors).</p>
+</div>
+</div>
+</section>
+<section id="pseudocode-from-simple-to-detailed" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="pseudocode-from-simple-to-detailed"><span class="header-section-number">4.2</span> Pseudocode From Simple to Detailed</h2>
+<p>The form and level of detail with which you formulate pseudocode depend on your level of knowledge and your goal: for structuring your program into sequential intermediate steps and identifying dependencies, a simple list of work steps is sufficient. For developing an algorithm and identifying required methods (e.g., loops) and tools (e.g., specialized packages), it will be necessary to describe program instructions in more detail. A detailed representation helps you, for example, to identify recurring work steps that can be outsourced into a function. For presenting your program at a scientific conference or documenting it in a user manual, a flowchart may be appropriate.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">simple</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">intermediate</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Detailed</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href="">Flowchart</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>Program instruction with a descriptive name</p>
+<p><code>SortAscending</code></p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>Instruction block in everyday language</p>
+<pre><code>  SortAscending
+    IterateDataset (DatasetLength - 1) times # Number of repetitions
+      From beginning to (DatasetLength - 1) # Pairwise comparisons
+        Compare value and successor
+        IF value greater than successor THEN
+          Swap value and successor
+    OutputDataset</code></pre>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<p>Block of instructions in the style and using the terminology of programming</p>
+<pre><code>  SortAscending  
+    IF DatasetLength &gt; 1 THEN
+      FROM Dataset[IndexA = 1] TO Dataset[IndexA = DatasetLength - 1] DO # Number of loop iterations
+        FROM Dataset[IndexB = 1] TO Dataset[IndexB = DatasetLength - 1] DO # Pairwise comparisons
+          IF Dataset[IndexB] &gt; Dataset[IndexB + 1] THEN
+            Swap(Dataset[IndexB], Dataset[IndexB + 1])
+              Write(Dataset[IndexB], to = TempStorage)
+              Write(Dataset[IndexB + 1], to = Dataset[IndexB])
+              Write(TempStorage, to = Dataset[IndexB + 1])
+          IF IndexB &lt; DatasetLength - 1 THEN
+            Increment IndexB
+      IF IndexA &lt; DatasetLength - 1 THEN
+        Increment IndexA
+    OutputDataset</code></pre>
+</div>
+<div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="skript/00-bilder/flussdiagramm-bubblesort-ms-mp.png" class="img-fluid figure-img" style="width:50.0%" alt="A flowchart that illustrates the program flow from the tab in detail."></p>
+<figcaption>Flowchart Sort Ascending</figcaption>
+</figure>
+</div>
+<div class="border">
+<p>Flowchart by Marc Sönnecken and Maik Poetzsch</p>
+</div>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+</section>
+</section>
+<section id="writing-pseudocode" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Writing Pseudocode</h1>
+<p>The following schema helps you develop ideas, describe a program, and visualize the program flow. Pseudocode allows you to describe your program as well as the required tools and methods in a way that is understandable to yourself and others. How you write pseudocode is an individual matter, as there are only a few rules. Pseudocode primarily helps you develop a solution approach for a given task. Pseudocode is considered ‘correctly’ written if it helps you:</p>
+<ul>
+<li><p>focus your thoughts,</p></li>
+<li><p>describe a task in a way that is understandable to you,</p></li>
+<li><p>break the task into clearly defined sub-tasks,</p></li>
+<li><p>develop a solution procedure (algorithm) for the sub-tasks,</p></li>
+<li><p>identify required methods and tools,</p></li>
+<li><p>describe your solution procedures as a program of consecutive steps,</p></li>
+<li><p>estimate the time required for implementation, and</p></li>
+<li><p>communicate your program to others.</p></li>
+</ul>
+<section id="exercises" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="exercises"><span class="header-section-number">5.1</span> Exercises</h2>
+<p>For this module, two exercises are available. They are designed to be approachable for students without prior knowledge in data analysis and illustrate aspects of program development. However, it is often best to work on your own project. In the “Own Project” tab, you can formulate your own task.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Overview</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Own Project</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">Baking a Sweet Braid</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false" href="">Vitamin C in Guinea Pigs</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<ul>
+<li><p>No prior data analysis knowledge: Baking a Sweet Braid<br>
+Learning goals: Break a task into consecutive steps, fully describe each step, identify dependencies and prerequisites (required tools, estimate time).</p></li>
+<li><p>With prior data analysis knowledge: Vitamin C in Guinea Pigs<br>
+Learning goals: Describe data analysis using pseudocode.</p></li>
+</ul>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>Here you can note down your task or project goal. Please note that your text will not be saved.</p>
+<textarea id="own-project" name="own-project" rows="4" cols="50"></textarea>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<p>Your friend Lisa sends you a recipe she found online. She writes that she can arrive an hour earlier than planned tomorrow to bake together with you – working together will be faster than the 65 minutes stated in the recipe. Lisa also asks if she should bring any ingredients.</p>
+<p><strong>How would you respond to Lisa? Model the baking process.</strong></p>
+<div class="border">
+<p>The following recipe was created by Anna-Lena and is available at <a href="https://www.einfachbacken.de/rezepte/hefezopf" class="uri">https://www.einfachbacken.de/rezepte/hefezopf</a>.</p>
+<p><strong><em>Tender Sweet Braid</em></strong><br>
+Preparation time: 40 min<br>
+Baking time: 25 min</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Ingredients</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>250 ml</td>
+<td>milk</td>
+</tr>
+<tr class="even">
+<td>475 g</td>
+<td>wheat flour (Type 405)</td>
+</tr>
+<tr class="odd">
+<td>60 g</td>
+<td>sugar</td>
+</tr>
+<tr class="even">
+<td>½ cube</td>
+<td>fresh yeast (approx. 21 g)</td>
+</tr>
+<tr class="odd">
+<td>50 g</td>
+<td>soft butter (room temperature)</td>
+</tr>
+<tr class="even">
+<td>1 pinch</td>
+<td>salt</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>egg (size M)</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>some milk for brushing</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>some pearl sugar for sprinkling</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>some flour for dough handling</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<p><strong>Step 1</strong></p>
+<p><strong>250 ml</strong> milk, <strong>475 g</strong> wheat flour (Type 405), <strong>1 pinch</strong> sugar, <strong>½ cube</strong> fresh yeast (approx. 21 g)</p>
+<p>Warm the milk until lukewarm. Sift the flour into a bowl. Make a well in the flour and crumble the yeast into the well. Mix 3 tbsp of the lukewarm milk with 1 pinch of sugar and pour over the yeast in the well. Stir the yeast-milk mixture lightly with a spoon (do not knead the flour yet). Cover the bowl with a kitchen towel and let it rest in a warm place for about 15 minutes.</p>
+<p><strong>Step 2</strong></p>
+<p><strong>1</strong> egg (size M), <strong>60 g</strong> sugar, <strong>1 pinch</strong> salt, <strong>50 g</strong> soft butter (room temperature)</p>
+<p>Add the egg, remaining milk, remaining sugar, and salt to the bowl and knead together with the yeast mixture and flour for 3 min on low speed, then approx. 5 min on high speed using the mixer hooks. Gradually knead in the butter in pieces. To ensure the dough rises well, knead it vigorously for at least 5 min. Otherwise, the dough may collapse later or be sticky!</p>
+<p><strong>Step 3</strong></p>
+<p>some flour for dough handling</p>
+<p>Cover the bowl with the dough again with a kitchen towel and let it rest in a warm place for another 60 min. Then place the dough on a floured surface and divide it into three parts. Roll each dough piece into a long sausage, about 40 cm long. Braid the dough strands. Twist the ends together and tuck them under the braid to create a neat finish. Place the braid on a baking sheet lined with parchment paper and cover with a kitchen towel. Let it rest for another 45 min.</p>
+<p><strong>Step 4</strong></p>
+<p>some milk for brushing, some pearl sugar for sprinkling</p>
+<p>Meanwhile, preheat the oven to <strong>200°C top/bottom heat (180°C fan)</strong>. Brush the braid with some milk and sprinkle with pearl sugar. Bake the braid in the preheated oven for <strong>about 15-20 minutes</strong> until lightly browned. Let it cool completely. The braid can also be frozen.</p>
+</div>
+</div>
+<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
+<p>In a group of 60 guinea pigs, the length of odontoblasts (tooth-forming cells) was measured in microns (<strong>len</strong>). The animals had previously been given Vitamin C as ascorbic acid (VC) or orange juice (OJ) (<strong>supp</strong>). The guinea pigs received doses of 0.5, 1, or 2 milligrams of Vitamin C per day (<strong>dose</strong>). <span class="citation" data-cites="Crampton.1947">(<a href="#ref-Crampton.1947" role="doc-biblioref">Crampton 1947</a>)</span></p>
+<p><strong>What effect does Vitamin C have on tooth growth in guinea pigs? Describe your approach using pseudocode or a flowchart to determine the effect of supplement type and dose.</strong></p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>#</th>
+<th>len</th>
+<th>supp</th>
+<th>dose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>4.2</td>
+<td>VC</td>
+<td>0.5</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>16.5</td>
+<td>VC</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>21</td>
+<td>23.6</td>
+<td>VC</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>31</td>
+<td>15.2</td>
+<td>OJ</td>
+<td>0.5</td>
+</tr>
+<tr class="odd">
+<td>41</td>
+<td>19.7</td>
+<td>OJ</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>51</td>
+<td>25.5</td>
+<td>OJ</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<p>If you want to view the complete dataset, you can access it in R with <code>ToothGrowth</code> or download the dataset here: <a href="https://vincentarelbundock.github.io/Rdatasets/csv/datasets/ToothGrowth.csv">ToothGrowth.csv</a></p>
+</div>
+</div>
+</div>
+</section>
+<section id="using-eva-for-a-focus-sprint" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="using-eva-for-a-focus-sprint"><span class="header-section-number">5.2</span> Using EVA for a Focus Sprint</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="skript/00-bilder/adam-eve-PCL-de.png" class="img-fluid figure-img" style="width:50.0%" alt="Decorative graphic: The biblical Eve hands Adam an apple in paradise. She says: Try a Focus Sprint!"></p>
+<figcaption>&nbsp;</figcaption>
+</figure>
+</div>
+<div class="border">
+<p>Adam Bible Nature by CCXpistiavos is licensed under the <a href="https://pixabay.com/service/license-summary/">Pixabay Content License</a>. Available on <a href="https://pixabay.com/vectors/adam-bible-bible-pics-2061819/">Pixabay</a>. The speech bubble has been added.</p>
+</div>
+<p>&nbsp;</p>
+<p>Sometimes getting started is the hardest part. The first step in program development is idea collection: What exactly should be done, which steps are required, what can already be done, and what still needs preparation or research? <strong>If you already have a clear idea of the solution, you can skip this step.</strong></p>
+<p>The <strong>Focus Sprint</strong> (Scheuermann 2016) is a fast writing exercise to get started on writing about a specific topic. The exercise can be used as a creativity technique for starting a topic or as a thinking aid during work. The goal is to write quickly, which allows you to get close to your inner voice and let creativity flow. <span class="citation" data-cites="Scheuermann2016">(<a href="#ref-Scheuermann2016" role="doc-biblioref">Scheuermann 2016, 74, 78</a>)</span></p>
+<p>The Focus Sprint is conducted in two steps: The first step is a five-minute writing phase. Write the task or problem you want to explore on paper or a computer. You can use a keyword or formulate a specific question. Set a timer for 5 minutes and start writing quickly on your prepared sheet. There is only one rule: If you notice your thoughts drifting off-topic, return to the topic, for example, by rewriting the task where you are currently writing. <span class="citation" data-cites="Scheuermann2016">(<a href="#ref-Scheuermann2016" role="doc-biblioref">Scheuermann 2016, 78</a>)</span></p>
+<section id="focus-sprint" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="focus-sprint">Focus Sprint</h3>
+<p><strong>You can perform your Focus Sprint in this text field. Please note that your text will not be saved. So: 3, 2, 1 – start writing in your own words!</strong></p>
+<textarea id="focussprint-textarea" name="focussprint-textarea" rows="4" cols="50"></textarea>
+<p>&nbsp;</p>
+<p>The second step is evaluation. Read through your Focus Sprint and highlight what seems important. Can you identify intermediate steps? If so, highlight them and add notes, comments, or questions. <span class="citation" data-cites="Scheuermann2016">(cf. <a href="#ref-Scheuermann2016" role="doc-biblioref">Scheuermann 2016, 78</a>)</span></p>
+<div id="tip-intermediate-steps" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;5.2: Identifying Intermediate Steps
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Intermediate steps break a complex task into manageable work packages that each perform a specific function in the program flow (e.g., sorting data) or produce a specific output (e.g., a chart). An intermediate step is a subroutine, and creating intermediate steps helps break a task into subtasks and understand which steps must be executed in a subroutine to solve the subtask.</p>
+<p>The main purpose of creating intermediate steps is to reduce complexity. A subroutine developed for a defined subtask can be easily tested to identify and fix errors. Subroutines can also be reused in the program flow, e.g., to simplify the solution of another, more complex subtask.</p>
+<p>When defining intermediate steps, other criteria can also be useful, such as the location of data processing (e.g., at the measuring site, on a workstation, in a data center) or the tools used (e.g., microcontroller, Python, C++, manual data processing).</p>
+<div id="tip-exercise-steps" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;5.1: Possible Intermediate Steps for Exercises
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Baking a braided yeast bread</p>
+<ul>
+<li><p>By function: Prepare ingredients, process ingredients, bake</p></li>
+<li><p>By output: Prepare milk mixture, prepare yeast mixture, prepare raw dough, shape dough braid, bake braid</p></li>
+</ul>
+<p>Vitamin C for guinea pigs</p>
+<ul>
+<li><p>By function: Create subsets, analyze dataset, visualize dataset, create flowchart</p></li>
+<li><p>By output: Tabulated mean comparison, boxplot for all subgroups, Mermaid flowchart</p></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The <strong>EVA principle</strong> helps you fully describe intermediate steps. EVA is a basic pattern in computer-based data processing: <strong>E</strong>ntry, <strong>P</strong>rocessing, <strong>O</strong>utput. These steps follow in order: first data is collected, then processed, and finally results are output.</p>
+<ul>
+<li><p>Entry: What data is provided as input? What format is it in?</p></li>
+<li><p>Processing: What steps must be performed to achieve the described output?</p></li>
+<li><p>Output: What result should the data processing produce? What format should the output be in?</p></li>
+</ul>
+<p>To conclude, summarize your focus sprint in one core sentence that highlights what is most important to you. This can be a statement, but also an open question that you would like to pursue further. Mark this core sentence additionally. <span class="citation" data-cites="Scheuermann2016">(<a href="#ref-Scheuermann2016" role="doc-biblioref">Scheuermann 2016, 79</a>)</span></p>
+<p>With this, you have completed the first step toward formulating a complete program description! If you wish, you can deepen your thoughts on an open question or an intermediate step with another focus sprint. Otherwise, the next step follows now.</p>
+</section>
+</section>
+<section id="program-description-in-pseudocode" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="program-description-in-pseudocode"><span class="header-section-number">5.3</span> Program Description in Pseudocode</h2>
+<p>You now have an idea of your solution path, its intermediate steps, and their sequence. The next step is formalizing your program using pseudocode. Program instructions are described in everyday language but with programming style and terminology. This means:</p>
+<ol type="1">
+<li><p>Assign meaningful names to instructions. In data analysis, common instructions are:</p>
+<ul>
+<li><p>Import data (<code>import</code>), e.g., FetchDataFromLocation</p></li>
+<li><p>Organize data (<code>tidy</code>), e.g., SortAscending</p></li>
+<li><p>Transform data (<code>transform</code>), e.g., ComputeAverage</p></li>
+<li><p>Visualize data (<code>visualise</code>), e.g., GenerateHistogram</p></li>
+<li><p>Model data (<code>model</code>), e.g., CreateLinearModel</p></li>
+<li><p>Export data (<code>export</code>), e.g., SavePlot</p></li>
+</ul>
+<p><span class="citation" data-cites="R-for-Data-Science">(cf. <a href="#ref-R-for-Data-Science" role="doc-biblioref">Wickham et al. 2023</a>, Chapter Whole Game)</span></p></li>
+<li><p>to document the program flow by</p>
+<ul>
+<li><p>writing consecutive program statements one below the other,</p></li>
+<li><p>making blocks of program statements recognizable through indentation and/or bracketing, and</p></li>
+<li><p>grouping related program statements into clearly separated intermediate steps.</p></li>
+</ul></li>
+<li><p>to separate program statements from explanatory parts by using comments, by</p>
+<ul>
+<li><p>marking comments with special symbols, for example <code>// comment</code>, <code># comment</code>, <code>%% comment</code>, or <code>/* comment */</code>, and</p></li>
+<li><p>placing them in front of individual work steps (e.g., short descriptions of intermediate steps according to the EVA model) and/or using them within a line.</p></li>
+</ul></li>
+<li><p>Expressing complex program instructions using computer science terminology, where appropriate in accordance with the concepts and syntax of the programming language you have chosen. This includes:</p></li>
+</ol>
+<p><strong>Conditional statements:</strong> Conditional statements make the execution of program instructions dependent on one or more conditions.</p>
+<ul>
+<li><p>IF A (less than, less than or equal to, exactly equal to, greater than, greater than or equal to, not equal to) B, THEN C, ELSE D</p></li>
+<li><p>IF A B1 AND B2, THEN C</p></li>
+<li><p>IF A B1 OR B2, THEN C</p></li>
+</ul>
+<p><strong>Loops:</strong> Loops repeat program instructions as long as the entry condition holds or until the termination condition is met.</p>
+<ul>
+<li><p>WHILE A, DO C</p></li>
+<li><p>FROM A TO B, DO C</p></li>
+</ul>
+<p><strong>Functions:</strong> Functions bundle program instructions so that parts of a program can be reused multiple times. Functions are a form of subprograms.</p>
+<ul>
+<li>FunctionDoXY(Argument 1, Argument 2, …)<br>
+Instruction1<br>
+Instruction2<br>
+…</li>
+</ul>
+<div id="nte-example-pseudocode" class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Example&nbsp;5.1: Program Description in Pseudocode
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<pre><code># Input: one-dimensional, ordinal dataset
+# Processing: check if dataset contains at least two values
+## if not: error message
+## if yes: ascending sort using bubble sort with control structure for the outer loop
+# Output: ascending sorted dataset
+
+  SortAscending(Dataset)
+    IF DatasetLength &gt; 1 THEN
+
+      # outer loop
+      do_work = TRUE # control structure for the outer loop
+      IF do_work == TRUE THEN
+
+        FROM Dataset[IndexA = 1] TO Dataset[DatasetLength - 1] DO
+          do_work = FALSE
+
+          # inner loop for pairwise comparisons
+          FROM Dataset[IndexB = 1] TO Dataset[DatasetLength - 1] DO
+            IF Dataset[IndexB] &gt; Dataset[IndexB + 1] THEN
+              Swap(Dataset[IndexB], Dataset[IndexB + 1])
+                Write(Dataset[IndexB], to = TempStorage)
+                Write(Dataset[IndexB + 1], to = Dataset[IndexB])
+                Write(TempStorage, to = Dataset[IndexB + 1])
+              do_work = TRUE # mark if a swap occurred
+            IF IndexB &lt; DatasetLength - 1 THEN
+              Increment IndexB
+          
+          IF IndexA &lt; DatasetLength - 1 THEN
+            Increment IndexA
+
+      OutputDataset
+    ELSE
+      Report("The dataset must contain at least two elements!")
+</code></pre>
+<p><em>Note: Manually incrementing the counter is usually not required in programming languages and is used here only for better clarity.</em></p>
+</div>
+</div>
+</div>
+<p>By formalizing your program in pseudocode, you have developed an intuitively understandable, complete program description. The next step is to visualize your program graphically.</p>
+<p>&nbsp;</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Counting Exercise</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Sample Pseudocode Solution</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<p><strong>Describe a program in pseudocode that counts from 1 to 10 and from 15 to 20.</strong></p>
+<p>You can write your pseudocode in this text field. Please note that your text will not be saved.</p>
+<textarea id="exercise-area2" name="exercise-area2" rows="4" cols="50"></textarea>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<pre><code>i = 0
+WHILE i is smaller then 10 DO
+  increase i by 1
+  output i
+i = 14
+WHILE i is smaller then 20 DO
+  increase i by 1
+  output i</code></pre>
+</div>
+</div>
+</div>
+<section id="karel-the-robot" class="level3">
+<h3 class="anchored" data-anchor-id="karel-the-robot">Karel The Robot</h3>
+<p>If you want to practice the application of computer science concepts such as conditionals or loops, <a href="https://github.com/fredoverflow/karel">Karel The Robot</a> is well worth a look. The program introduces the application of computer science control structures using its own pseudocode language.</p>
+<p>An introduction to the program, along with instructions for installation and usage, can be found on the GitHub page linked in the previous paragraph or on the YouTube channel of Medienberatung Niedersachsen:</p>
+<div class="border">
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/vD8RN_WbvLo" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>Learning to program with Karel by Medienberatung Niedersachsen is licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY</a>. The work is available on <a href="https://www.youtube.com/watch?v=vD8RN_WbvLo">YouTube</a>. 2022</p>
+</div>
+</section>
+</section>
+<section id="visualizing-program-flow" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="visualizing-program-flow"><span class="header-section-number">5.4</span> Visualizing Program Flow</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="skript/00-bilder/woman-speaker.png" class="img-fluid figure-img" style="width:50.0%" alt="A person speaking through a megaphone"></p>
+<figcaption>&nbsp;</figcaption>
+</figure>
+</div>
+<div class="border">
+<p>Lead 1 by CocoMaterial is licensed under <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a>. The work is available on <a href="https://cocomaterial.com/results?q=megaphone&amp;vectorId=65">CocoMaterial</a>.</p>
+</div>
+<p>&nbsp;</p>
+<p>A clear graphical representation gives pseudocode even more clarity and thus particularly supports communication with others. The graphical representation of a program is called a flowchart. The symbols used for a flowchart are standardized in <span class="citation" data-cites="DIN-66001-1983">(<a href="#ref-DIN-66001-1983" role="doc-biblioref">DIN 1983</a>)</span>. The shapes are also referred to as nodes, and the connections as edges.</p>
+<!-- For technical reasons, these are rendered graphics -->
+<!-- see mermaid-code.txt -->
+<div class="quarto-layout-panel" data-layout="[30, 70]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: center;">
+<p><img src="skript/00-bilder/start-stopp.svg" class="img-fluid" alt="Rounded rectangle labeled Start / Stop"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<dl>
+<dt>Rounded rectangle (Number 6.4.1)</dt>
+<dd>
+Interface to the environment that indicates the beginning and end of a sequence and, for example, signals the origin or destination of data.
+</dd>
+</dl>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: center;">
+<p><img src="skript/00-bilder/verarbeitung.svg" class="img-fluid" alt="Rectangle labeled Processing"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<dl>
+<dt>Rectangle (Number 6.1.1)</dt>
+<dd>
+Processing including input/output
+</dd>
+</dl>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: center;">
+<p><img src="skript/00-bilder/entscheidung.svg" class="img-fluid" alt="Diamond with two arrows labeled true and false leading to two rectangles, Instruction 1 and Instruction 2."></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<dl>
+<dt>Diamond (Number 6.1.2)</dt>
+<dd>
+Branching / decision
+</dd>
+</dl>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: center;">
+<p><img src="skript/00-bilder/unterprogramm.svg" class="img-fluid" alt="Subroutine Make coffee consisting of a rectangle with double vertical lines 'Make coffee' and a framed sequence of connected rectangles 'Insert filter'–'Add coffee grounds'–'Add water'–'Turn on coffee machine'. The framed sequence is titled Make coffee."></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<dl>
+<dt>Rectangle with double vertical lines (Number 7.2.4)</dt>
+<dd>
+Reference to a program documented elsewhere
+</dd>
+</dl>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: center;">
+<p><img src="skript/00-bilder/verbindungen.svg" class="img-fluid" alt="Flowchart showing the use of labeled arrows and lines of different lengths."></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<dl>
+<dt>Connection (Number 6.3.1)</dt>
+<dd>
+Process chains are connected with lines or arrows. Connections are oriented from left to right or from top to bottom; deviations must be indicated with arrowheads.
+</dd>
+<dd>
+If multiple outputs are associated with conditions, these must be identified by labels on the connecting lines.
+</dd>
+<dd>
+Multiple connections to a symbol can be merged into one connection. However, crossing connection lines should be avoided. These do not represent a merge. (<em>Note: Schemdraw is recommended for displaying merged connections.</em>)
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<p><span class="citation" data-cites="DIN-66001-1983">(<a href="#ref-DIN-66001-1983" role="doc-biblioref">DIN 1983</a>)</span></p>
+<div id="wrn-DIN66001" class="callout callout-style-simple callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note&nbsp;5.1: Representation of Data According to DIN 66001
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>DIN 66001 also defines symbols for representing data. However, the standard specifies for flowcharts: “Data are not represented. See example in section A.2.” <span class="citation" data-cites="DIN-66001-1983">(<a href="#ref-DIN-66001-1983" role="doc-biblioref">DIN 1983, 2</a>)</span>. Nevertheless, specific types of data are shown in example A.2, such as manually or machine-processed data <span class="citation" data-cites="DIN-66001-1983">(<a href="#ref-DIN-66001-1983" role="doc-biblioref">DIN 1983, 13–14</a>)</span>.</p>
+<p>However, the symbols for specific data types defined in numbers 6.2.2 to 6.2.10 are not fully available in all diagram tools. This affects:</p>
+<ul>
+<li><p><a href="https://graphviz.org/doc/info/shapes.html">Graphviz</a> (e.g., machine-processed data according to number 6.2.2)</p></li>
+<li><p><a href="https://mermaid.js.org/syntax/flowchart.html#node-shapes">Mermaid</a> (e.g., machine-processed data according to number 6.2.2)</p></li>
+<li><p>Office software suite LibreOffice (e.g., manually processed data according to number 6.2.3)</p></li>
+</ul>
+<p>In the representation of flowcharts, the use of symbol No.&nbsp;6.2.1 (general data) is common practice.</p>
+<div class="quarto-layout-panel" data-layout="[30, 70]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="skript/00-bilder/din-daten-allgemein.svg" class="img-fluid figure-img"></p>
+<figcaption>&nbsp;</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<dl>
+<dt>Data (Number 6.2.1)</dt>
+<dd>
+Representation for data or data carriers in general
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<!-- Note: For technical reasons, this is a rendered graphic (Quarto issue #9677). -->
+</div>
+</div>
+</div>
+<section id="tools-for-creating-flowcharts" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="tools-for-creating-flowcharts">Tools for Creating Flowcharts</h3>
+<p>Flowcharts can be created in various ways:</p>
+<ul>
+<li><p>with pen and paper,</p></li>
+<li><p>with office software suites such as LibreOffice,</p></li>
+<li><p>with visualization programs such as <a href="https://graphviz.org/">Graphviz</a> or <a href="https://mermaid.js.org/">Mermaid</a>,</p></li>
+<li><p>with specialized packages such as <a href="https://cran.r-project.org/web/packages/DiagrammeR/index.html">DiagrammeR</a> or <a href="https://schemdraw.readthedocs.io/en/latest/elements/flow.html">Schemdraw</a>.</p></li>
+</ul>
+<p>The range of functions and syntax differ, and each tool has its own strengths. Mermaid, Graphviz, and Schemdraw are declarative drawing tools with which flowcharts (and other graphics) can be written and rendered visually. Mermaid has a simple, intuitive syntax. Graphviz allows more design options (but requires a local system installation when used with Python). The Python module Schemdraw supports a syntax similar to Python code and provides easy access to DIN-compliant nodes and edges.</p>
+<div id="nte-flowcharts" class="callout callout-style-default callout-note callout-titled" title="Creating Flowcharts in Python and R">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Example&nbsp;5.2: Creating Flowcharts in Python and R
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Code Example Python</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Schemdraw in Python</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-3" role="tab" aria-controls="tabset-4-3" aria-selected="false" href="">R code example</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-4" role="tab" aria-controls="tabset-4-4" aria-selected="false" href="">Mermaid in R</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Flowchart with Schemdraw and Graphviz in Python</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">## Schemdraw</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> subprocess</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>subprocess.call([<span class="st">'pip'</span>, <span class="st">'install'</span>, <span class="st">'schemdraw'</span>])</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> schemdraw</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> schemdraw.flow <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> schemdraw.Drawing() <span class="im">as</span> drawing:</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># continuous process in correct order from start to end</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> Start().label(<span class="st">"Lunch Break"</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> Line().down()</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> Box().label(<span class="st">"Count potatoes"</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> Line().down()</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> (with_peel <span class="op">:=</span> Decision(S<span class="op">=</span><span class="st">"Yes"</span>, E<span class="op">=</span><span class="st">"No"</span>).label(<span class="st">"With peel?"</span>))</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> Arrow().at(with_peel.S)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> (cook <span class="op">:=</span> Box().label(<span class="st">"Cook potatoes"</span>))</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> Line().down()</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> Box().label(<span class="st">"Eat potatoes"</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> Line().down()</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> Start().label(<span class="st">"Break End"</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># alternative branch of the decision</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> Arrow().right().at(with_peel.E)</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> (peel <span class="op">:=</span> Box().label(<span class="st">"Peel potatoes"</span>))</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    drawing <span class="op">+=</span> Wire(<span class="st">"|-"</span>, arrow<span class="op">=</span><span class="st">"-&gt;"</span>).at(peel.S).to(cook.E)  <span class="co"># .S + .E (or other directions) must be set; |- first defines a vertical, right-angled edge</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    drawing.draw()</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># drawing.save("Potatoes.svg")</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co">## Graphviz</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="co">## requires a local installation of Graphviz https://graphviz.org/download/</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> subprocess</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>subprocess.call([<span class="st">'pip'</span>, <span class="st">'install'</span>, <span class="st">'graphviz'</span>])  <span class="co"># installs the graphviz module</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> graphviz</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>dot <span class="op">=</span> graphviz.Digraph(name<span class="op">=</span><span class="st">"Potatoes"</span>)</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="co">### Start / End</span></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>dot.node(name<span class="op">=</span><span class="st">"Lunch Break"</span>, shape<span class="op">=</span><span class="st">"Mrecord"</span>)</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>dot.node(name<span class="op">=</span><span class="st">"Break End"</span>, shape<span class="op">=</span><span class="st">"Mrecord"</span>)</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="co">### Instructions</span></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>dot.node(name<span class="op">=</span><span class="st">"Count potatoes"</span>, shape<span class="op">=</span><span class="st">"box"</span>)</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>dot.node(name<span class="op">=</span><span class="st">"Peel potatoes"</span>, shape<span class="op">=</span><span class="st">"box"</span>)</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>dot.node(name<span class="op">=</span><span class="st">"Cook potatoes"</span>, shape<span class="op">=</span><span class="st">"box"</span>)</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>dot.node(name<span class="op">=</span><span class="st">"Eat potatoes"</span>, shape<span class="op">=</span><span class="st">"box"</span>)</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a><span class="co">### Decision</span></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>dot.node(name<span class="op">=</span><span class="st">"with peel"</span>, shape<span class="op">=</span><span class="st">"diamond"</span>)</span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="co">### Edges</span></span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>dot.edge(<span class="st">"Lunch Break"</span>, <span class="st">"Count potatoes"</span>, arrowhead<span class="op">=</span><span class="st">"none"</span>)</span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>dot.edge(<span class="st">"Count potatoes"</span>, <span class="st">"with peel"</span>, arrowhead<span class="op">=</span><span class="st">"none"</span>)</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>dot.edge(<span class="st">"with peel"</span>, <span class="st">"Cook potatoes"</span>, label<span class="op">=</span><span class="st">"Yes"</span>)</span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>dot.edge(<span class="st">"with peel"</span>, <span class="st">"Peel potatoes"</span>, label<span class="op">=</span><span class="st">"No"</span>)</span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>dot.edge(<span class="st">"Peel potatoes"</span>, <span class="st">"Cook potatoes"</span>, arrowhead<span class="op">=</span><span class="st">"none"</span>)</span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>dot.edge(<span class="st">"Cook potatoes"</span>, <span class="st">"Eat potatoes"</span>, arrowhead<span class="op">=</span><span class="st">"none"</span>)</span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>dot.edge(<span class="st">"Eat potatoes"</span>, <span class="st">"Break End"</span>, arrowhead<span class="op">=</span><span class="st">"none"</span>)</span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>dot.render(<span class="st">"Potatoes.gv"</span>, cleanup<span class="op">=</span><span class="va">True</span>, view<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="skript/00-bilder/Kartoffeln.svg" class="img-fluid figure-img" alt="A flowchart created with Schemdraw showing how to cook potatoes with or without skin during the lunch break."></p>
+<figcaption>Flowchart with Schemdraw</figcaption>
+</figure>
+</div>
+<p><em>Note: For technical reasons, the graphic was included as an image.</em></p>
+</div>
+<div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
+<pre><code># Flowchart with DiagrammeR in R
+
+install.packages("DiagrammeR")
+library("DiagrammeR")
+
+## Mermaid
+DiagrammeR::mermaid("
+  graph TD
+    0(Lunch break)
+    A[Count potatoes]
+    B{with skin}
+    D[Cook potatoes]
+    E[Eat potatoes]
+    S[Peel potatoes]
+    Z(Break ends)
+    
+    0---A
+    A---B
+    B--&gt;|yes|D
+    B--&gt;|no|S
+    S---D
+    D---E
+    E---Z
+")
+
+## Graphviz
+DiagrammeR::grViz("
+
+  graph Potatoes {
+  
+  # defining nodes
+  node [shape = Mrecord]
+  
+    Lunch_break; Break_ends
+  
+  node [shape = box]
+  
+    Count_potatoes
+    Peel_potatoes
+    Cook_potatoes
+    Eat_potatoes
+    
+  node[shape = diamond]
+  
+    with_skin
+    
+  # defining edges
+    Lunch_break -- Count_potatoes
+    Count_potatoes -- with_skin
+      with_skin -- Cook_potatoes[dir = forward label=yes]
+      with_skin -- Peel_potatoes[dir = forward label=no]
+        Peel_potatoes -- Cook_potatoes
+    Cook_potatoes -- Eat_potatoes
+    Eat_potatoes -- Break_ends
+  }
+")</code></pre>
+</div>
+<div id="tabset-4-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-4-tab">
+<!-- The Mermaid code runs in Quarto, but not in HTML (causes Mermaid engine to crash). HTML comments are parsed by Mermaid. Therefore, include as an image. https://github.com/quarto-dev/quarto-cli/issues/9693 -->
+<!-- .svg fails to render with arrow heads -->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="skript/00-bilder/mermaid-in-r.png" class="img-fluid figure-img"></p>
+<figcaption>&nbsp;</figcaption>
+</figure>
+</div>
+<!-- Note: For technical reasons, this is a rendered image (Quarto issue #9693). -->
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>&nbsp;</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">Exercise: Counting</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Sample Solution Pseudocode</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-3" role="tab" aria-controls="tabset-5-3" aria-selected="false" href="">Sample solution Mermaid</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-4" role="tab" aria-controls="tabset-5-4" aria-selected="false" href="">Sample Solution Flowchart</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<p><strong>Create a flowchart for a program that counts from 1 to 10 and from 15 to 20.</strong></p>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<pre><code>i = 0
+WHILE i is smaller then 10 DO
+  increase i by 1
+  output i
+i = 14
+WHILE i is smaller then 20 DO
+  increase i by 1
+  output i</code></pre>
+</div>
+<div id="tabset-5-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-3-tab">
+<pre class="raw"><code>---
+title: Count from 1-10 and from 15-20
+---
+flowchart TD
+Start([Start])
+initialize1[i = 0]
+initialize2[i = 14]
+Loop1{i less than 10}
+Loop2{i less than 20}
+Increment1[i = i + 1]
+Increment2[i = i + 1]
+Output1[Print i]
+Output2[Print i]
+End([End])
+
+Start --- initialize1
+initialize1 --- Loop1
+    
+    Loop1 --&gt;|no| initialize2 --- Loop2
+        Loop2 --&gt;|yes| Increment2 --- Output2 --&gt; Loop2
+        Loop2 --&gt;|no| End
+
+    Loop1 --&gt;|yes| Increment1 --- Output1 --&gt; Loop1
+
+%% invisible connections for positioning
+    Output1 ~~~ Loop2
+    Output2 ~~~ End</code></pre>
+</div>
+<div id="tabset-5-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-4-tab">
+<!-- .svg fails to render with arrow heads -->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="aufgaben/00-bilder/musterloesung-flussdiagramm.png" class="img-fluid figure-img" alt="The flowchart corresponding to the Mermaid code from the previous panel."></p>
+<figcaption>Flowchart with DiagrammeR in R</figcaption>
+</figure>
+</div>
+<!-- Note: For technical reasons, this is a rendered graphic (Quarto issue #9693). -->
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="sample-solutions" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Sample Solutions</h1>
+<div id="tip-BraidedBread" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;6.1: Baking Braided Bread
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Preparing the braided bread takes at least three hours. The dough (or yeast mixture) needs to rise over several steps for a total of 120 minutes and then cool after baking. Due to the long waiting times, one person can complete all steps, and having a second person work in parallel saves very little time. Lisa may, of course, come an hour earlier, but then the dough is either resting for the final time, baking in the oven, or cooling. She does not need to bring ingredients, as the ingredient list is complete.</p>
+<pre><code># Step 1 - approx. 25 minutes
+## Input: 250 ml milk, 475 g wheat flour, 1 pinch of sugar, ½ cube of yeast
+## Tools: bowl, sieve, pot, spoon, kitchen towel  
+## Process: Dissolve yeast in sweetened milk
+## Output: Yeast mixture, flour
+
+PrepareYeastMixture
+  SiftFlour # use sieve
+  AddFlour        
+  MakeWell # create a well in the flour  
+  CrumbleYeast  
+  AddYeast  
+  PrepareMilk # use pot
+    **WHILE** Milk &lt; lukewarm **DO**  
+      HeatMilk  
+    AddSugar
+    Stir # mix milk and sugar with spoon  
+  AddMilk  
+  Stir # mix yeast and milk mixture with spoon  
+  DoughRises(Time = 15 minutes)  
+    CoverBowl # use kitchen towel  
+    KeepWarm
+
+# Step 2 - approx. 75 minutes
+## Input: yeast mixture, flour, 1 egg, 60 g sugar, 1 pinch salt, 50 g butter  
+## Tools: bowl, mixer, knife, kitchen towel
+## Process: Add egg, milk, salt, butter and knead  
+## Output: raw dough
+    
+PrepareDough  
+  DiceButter # use knife  
+    # Output: n butter cubes
+  **WHILE** DoughRises **DO**
+    Wait  
+  AddEgg  
+  AddMilk  
+  AddSugar  
+  AddSalt  
+  Knead(Time = 3 min, Speed = low) # use mixer hook  
+  Knead(Time = 5 min, Speed = high) # use mixer hook  
+  AddButter  
+    **WHILE** n &gt; 0 **DO**  
+      Knead(Speed = high)  
+      AddButterCube  
+      n = n - 1
+    Knead(Time = 5 min, Speed = high) # use mixer hook
+  DoughRises(Time = 60 minutes)  
+    CoverBowl # use kitchen towel  
+    KeepWarm
+
+# Step 3 - approx. 55 minutes
+## Input: raw dough, some flour
+## Process: Shape raw dough into braided loaf
+## Tools: baking tray, parchment paper, kitchen towel
+## Output: braided loaf
+
+ShapeBraid  
+  PlaceParchmentOnTray  
+  FlourWorkSurface  
+  PlaceDoughOnSurface  
+  DivideDough(Pieces = 3)  
+    # Output = n dough pieces  
+  RollDough  
+    **WHILE** n &gt; 0 **DO**  
+      RollPiece(Length = 40 cm)  
+      n = n - 1  
+  CreateBraid  
+    BraidRolls  
+    TwistEnds  
+  PlaceBraidOnParchment  
+  DoughRises(Time = 45 minutes)  
+    CoverBraid # use kitchen towel 
+    KeepWarm  
+
+# Step 4 - approx. 40 minutes
+## Input: braided loaf, some milk, some pearl sugar
+## Tools: brush, oven
+## Process: Brush loaf, sprinkle, and bake
+## Output: baked yeast braid
+
+BakeBraid  
+  PreheatOven  
+    **IF** ConvectionAvailable **THEN**   
+      Mode = Convection  
+      Temperature = 180 C  
+    **ELSE**  
+      Mode = TopBottomHeat  
+      Temperature = 200 C
+  BrushBraidWithMilk # use brush
+  SprinkleBraidWithPearlSugar
+  BakeBraid
+    PlaceTrayInOven
+    **WHILE** Braid &lt; lightly brown **DO**
+      KeepTrayInOven
+    RemoveTray
+  CoolBraid
+    **WHILE** Braid &gt; room temperature **DO**
+      Wait</code></pre>
+</div>
+</div>
+</div>
+<div id="tip-GuineaPig" class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;6.2: Vitamin C in Guinea Pigs
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<pre><code># Step 1 – Load Dataset
+## Input: URL
+## Tool: Browser
+## Processing: Save raw data
+## Output: comma-separated file ToothGrowth.csv
+
+FetchDatasetFromURL
+SaveDataset
+
+# Step 2 – Compare Means
+## Input: ToothGrowth.csv
+## Tool: IDE
+## Processing: Compute means for subsets
+## Output: Table of means by dose and administration method
+
+DetermineRowNumbers
+  RowNumbers(supp = OJ)
+  RowNumbers(supp = VC)
+  RowNumbers(dose = 0.5)
+  RowNumbers(dose = 1)
+  RowNumbers(dose = 2)
+CreateSubsets # by criterion or by row numbers
+    SubsetSupp = OJ
+        SubsetDose = 0.5
+        SubsetDose = 1
+        SubsetDose = 2
+    SubsetSupp = VC
+        SubsetDose = 0.5
+        SubsetDose = 1
+        SubsetDose = 2
+ComputeMeans
+    MeanLen(Dataset)
+    MeansSubsets
+        MeanLen(SubsetSupp = OJ &amp; Dose = 0.5)
+        MeanLen(SubsetSupp = OJ &amp; Dose = 1)
+        MeanLen(SubsetSupp = OJ &amp; Dose = 2)
+        MeanLen(SubsetSupp = VC &amp; Dose = 0.5)
+        MeanLen(SubsetSupp = VC &amp; Dose = 1)
+        MeanLen(SubsetSupp = VC &amp; Dose = 2)
+CreateTable
+    Columns = OJ, VC
+    Rows = Dose
+    Cells = MeanLen
+OutputTable
+
+# Step 3 – Graphical Representation
+## Input: ToothGrowth.csv
+## Tool: Boxplot function
+## Processing: Generate boxplot by dose and method
+## Output: Boxplots by dose and administration method
+
+Boxplot(Len by Dose &amp; Method)
+    CreateBoxplot
+    DistinguishMethodByColor
+    AddLegend
+SaveBoxplot
+</code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="key-points" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Key Points</h1>
+<div style="position: relative; width: 100%; aspect-ratio: 16 / 9;">
+<p><iframe src="https://av.tib.eu/player/71643" allowfullscreen="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></p>
+</div>
+<p>&nbsp;</p>
+<p>The form and level of detail in which you write pseudocode depends on your knowledge and your goal. Pseudocode can be used as a creativity technique without formal rules, help in a detailed form when developing an algorithmic solution, or support your communication with others visually in the form of a flowchart.</p>
+</section>
+<section id="learning-assessment" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Learning Assessment</h1>
+<section id="skills-quiz" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="skills-quiz"><span class="header-section-number">8.1</span> Skills Quiz</h2>
+<ol class="example" type="1">
+<li>Write a program in pseudocode that outputs all even numbers up to 10.</li>
+</ol>
+<textarea id="quiz-1" name="quiz-1" rows="4" cols="50"></textarea>
+<p>&nbsp;</p>
+<ol start="2" class="example" type="1">
+<li>Find the error in the pseudocode.</li>
+</ol>
+<p>A friend shows you the pseudocode of a program that is supposed to check whether letters are uppercase or lowercase. However, the output only works for lowercase letters. Can you find the mistake?</p>
+<pre><code>text = input("Please enter your text: ")
+char_list = DivideCharactersIntoList(text)
+
+FOR EACH element IN char_list DO
+
+  if decimal_value(element) &gt;= 97 AND decimal_value(element) &lt;= 122 DO
+      print("The character", element, "is lowercase.")
+
+    if decimal_value(element) &gt;= 65 AND decimal_value(element) &lt;= 90 DO
+      print("The character", element, "is uppercase.")</code></pre>
+<p>&nbsp;</p>
+<ol start="3" class="example" type="1">
+<li>Draw a flowchart of the correct program.</li>
+</ol>
+<div id="tip-skill-quiz" class="callout callout-style-default callout-tip callout-titled" title="Solutions">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;8.2: Solutions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Solution 1:</p>
+<pre><code>i = 1
+WHILE i is less than or equal to 10
+  IF i modulo 2 is equal to 0 THEN
+    Print i
+  Increment i by 1</code></pre>
+<p>Solution 2: The check for uppercase letters (decimal_value(element) &gt;= 65 AND decimal_value(element) &lt;= 90) takes place within the statement block that is executed when a letter is lowercase (decimal_value(element) &gt;= 97 AND decimal_value(element) &lt;= 122). The truth value of this condition is false if the letter is uppercase. Therefore, the following statements are not executed when <code>element</code> contains an uppercase letter. Proper indentation can resolve this issue.</p>
+<pre><code>text = Input("Please enter your text.")
+char_list = SplitIntoCharList(text)
+
+FOR EACH element IN char_list DO
+
+  If DecimalValue(element) &gt;= 97 AND DecimalValue(element) &lt;= 122 DO
+    Print("The character ", element, " is lowercase.")
+
+  # corrected indentation
+  If DecimalValue(element) &gt;= 65 AND DecimalValue(element) &lt;= 90 DO
+    Print("The character ", element, " is uppercase.")</code></pre>
+<p>Solution 3:</p>
+<div id="tip-skill-quiz-flowchart" class="callout callout-style-default callout-tip callout-titled" title="Mermaid Diagram">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip&nbsp;8.1: Mermaid Diagram
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><img src="skript/00-bilder/mermaid-diagram-buchstaben.svg" class="img-fluid" style="width:80.0%" alt="A flowchart for the pseudocode shown in Solution 2."></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="exercises-1" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="exercises-1"><span class="header-section-number">8.2</span> Exercises</h2>
+<section id="develop-a-stock-market-strategy" class="level3">
+<h3 class="anchored" data-anchor-id="develop-a-stock-market-strategy">Develop a Stock Market Strategy</h3>
+<p>You want to evaluate the potential return of a turnaround strategy in the stock market. Your idea is to buy a stock index when it has fallen at least 30 percent from its all-time high over the past three years. With this strategy, you speculate that the index will recover and that your favorable entry point will yield a better return than regular, non-timed purchases. The comparison period is 30 years (you can choose the start and end dates yourself).</p>
+<p><strong>Test your strategy using the S&amp;P500.</strong></p>
+<p>Parameters: $5,000 starting capital, an additional $500 available for investment each month over 30 years, dividends reinvested the following month or accumulated until the next price drop, strategy: Buy &amp; Hold (no selling), price drop threshold: 30 percent from the all-time high over the past 3 years.</p>
+<ul>
+<li><p>Optional: In how many 30-year periods would your turnaround strategy have outperformed steady accumulation?</p></li>
+<li><p>Optional: How does the ratio change if the price drop threshold is adjusted (20 or 40 percent)?</p></li>
+</ul>
+<p>An S&amp;P500 dataset with monthly data from 1871 to 2024 is available on Robert Shiller’s <a href="https://shillerdata.com/">website</a> (<a href="https://img1.wsimg.com/blobby/go/e5e77e0b-59d1-44d9-ab25-4763ac982e53/downloads/ie_data.xls?ver=1712069253887">direct link to the XLS file</a>).</p>
+<div id="wrn-SP500" class="callout callout-style-simple callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note&nbsp;8.1: S&amp;P500 Dataset Description
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The dataset is provided at a monthly resolution (<strong>Date</strong>). In addition to the price (<strong>Price</strong>), distributed dividends (<strong>Dividend</strong>) are recorded.<br>
+<em>Note: The dataset is provided as an Excel file and has been slightly modified for clarity (column name adjustments, Date column formatting, rounding of Price and Dividend columns). Please note that if you download the dataset yourself, its appearance may differ.</em></p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>#</th>
+<th>Date</th>
+<th>Price</th>
+<th>Dividend</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1871.01</td>
+<td>4.44</td>
+<td>0.26</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>1871.02</td>
+<td>4.50</td>
+<td>0.26</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1871.03</td>
+<td>4.61</td>
+<td>0.26</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>1871.04</td>
+<td>4.74</td>
+<td>0.26</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>1871.05</td>
+<td>4.86</td>
+<td>0.26</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>1871.06</td>
+<td>4.82</td>
+<td>0.26</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>1871.07</td>
+<td>4.73</td>
+<td>0.26</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>1871.08</td>
+<td>4.79</td>
+<td>0.26</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>1871.09</td>
+<td>4.84</td>
+<td>0.26</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>1871.10</td>
+<td>4.59</td>
+<td>0.26</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>1871.11</td>
+<td>4.64</td>
+<td>0.26</td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td>1871.12</td>
+<td>4.74</td>
+<td>0.26</td>
+</tr>
+<tr class="odd">
+<td>1828</td>
+<td>2023.04</td>
+<td>4121.47</td>
+<td>68.38</td>
+</tr>
+<tr class="even">
+<td>1829</td>
+<td>2023.05</td>
+<td>4146.17</td>
+<td>68.54</td>
+</tr>
+<tr class="odd">
+<td>1830</td>
+<td>2023.06</td>
+<td>4345.37</td>
+<td>68.71</td>
+</tr>
+<tr class="even">
+<td>1831</td>
+<td>2023.07</td>
+<td>4508.08</td>
+<td>68.91</td>
+</tr>
+<tr class="odd">
+<td>1832</td>
+<td>2023.08</td>
+<td>4457.36</td>
+<td>69.11</td>
+</tr>
+<tr class="even">
+<td>1833</td>
+<td>2023.09</td>
+<td>4409.09</td>
+<td>69.31</td>
+</tr>
+<tr class="odd">
+<td>1834</td>
+<td>2023.10</td>
+<td>4269.40</td>
+<td>69.64</td>
+</tr>
+<tr class="even">
+<td>1835</td>
+<td>2023.11</td>
+<td>4460.06</td>
+<td>69.97</td>
+</tr>
+<tr class="odd">
+<td>1836</td>
+<td>2023.12</td>
+<td>4685.05</td>
+<td>70.30</td>
+</tr>
+<tr class="even">
+<td>1837</td>
+<td>2024.01</td>
+<td>4815.61</td>
+<td>70.48</td>
+</tr>
+<tr class="odd">
+<td>1838</td>
+<td>2024.02</td>
+<td>5011.96</td>
+<td>70.65</td>
+</tr>
+<tr class="even">
+<td>1839</td>
+<td>2024.03</td>
+<td>5170.57</td>
+<td>70.82</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-Pseudocode-was-ist" class="csl-entry" role="listitem">
+AAU, Informatik-Werkstatt. 2019. <span>“Was Ist Ein Pseudocode?”</span> <a href="https://www.rfdz-informatik.at/wp-content/uploads/2020/10/RE_I_Pseudocode.pdf">https://www.rfdz-informatik.at/wp-content/uploads/2020/10/RE_I_Pseudocode.pdf</a>.
+</div>
+<div id="ref-Crampton.1947" class="csl-entry" role="listitem">
+Crampton, E. W. 1947. <span>“THE GROWTH OF THE ODONTOBLASTS OF THE INCISOR TOOTH AS a CRITERION OF THE VITAMIN c INTAKE OF THE GUINEA PIG.”</span> <em>The Journal of Nutrition</em> 33 (5): 491–504. <a href="https://doi.org/10.1093/jn/33.5.491">https://doi.org/10.1093/jn/33.5.491</a>.
+</div>
+<div id="ref-DIN-66001-1983" class="csl-entry" role="listitem">
+DIN. 1983. <span>“DIN 66001: Informationsverarbeitung. Sinnbilder Und Ihre Anwendung.”</span> <span>Beuth Verlag GmbH</span>. <a href="https://doi.org/10.31030/1300312">https://doi.org/10.31030/1300312</a>.
+</div>
+<div id="ref-Scheuermann2016" class="csl-entry" role="listitem">
+Scheuermann, Ulrike. 2016. <em>Schreibdenken: Schreiben Als Denk- Und Lernwerkzeug Nutzen Und Vermitteln</em>. 3. Utb.
+</div>
+<div id="ref-R-for-Data-Science" class="csl-entry" role="listitem">
+Wickham, Hadley, Mine Çetinkaya-Rundel, and Garrett Grolemund. 2023. <span>“R for Data Science: Import, Tidy, Transform, Visualize, and Model Data.”</span> 2nd edition. O’Reilly. <a href="https://r4ds.hadley.nz/">https://r4ds.hadley.nz/</a>.
+</div>
+</div>
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../index.html" class="pagination-link" aria-label="Overview">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Overview</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../books/w-python-minimal-en/index.html" class="pagination-link" aria-label="Python Tool Module">
+        <span class="nav-page-text">Python Tool Module</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en/blob/main/books/w-pseudocode-en/Pseudocode.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
