@@ -1,0 +1,153 @@
+project:
+  type: book
+  output-dir: output/book/
+book:
+  title: "Python Building Blocks"
+  author:
+    - Lukas Arnold
+    - Simone Arnold
+    - Florian Bagemihl
+    - Matthias Baitsch
+    - Marc Fehr
+    - Maik Poetzsch
+    - Sebastian Seipel
+  date: today
+  language: en-US
+  downloads: [pdf]
+  repo-url: "https://github.com/bausteine-der-datenanalyse/bcd-bausteine-python-en"
+  repo-actions: [source]
+  favicon: books/shared-media/logo/favicon.svg
+  sidebar:
+    title: "Python Building Blocks"
+    logo: books/shared-media/logo/logo_with_text.svg
+  chapters:
+    - index.qmd
+    - part: "w-pseudocode-en"
+      chapters:
+        - books/w-pseudocode-en/Pseudocode.qmd
+    - part: "w-python-minimal-en"
+      chapters:
+        - books/w-python-minimal-en/index.qmd
+        - books/w-python-minimal-en/skript/einleitung.qmd
+        - books/w-python-minimal-en/skript/datentypen.qmd
+        - books/w-python-minimal-en/skript/flusskontrolle.qmd
+        - books/w-python-minimal-en/skript/listen_iterationen.qmd
+        - books/w-python-minimal-en/skript/funktionen.qmd
+        - books/w-python-minimal-en/skript/lesen_schreiben.qmd
+    - part: "w-python-en"
+      chapters:
+        - books/w-python-en/index.qmd
+        - books/w-python-en/skript/einleitung.qmd
+        - books/w-python-en/skript/datentypen.qmd
+        - books/w-python-en/skript/funktionen.qmd
+        - books/w-python-en/skript/flusskontrolle.qmd
+        - books/w-python-en/skript/sammeltypen.qmd
+        - books/w-python-en/skript/funktionen-definieren.qmd
+        - books/w-python-en/skript/dateien-lesen-und-schreiben.qmd
+        - books/w-python-en/skript/module-und-pakete-importieren.qmd
+        - books/w-python-en/skript/daswichtigste.qmd
+    - part: "w-python-numpy-grundlagen-en"
+      chapters:
+        - books/w-python-numpy-grundlagen-en/index.qmd
+        - books/w-python-numpy-grundlagen-en/skript/introduction_en.qmd
+        - books/w-python-numpy-grundlagen-en/skript/array_creation_en.qmd
+        - books/w-python-numpy-grundlagen-en/skript/array_info_en.qmd
+        - books/w-python-numpy-grundlagen-en/skript/array_calculation_en.qmd
+        - books/w-python-numpy-grundlagen-en/skript/array_slicing_en.qmd
+        - books/w-python-numpy-grundlagen-en/skript/array_manipulation_en.qmd
+        - books/w-python-numpy-grundlagen-en/skript/array_read_n_write_en.qmd
+        - books/w-python-numpy-grundlagen-en/skript/array_images_en.qmd
+        - books/w-python-numpy-grundlagen-en/skript/assessment_en.qmd
+        - books/w-python-numpy-grundlagen-en/uebungen/uebung.qmd
+        - books/w-python-numpy-grundlagen-en/klausurfragen/klausurfragen_en.qmd
+    - part: "w-pandas-en"
+      chapters:
+        - books/w-pandas-en/index.qmd
+        - books/w-pandas-en/skript/einleitung.qmd
+        - books/w-pandas-en/skript/operationen.qmd
+        - books/w-pandas-en/skript/plotting.qmd
+        - books/w-pandas-en/skript/datentypen.qmd
+        - books/w-pandas-en/skript/datetime.qmd
+        - books/w-pandas-en/skript/dateien.qmd
+    - part: "w-python-matplotlib-en"
+      chapters:
+        - books/w-python-matplotlib-en/index.qmd
+        - books/w-python-matplotlib-en/skript/introduction.qmd
+        - books/w-python-matplotlib-en/skript/basic_plot_types.qmd
+        - books/w-python-matplotlib-en/skript/adapting_plots.qmd
+        - books/w-python-matplotlib-en/skript/advanced_techniques.qmd
+        - books/w-python-matplotlib-en/skript/scientific_plotting.qmd
+    - part: "m-numerik-en"
+      chapters:
+        - books/m-numerik-en/index.qmd
+        - books/m-numerik-en/skript/einleitung.qmd
+        - books/m-numerik-en/skript/intro_integrale.qmd
+        - books/m-numerik-en/skript/intro_ableitungen.qmd
+    - part: "m-einlesen-strukturierter-datensaetze-en"
+      chapters:
+        - books/m-einlesen-strukturierter-datensaetze-en/index.qmd
+        - books/m-einlesen-strukturierter-datensaetze-en/skript/einleitung.qmd
+        - books/m-einlesen-strukturierter-datensaetze-en/skript/grundlagen.qmd
+        - books/m-einlesen-strukturierter-datensaetze-en/skript/datentypoperationen.qmd
+        - books/m-einlesen-strukturierter-datensaetze-en/skript/numpy-pandas.qmd
+        - books/m-einlesen-strukturierter-datensaetze-en/skript/zeitreihen.qmd
+        - books/m-einlesen-strukturierter-datensaetze-en/skript/marktdaten-oesterreich.qmd
+        - books/m-einlesen-strukturierter-datensaetze-en/skript/modul-glob.qmd
+        - books/m-einlesen-strukturierter-datensaetze-en/skript/maskierte-arrays.qmd
+        - books/m-einlesen-strukturierter-datensaetze-en/skript/dateiformate.qmd
+        - books/m-einlesen-strukturierter-datensaetze-en/skript/daswichtigste.qmd
+        - books/m-einlesen-strukturierter-datensaetze-en/skript/lernzielkontrolle.qmd
+    - part: "m-datenfitting-und-optimierung-en"
+      chapters:
+        - books/m-datenfitting-und-optimierung-en/index.qmd
+        - books/m-datenfitting-und-optimierung-en/skript/einleitung.qmd
+        - books/m-datenfitting-und-optimierung-en/skript/interpolation.qmd
+        - books/m-datenfitting-und-optimierung-en/skript/fitting.qmd
+        - books/m-datenfitting-und-optimierung-en/skript/splines.qmd
+        - books/m-datenfitting-und-optimierung-en/skript/glaetten.qmd
+        - books/m-datenfitting-und-optimierung-en/skript/uebungen.qmd
+    - part: "m-sensordatenanalyse-en"
+      chapters:
+        - books/m-sensordatenanalyse-en/index.qmd
+        - books/m-sensordatenanalyse-en/skript/einleitung.qmd
+        - books/m-sensordatenanalyse-en/skript/normalverteilung.qmd
+        - books/m-sensordatenanalyse-en/skript/lineare-parameterschätzung.qmd
+        - books/m-sensordatenanalyse-en/skript/fehlerrechnung.qmd
+        - books/m-sensordatenanalyse-en/skript/übung-hooke.qmd
+        - books/m-sensordatenanalyse-en/skript/kalibrierung.qmd
+    - part: "m-analyse-von-zeitdaten-en"
+      chapters:
+        - books/m-analyse-von-zeitdaten-en/index.qmd
+        - books/m-analyse-von-zeitdaten-en/skript/01-einleitung.qmd
+        - books/m-analyse-von-zeitdaten-en/skript/02-vorverarbeitung-validierung.qmd
+        - books/m-analyse-von-zeitdaten-en/skript/03-resampling-alignment.qmd
+        - books/m-analyse-von-zeitdaten-en/skript/04-glaettung.qmd
+        - books/m-analyse-von-zeitdaten-en/skript/05-trend-saison.qmd
+        - books/m-analyse-von-zeitdaten-en/skript/06-lags-autokorrelation.qmd
+        - books/m-analyse-von-zeitdaten-en/skript/07-anomalien.qmd
+        - books/m-analyse-von-zeitdaten-en/skript/08-forecasting-baselines.qmd
+        - books/m-analyse-von-zeitdaten-en/skript/09-lernzielkontrolle.qmd
+        - books/m-analyse-von-zeitdaten-en/skript/10-uebung.qmd
+        - books/m-analyse-von-zeitdaten-en/skript/11-klausurfragen.qmd
+    - part: "a-energiedatenanalyse-en"
+      chapters:
+        - books/a-energiedatenanalyse-en/index.qmd
+        - books/a-energiedatenanalyse-en/skript/energiedatenanalyse.qmd
+    - part: "a-auswertung-fds-daten-en"
+      chapters:
+        - books/a-auswertung-fds-daten-en/index.qmd
+        - books/a-auswertung-fds-daten-en/skript/introduction.qmd
+        - books/a-auswertung-fds-daten-en/skript/aset.qmd
+        - books/a-auswertung-fds-daten-en/skript/fdsreader.qmd
+        - books/a-auswertung-fds-daten-en/uebungen/uebung.qmd
+        - books/a-auswertung-fds-daten-en/klausurfragen/klausurfragen.qmd
+format:
+  html:
+    theme: flatly
+    toc: true
+    toc-depth: 2
+  pdf:
+    number-sections: true
+
+execute:
+  freeze: auto

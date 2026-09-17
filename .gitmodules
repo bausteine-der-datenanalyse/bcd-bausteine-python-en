@@ -1,0 +1,42 @@
+[submodule "books/w-pseudocode-en"]
+	path = books/w-pseudocode-en
+	url = https://github.com/bausteine-der-datenanalyse/w-pseudocode-en.git
+[submodule "books/w-python-minimal-en"]
+	path = books/w-python-minimal-en
+	url = https://github.com/bausteine-der-datenanalyse/w-python-minimal-en.git
+[submodule "books/w-python-en"]
+	path = books/w-python-en
+	url = https://github.com/bausteine-der-datenanalyse/w-python-en.git
+[submodule "books/w-python-numpy-grundlagen-en"]
+	path = books/w-python-numpy-grundlagen-en
+	url = https://github.com/bausteine-der-datenanalyse/w-python-numpy-grundlagen-en.git
+[submodule "books/w-pandas-en"]
+	path = books/w-pandas-en
+	url = https://github.com/bausteine-der-datenanalyse/w-pandas-en.git
+[submodule "books/w-python-matplotlib-en"]
+	path = books/w-python-matplotlib-en
+	url = https://github.com/bausteine-der-datenanalyse/w-python-matplotlib-en.git
+[submodule "books/m-numerik-en"]
+	path = books/m-numerik-en
+	url = https://github.com/bausteine-der-datenanalyse/m-numerik-en.git
+[submodule "books/m-einlesen-strukturierter-datensaetze-en"]
+	path = books/m-einlesen-strukturierter-datensaetze-en
+	url = https://github.com/bausteine-der-datenanalyse/m-einlesen-strukturierter-datensaetze-en.git
+[submodule "books/m-datenfitting-und-optimierung-en"]
+	path = books/m-datenfitting-und-optimierung-en
+	url = https://github.com/bausteine-der-datenanalyse/m-datenfitting-und-optimierung-en.git
+[submodule "books/m-sensordatenanalyse-en"]
+	path = books/m-sensordatenanalyse-en
+	url = https://github.com/bausteine-der-datenanalyse/m-sensordatenanalyse-en.git
+[submodule "books/m-analyse-von-zeitdaten-en"]
+	path = books/m-analyse-von-zeitdaten-en
+	url = https://github.com/bausteine-der-datenanalyse/m-analyse-von-zeitdaten-en.git
+[submodule "books/a-energiedatenanalyse-en"]
+	path = books/a-energiedatenanalyse-en
+	url = https://github.com/bausteine-der-datenanalyse/a-energiedatenanalyse-en.git
+[submodule "books/a-auswertung-fds-daten-en"]
+	path = books/a-auswertung-fds-daten-en
+	url = https://github.com/bausteine-der-datenanalyse/a-auswertung-fds-daten-en.git
+[submodule "books/shared-media"]
+	path = books/shared-media
+	url = https://github.com/bausteine-der-datenanalyse/shared-media-and-workflows.git
